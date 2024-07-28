@@ -19,6 +19,7 @@ const config: Config = {
         },
         secondary: {
           400: '#1A0A00',
+          900:'#662700',
         },
         offwhite: "#FFFAFA",
         offgray: "#606060",

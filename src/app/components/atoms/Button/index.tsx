@@ -20,7 +20,7 @@ export default function Button({
 
   return (
     <a
-      className={`w-[200px] h-fit flex justify-center items-center rounded-lg py-2 px-4 text-center
+      className={`w-full h-fit flex justify-center items-center rounded-lg py-2 px-4 text-center
       ${colorBg} ${colorTextButton} ${fontWeight} font-sans
       hover:opacity-80 hover:cursor-pointer`}
     >
