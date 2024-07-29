@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 
 //components
-import Button from "@/app/components/atoms/Button/index";
+import Button from "@/app/components/atoms/Button/DefaultButton/index";
 import Input from "@/app/components/atoms/Input";
 
 //assets
@@ -14,7 +14,7 @@ import LockIcon from "../../../../../public/assets/icons/LockIcon";
 export default function LoginForm() {
   return (
       <div className="flex flex-col justify-center items-center w-[300px]
-    bg-offwhite rounded-lg py-8 gap-2 px-8 shadow-2xl md:w-[400px]">
+    bg-offwhite rounded-lg py-8 md:py-16 gap-2 px-8 shadow-2xl md:w-[400px]">
         
         <Image
             alt="logo vila vitoria"

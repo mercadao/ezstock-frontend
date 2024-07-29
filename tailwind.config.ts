@@ -16,6 +16,7 @@ const config: Config = {
       colors: {
         primary: {
           400: '#D27339',
+          900:'#FF6A00',
         },
         secondary: {
           400: '#1A0A00',
@@ -23,6 +24,7 @@ const config: Config = {
         },
         offwhite: "#FFFAFA",
         offgray: "#606060",
+        textGray: "#7E746D",
         transparentGray: "#D9D9D9",
       },
       fontFamily: {

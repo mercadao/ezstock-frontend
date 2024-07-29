@@ -1,7 +1,7 @@
 import React, { ReactNode, useState } from 'react';
 
 interface InputProps {
-    label: string;
+    label?: string;
     type: string;
     placeholder: string;
     customColorText?: string;
