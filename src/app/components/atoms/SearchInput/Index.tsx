@@ -7,7 +7,7 @@ interface SearchInputProps {
 
 export default function SearchInput() {
   return (
-    <div className="relative w-[350px] h-[50px] bg-white rounded-2xl border flex items-center">
+    <div className="relative w-full h-[50px] bg-white rounded-2xl border flex items-center">
       <input
         type="text"
         placeholder="Pesquisar..."
