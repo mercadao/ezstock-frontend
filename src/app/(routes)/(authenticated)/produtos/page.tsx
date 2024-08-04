@@ -1,6 +1,6 @@
-import CardProduct from "@/app/components/atoms/CardProduct";
 import Divider from "@/app/components/atoms/Divider";
 import PainelHeader from "@/app/components/molecules/PainelHeader";
+import ProductList from "@/app/components/molecules/ProductList";
 
 export default function Home(){
 
@@ -14,7 +14,7 @@ export default function Home(){
 
                 <Divider  color="primary-900"/>
 
-                <CardProduct isActive={true} name="Produto 1" price={100} id={1} />
+                <ProductList />
 
             </div>
         </>
