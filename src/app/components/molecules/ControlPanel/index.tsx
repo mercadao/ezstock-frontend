@@ -1,3 +1,4 @@
+import DashboardButton from "../../atoms/Button/DashboardButton/Index";
 import DashboardItem from "../../atoms/DashboardItem/Index";
 import SearchInput from "../../atoms/SearchInput/Index";
 
@@ -11,12 +12,15 @@ export default function ControlPanel() {
         <p className="text-sm">Ultimas movimentações</p>
       </div>
       <hr className="my-4" />
-      <div className="flex flex-col gap-8">
-        <DashboardItem />
-        <DashboardItem />
-        <DashboardItem />
-        <DashboardItem />
-        <DashboardItem />
+      <div className="flex flex-col h-full justify-between items-start">
+        <div className="flex flex-col gap-8 w-full">
+          <DashboardItem />
+          <DashboardItem />
+          <DashboardItem />
+          <DashboardItem />
+          <DashboardItem />
+        </div>
+        <DashboardButton text="Ver mais" />
       </div>
     </div>
   );

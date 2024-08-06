@@ -2,7 +2,7 @@ interface ButtonProps {
   text: string;
   customColorBg?: string;
   customColorText?: string;
-  weight?: string; 
+  weight?: string;
   onClick: () => void;
 }
 
@@ -13,10 +13,9 @@ export default function Button({
   weight,
   onClick,
 }: ButtonProps) {
-
-  const colorBg = customColorBg ? customColorBg : 'bg-primary-400';
-  const colorTextButton = customColorText ? customColorText : 'text-white';
-  const fontWeight = weight ? weight : 'font-normal';
+  const colorBg = customColorBg ? customColorBg : "bg-primary-400";
+  const colorTextButton = customColorText ? customColorText : "text-white";
+  const fontWeight = weight ? weight : "font-normal";
 
   return (
     <a
