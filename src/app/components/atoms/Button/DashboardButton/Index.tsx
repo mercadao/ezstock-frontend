@@ -2,25 +2,22 @@ interface DashboardButtonProps {
   text?: string;
   customBorderColor?: string;
   customColorText?: string;
+  hoverBGColor?: string;
+  hoverColorText?: string;
 }
 
 export default function DashboardButton({
   text = "Button",
-  customBorderColor,
-  customColorText,
+  customBorderColor = "border-primary-400",
+  customColorText = "text-primary-400",
+  hoverBGColor = "hover:bg-primary-400",
+  hoverColorText = "hover:text-white",
 }: DashboardButtonProps) {
-  const borderColor = customBorderColor
-    ? customBorderColor
-    : "border-primary-400";
-  const hoverBgColor = customBorderColor ? customBorderColor : "bg-primary-400";
-  const colorText = customColorText ? customColorText : "text-primary-400";
-  const hoverColorText = customColorText ? customColorText : "text-white";
-
   return (
     <a
       href="#"
-      className={`px-6 py-1 border-2 ${borderColor} ${colorText} flex justify-center items-center rounded-3xl text-sm
-      font-medium hover:${hoverBgColor} hover:${hoverColorText} duration-300`}
+      className={`px-6 py-1 border-2 ${customBorderColor} ${customColorText} flex justify-center items-center rounded-3xl text-sm
+      font-medium duration-300 ${hoverBGColor} ${hoverColorText}`}
     >
       {text}
     </a>
