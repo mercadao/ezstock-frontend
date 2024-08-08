@@ -1,4 +1,5 @@
 import DashboardButton from "../../atoms/Button/DashboardButton/Index";
+import MovimentationChart from "../../atoms/Charts/MovimentarionChart/Index";
 
 export default function MovimentationPanel() {
   return (
@@ -13,6 +14,7 @@ export default function MovimentationPanel() {
           hoverColorText="hover:text-primary-400"
         />
       </div>
+      <MovimentationChart />
     </div>
   );
 }

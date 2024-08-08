@@ -1,5 +1,4 @@
-import DashboardItem from "@/app/components/atoms/DashboardItem/Index";
-import SearchInput from "@/app/components/atoms/SearchInput/Index";
+"use client";
 import ControlPanel from "@/app/components/molecules/ControlPanel";
 import MovimentationPanel from "@/app/components/molecules/MovimentationPanel/Index";
 
