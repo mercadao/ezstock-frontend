@@ -11,17 +11,77 @@ export default function MovimentationChart() {
       },
     },
     xaxis: {
-      categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999],
+      categories: [
+        "Produto 1",
+        "Produto 2",
+        "Produto 3",
+        "Produto 4",
+        "Produto 5",
+        "Produto 6",
+      ],
+      labels: {
+        show: false, // Esconde os indicadores do eixo X
+      },
+    },
+    yaxis: {
+      show: false,
     },
     fill: {
       colors: ["#FFFFFF"],
+      opacity: 1,
+      type: "solid",
+    },
+    dataLabels: {
+      style: {
+        colors: ["#D27339"],
+        weight: "bold",
+      },
+    },
+    markers: {
+      colors: ["#F44336", "#E91E63", "#9C27B0"],
+    },
+    colors: ["#F44336", "#E91E63", "#9C27B0"],
+    grid: {
+      show: true,
+    },
+
+    tooltip: {
+      theme: "dark", // Define o tema do tooltip (dark, light, ou personalizado)
+      style: {
+        fontSize: "12px", // Tamanho da fonte
+        fontColor: "FFFFFF", // Cor da fonte
+      },
     },
   };
 
   const series = [
     {
-      name: "series-1",
-      data: [30, 40, 35, 50, 49, 60, 70, 91, 125],
+      data: [
+        {
+          x: "Produto 1",
+          y: 10,
+        },
+        {
+          x: "Produto 2",
+          y: 18,
+        },
+        {
+          x: "Produto 3",
+          y: 13,
+        },
+        {
+          x: "Produto 4",
+          y: 30,
+        },
+        {
+          x: "Produto 5",
+          y: 17,
+        },
+        {
+          x: "Produto 6",
+          y: 6,
+        },
+      ],
     },
   ];
 

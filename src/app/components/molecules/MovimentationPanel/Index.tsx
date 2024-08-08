@@ -14,7 +14,15 @@ export default function MovimentationPanel() {
           hoverColorText="hover:text-primary-400"
         />
       </div>
-      <MovimentationChart />
+      <div className="h-[80%] flex justify-between items-center">
+        <div className="w-[60%] h-full">
+          <MovimentationChart />
+        </div>
+        <div className="w-[40%] flex flex-col justify-center items-center">
+          <p className="text-6xl font-bold">120kg</p>
+          <p className="mt-2 text-lg">Movimentados</p>
+        </div>
+      </div>
     </div>
   );
 }
