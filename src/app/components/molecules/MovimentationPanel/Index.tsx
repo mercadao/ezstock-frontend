@@ -1,5 +1,12 @@
 import DashboardButton from "../../atoms/Button/DashboardButton/Index";
-import MovimentationChart from "../../atoms/Charts/MovimentarionChart/Index";
+import dynamic from "next/dynamic";
+
+const MovimentationChart = dynamic(
+  () => import("../../atoms/Charts/MovimentarionChart/Index"),
+  {
+    ssr: false,
+  }
+);
 
 export default function MovimentationPanel() {
   return (
