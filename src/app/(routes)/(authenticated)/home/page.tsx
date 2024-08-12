@@ -2,6 +2,7 @@
 import ControlPanel from "@/app/components/molecules/ControlPanel";
 import MovimentationPanel from "@/app/components/molecules/MovimentationPanel/Index";
 import ProductPanel from "@/app/components/molecules/ProductsPanel/Index";
+import SalesPanel from "@/app/components/molecules/SalesPanel/Index";
 
 export default function Home() {
   return (
@@ -17,7 +18,9 @@ export default function Home() {
               <div className="h-full w-1/2 bg-[#FF8B45] rounded-xl">
                 <ProductPanel />
               </div>
-              <div className="h-full w-1/2 bg-[#FF8B45] rounded-xl"></div>
+              <div className="h-full w-1/2 bg-[#FF8B45] rounded-xl">
+                <SalesPanel />
+              </div>
             </div>
           </div>
 
