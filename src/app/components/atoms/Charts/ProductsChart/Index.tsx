@@ -9,6 +9,14 @@ export default function ProductsChart() {
       toolbar: {
         show: false,
       },
+      dropShadow: {
+        enabled: true,
+        color: "#000",
+        top: 14,
+        left: 7,
+        blur: 10,
+        opacity: 0.1,
+      },
     },
     labels: [
       "Produto 1",
@@ -18,7 +26,6 @@ export default function ProductsChart() {
       "Produto 5",
       "Produto 6",
     ],
-    colors: ["#662700", "#401800", "#1A0A00", "#522D16", "#9F572B"],
     fill: {
       opacity: 1,
       type: "solid",
@@ -41,7 +48,8 @@ export default function ProductsChart() {
     theme: {
       monochrome: {
         enabled: true,
-        color: "#D27339",
+        color: "#F88743",
+        transparent: "true",
       },
     },
     stroke: {
@@ -49,7 +57,7 @@ export default function ProductsChart() {
       width: 3,
     },
     legend: {
-      show: true,
+      show: false,
       fontWeight: "bold",
       fontFamily: "Poppins",
       fontSize: "10px",

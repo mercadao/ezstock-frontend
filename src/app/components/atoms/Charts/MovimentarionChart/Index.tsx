@@ -9,6 +9,14 @@ export default function MovimentationChart() {
       toolbar: {
         show: false,
       },
+      dropShadow: {
+        enabled: true,
+        color: "#000",
+        top: 18,
+        left: 7,
+        blur: 10,
+        opacity: 0.2,
+      },
     },
     xaxis: {
       categories: [
@@ -32,6 +40,7 @@ export default function MovimentationChart() {
       type: "solid",
     },
     dataLabels: {
+      enabled: true,
       style: {
         colors: ["#D27339"],
         weight: "bold",
@@ -40,16 +49,15 @@ export default function MovimentationChart() {
     markers: {
       colors: ["#F44336", "#E91E63", "#9C27B0"],
     },
-    colors: ["#F44336", "#E91E63", "#9C27B0"],
+    colors: ["#FFFFFF"],
     grid: {
       show: true,
     },
-
     tooltip: {
-      theme: "dark", // Define o tema do tooltip (dark, light, ou personalizado)
+      theme: "dark",
       style: {
-        fontSize: "12px", // Tamanho da fonte
-        fontColor: "FFFFFF", // Cor da fonte
+        fontSize: "12px",
+        color: "FFFFFF",
       },
     },
   };
@@ -87,7 +95,7 @@ export default function MovimentationChart() {
 
   return (
     <Chart
-      type="bar"
+      type="line"
       options={option}
       series={series}
       height="100%"

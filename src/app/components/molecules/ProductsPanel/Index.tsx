@@ -9,7 +9,8 @@ const ProductsChart = dynamic(
 
 export default function ProductPanel() {
   return (
-    <div className="w-full h-full p-6">
+    <div className="w-full h-full p-6 flex flex-col justify-between">
+      <p className="text-xl font-semibold mb-2">Produtos</p>
       <ProductsChart />
     </div>
   );
