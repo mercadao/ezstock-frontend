@@ -1,9 +1,10 @@
+import DashboardButton from "../../atoms/Button/DashboardButton/Index";
 import DashboardItem from "../../atoms/DashboardItem/Index";
 import SearchInput from "../../atoms/SearchInput/Index";
 
 export default function ControlPanel() {
   return (
-    <div className="text-brownText p-10 bg-white rounded-2xl border flex flex-col gap-4">
+    <div className="text-brownText p-10 bg-white rounded-2xl border flex flex-col gap-4 h-full">
       <p className="text-2xl font-medium">Painel de controle</p>
       <SearchInput />
       <div className="mt-4">
@@ -11,12 +12,15 @@ export default function ControlPanel() {
         <p className="text-sm">Ultimas movimentações</p>
       </div>
       <hr className="my-4" />
-      <div className="flex flex-col gap-6">
-        <DashboardItem />
-        <DashboardItem />
-        <DashboardItem />
-        <DashboardItem />
-        <DashboardItem />
+      <div className="flex flex-col h-full justify-between items-start">
+        <div className="flex flex-col gap-8 w-full">
+          <DashboardItem />
+          <DashboardItem />
+          <DashboardItem />
+          <DashboardItem />
+          <DashboardItem />
+        </div>
+        <DashboardButton text="Ver mais" />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 export default function DashboardItem() {
   return (
-    <div className="w-[280px] flex flex-col gap-2">
+    <div className="w-full flex flex-col gap-2">
       <div className="text-brownText flex justify-between">
         <p className="font-semibold">Produto</p>
         <p className="font-normal">R$0.000,00</p>
