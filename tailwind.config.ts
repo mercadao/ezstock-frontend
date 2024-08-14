@@ -32,6 +32,9 @@ const config: Config = {
       fontFamily: {
         sans: ["Poppins", "sans-serif"],
       },
+      spacing: {
+        'sidebar-width': '300px', // Defina a largura da sidebar aqui
+      },
     },
   },
   plugins: [],
