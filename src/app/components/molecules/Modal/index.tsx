@@ -1,4 +1,5 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
 interface ModalProps {
     isOpen: boolean;
@@ -11,17 +12,22 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-            <div className="bg-white p-4 rounded-md w-full max-w-lg">
+            <motion.div
+                className="relative bg-white p-4 rounded-md w-full max-w-lg"
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 50, opacity: 0 }}
+                transition={{ duration: 0.3 }}
+            >
+                <button
+                    className="absolute top-2 right-2 text-gray-700 hover:text-red-600"
+                    onClick={onClose}
+                    aria-label="Fechar"
+                >
+                    X
+                </button>
                 {children}
-                <div className="mt-4 flex justify-end">
-                    <button 
-                        className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600" 
-                        onClick={onClose}
-                    >
-                        Fechar
-                    </button>
-                </div>
-            </div>
+            </motion.div>
         </div>
     );
 }

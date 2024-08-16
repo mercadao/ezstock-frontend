@@ -2,6 +2,8 @@
 
 import React, { useState } from 'react';
 import SideBar from '@/app/components/organisms/SideBar';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -22,6 +24,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <main className={`flex-grow ${isSidebarClosed ? 'ml-[100px]' : 'ml-sidebar-width'} bg-offwhite h-full min-h-screen transition-all duration-300`}>
         {children}
       </main>
+      <ToastContainer />
     </div>
   );
 }
