@@ -1,22 +1,26 @@
-import Divider from "@/app/components/atoms/Divider";
 import PainelHeader from "@/app/components/molecules/PainelHeader";
-import ProductList from "@/app/components/molecules/ProductList";
+import Divider from "@/app/components/atoms/Divider";
+import Table from "@/app/components/organisms/Table";
 
-export default function Home(){
+const products = [
+    { id: 1, name: "Produto 1", price: "$10.00" },
+    { id: 2, name: "Produto 2", price: "$20.00" },
+    { id: 3, name: "Produto 3", price: "$30.00" },
+];
 
-    return(
-        <>
-            <div className="w-full h-full flex flex-col p-8">
+export default function Home() {
 
-                <h1 className="text-primary-900 text-2xl font-extrabold">Gerencie seus produtos</h1>
+ 
 
-                <PainelHeader />
+    return (
+        <div className="w-full h-full flex flex-col p-8">
+            <h1 className="text-primary-900 text-2xl font-extrabold">Gerencie seus produtos</h1>
 
-                <Divider  color="primary-900"/>
+            <PainelHeader />
 
-                <ProductList />
+            <Divider color="primary-900" />
 
-            </div>
-        </>
-    )
+            <Table />
+        </div>
+    );
 }

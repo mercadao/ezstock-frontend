@@ -1,3 +1,5 @@
+"use client";
+
 import Button from "@/app/components/atoms/Button/DefaultButton"
 import SmallButton from "@/app/components/atoms/Button/SmallButton";
 import Input from "@/app/components/atoms/Input";
@@ -24,6 +26,7 @@ export default function PainelHeader(){
                     onChange={() => console.log("Pesquisar")}
                     placeholder="Pesquisar produtos"
                     type="text"
+                    value=""
                 />
             </div>
             

@@ -2,7 +2,7 @@ interface ButtonProps {
   text: string;
   customColorBg?: string;
   customColorText?: string;
-  weight?: string; 
+  weight?: string;
   onClick: () => void;
 }
 
@@ -19,12 +19,13 @@ export default function Button({
   const fontWeight = weight ? weight : 'font-normal';
 
   return (
-    <a
+    <button
+      onClick={onClick} 
       className={`w-full h-fit flex justify-center items-center rounded-lg py-2 px-4 text-center
       ${colorBg} ${colorTextButton} ${fontWeight} font-sans
-      hover:opacity-80 hover:cursor-pointer`}
+      hover:opacity-80 focus:outline-none focus:ring-2 focus:ring-primary-500`} // Adiciona foco e estilo de anel
     >
       {text}
-    </a>
+    </button>
   );
 }

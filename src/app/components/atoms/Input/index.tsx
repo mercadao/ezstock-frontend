@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, ChangeEvent } from 'react';
 
 interface InputProps {
     label?: string;
@@ -6,8 +6,10 @@ interface InputProps {
     placeholder: string;
     customColorText?: string;
     weight?: string;
-    onChange: () => void;
+    value: string;
+    onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     icon?: ReactNode;
+    hasError?: boolean; 
 }
 
 export default function Input({
@@ -17,31 +19,39 @@ export default function Input({
     icon,
     customColorText,
     weight,
-    onChange
+    value,
+    onChange,
+    hasError = false
 }: InputProps) {
 
-    const colorText = customColorText ? customColorText : 'text-offgray';
+    const colorText = customColorText ? customColorText : (hasError ? 'text-red-500' : 'text-offgray');
     const fontWeight = weight ? weight : 'font-normal';
+    const borderColor = hasError ? 'border-red-500' : 'border-gray-300'; 
 
     return (
         <div className="mb-4 flex flex-col gap-2 w-full">
-            <label className={`text-sm ${colorText} ${fontWeight}`}>
-                {label}
-            </label>
-            <div className="relative group  w-full">
+            {label && (
+                <label className={`text-sm ${colorText} ${fontWeight}`}>
+                    {label}
+                </label>
+            )}
+            <div className="relative group w-full">
                 {icon && (
-                    <div className="absolute text-gray-500 inset-y-0 left-0 flex items-center pl-1 pointer-events-none group-focus-within:text-orange-400">
-                        {React.cloneElement(icon as React.ReactElement, { className: "text-black group-focus-within:text-orange-400" })}
+                    <div className={`absolute inset-y-0 left-0 flex items-center pl-1 pointer-events-none ${hasError ? 'text-red-500' : 'text-gray-500'} group-focus-within:text-orange-400`}>
+                        {React.cloneElement(icon as React.ReactElement, { className: `text-black ${hasError ? 'text-red-500' : 'text-black'} group-focus-within:text-orange-400` })}
                     </div>
                 )}
                 <input
                     placeholder={placeholder}
                     type={type}
+                    value={value}
+                    onChange={onChange}
                     className={`
                         block w-full pl-10 pr-3 py-2 
-                        border-b bg-transparent  text-black
+                        border-b ${borderColor} bg-transparent text-black
                         focus:outline-none focus:ring-primary-400
                         focus:border-primary-400 focus:placeholder:text-primary-400
+                        ${colorText}
                     `}
                 />
             </div>
