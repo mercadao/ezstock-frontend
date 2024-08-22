@@ -12,8 +12,12 @@ import { Produto } from "@/app/types";
 import { addProduto } from "@/app/services/postProducts";
 import { toast } from 'react-toastify';
 
-export default function PainelHeader() {
+// Define a interface para as propriedades do PainelHeader
+interface PainelHeaderProps {
+    title: string;
+}
 
+export default function PainelHeader({ title }: PainelHeaderProps) {
     const setSearchQuery = useProductStore((state) => state.setSearchQuery);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +32,7 @@ export default function PainelHeader() {
     const handleAddProduct = async () => {
         if (nomeProduto && valorKG !== null) {
             const newProduct: Produto = {
-                idProduto: Math.floor(Math.random() * 1000), 
+                idProduto: Math.floor(Math.random() * 1000), // Id fictício para demonstração
                 nomeProduto,
                 indAtivo,
                 valorKG,
@@ -48,26 +52,24 @@ export default function PainelHeader() {
     };
 
     return (
-        <div className="w-full flex justify-between mt-8">
-            <div>
+        <div className="w-full flex justify-between items-center mt-8">
+            <h1 className="text-2xl font-bold text-primary-900">{title}</h1>
+
+            <div className="flex gap-4">
                 <Button
                     text="+ Adicionar produto"
                     onClick={() => setIsModalOpen(true)}
                     customColorText="text-offwhite"
                     customColorBg="bg-primary-900"
                 />
-            </div>
 
-            <div className="flex gap-4">
-                <div className="w-[200px]">
                 <div className="w-[200px]">
                     <Input
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Pesquisar produtos"
-                            type="text"
-                            value=""
-                        />
-                    </div>
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Pesquisar produtos"
+                        type="text"
+                        value=""
+                    />
                 </div>
 
                 <div className="text-primary-900 hover:text-white">

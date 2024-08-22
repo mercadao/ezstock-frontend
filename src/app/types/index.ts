@@ -1,8 +1,9 @@
-export interface Produto {
+export interface Item {
     idProduto: number;
     nomeProduto: string;
     indAtivo: boolean;
     valorKG: number;
+    [key: string]: any; 
 }
   
 export interface Cliente{

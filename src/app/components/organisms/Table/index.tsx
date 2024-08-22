@@ -2,99 +2,35 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import TableRow from "@/app/components/molecules/TableRow";
 import { TableCellProps } from "@/app/components/atoms/TableCell";
-import Modal from "@/app/components/molecules/Modal";
-import EditProductModal from "@/app/components/molecules/Modal/EditModal";
-import { toast } from "react-toastify";
 
 interface TableProps<T> {
     fetchData: () => Promise<T[]>;
-    deleteItem: (id: number) => Promise<void>;
-    headers: TableCellProps[];
-    mapRowData: (item: T) => TableCellProps[];
-    renderDetails: (item: T) => JSX.Element;
-    renderEditModal: (item: T | null, isOpen: boolean, onClose: () => void) => JSX.Element;
+    generateHeaders: (items: T[]) => TableCellProps[];
+    mapRowData: (item: T, onInfoClick: (item: T) => void) => TableCellProps[];
+    onInfoClick: (item: T) => void;
 }
 
-export default function Table<T extends { id: number }>({
+export default function Table<T>({
     fetchData,
-    deleteItem,
-    headers,
+    generateHeaders,
     mapRowData,
-    renderDetails,
-    renderEditModal,
+    onInfoClick,
 }: TableProps<T>) {
     const [items, setItems] = useState<T[]>([]);
-    const [selectedItem, setSelectedItem] = useState<T | null>(null);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [headers, setHeaders] = useState<TableCellProps[]>([]);
 
     useEffect(() => {
         async function fetchItems() {
             try {
                 const data = await fetchData();
                 setItems(data);
+                setHeaders(generateHeaders(data));
             } catch (error) {
                 console.error("Erro ao carregar dados:", error);
             }
         }
         fetchItems();
-    }, [fetchData]);
-
-    const handleOpenModal = (item: T) => {
-        setSelectedItem(item);
-    };
-
-    const handleCloseModal = () => {
-        setSelectedItem(null);
-    };
-
-    const handleOpenEditModal = (item: T) => {
-        setSelectedItem(item);
-        setIsEditModalOpen(true);
-    };
-
-    const handleCloseEditModal = () => {
-        setSelectedItem(null);
-        setIsEditModalOpen(false);
-    };
-
-    const handleDeleteItem = (item: T) => {
-        toast(
-            <div className="flex flex-col justify-center items-center py-2 gap-4">
-                <p className="text-lg font-semibold text-gray-800 text-center">Tem certeza que deseja excluir este item?</p>
-                <div className="flex w-full items-center justify-center gap-4">
-                    <button
-                        onClick={async () => {
-                            try {
-                                await deleteItem(item.id);
-                                setItems((prevItems) =>
-                                    prevItems.filter((p) => p.id !== item.id)
-                                );
-                                toast.dismiss();
-                                toast.success("Item excluído com sucesso!");
-                            } catch (error) {
-                                toast.error("Erro ao excluir item. Tente novamente.");
-                            }
-                        }}
-                        className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-md shadow"
-                    >
-                        Sim
-                    </button>
-                    <button
-                        onClick={() => toast.dismiss()}
-                        className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold px-4 py-2 rounded-md shadow"
-                    >
-                        Não
-                    </button>
-                </div>
-            </div>,
-            {
-                position: "top-center",
-                autoClose: false,
-                closeOnClick: false,
-                draggable: false,
-            }
-        );
-    };
+    }, [fetchData, generateHeaders]);
 
     return (
         <div className="my-4 w-full">
@@ -102,7 +38,7 @@ export default function Table<T extends { id: number }>({
                 <TableRow data={headers} isHeader={true} />
                 {items.map((item, index) => (
                     <motion.div
-                        key={item.id}
+                        key={(item as any).id}
                         initial={{ y: -20, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{
@@ -110,16 +46,14 @@ export default function Table<T extends { id: number }>({
                             delay: index * 0.2,
                         }}
                     >
-                        <TableRow data={mapRowData(item)} />
+                        <TableRow
+                            data={mapRowData(item, onInfoClick)}
+                            item={item} // Passa o item para a linha
+                            onInfoClick={onInfoClick} // Passa a função de clique
+                        />
                     </motion.div>
                 ))}
             </div>
-
-            <Modal isOpen={!!selectedItem && !isEditModalOpen} onClose={handleCloseModal}>
-                {selectedItem && renderDetails(selectedItem)}
-            </Modal>
-
-            {renderEditModal(selectedItem, isEditModalOpen, handleCloseEditModal)}
         </div>
     );
 }

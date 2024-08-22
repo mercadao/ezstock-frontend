@@ -22,7 +22,7 @@ const sections = [
   {
     title: 'Serviços',
     items: [
-      { icon: <StoreIcon />, text: 'Estoque', href: '/stock' },
+      { icon: <StoreIcon />, text: 'Materia Prima', href: '/materiaPrima' },
       { icon: <ProductIcon />, text: 'Produtos', href: '/produtos' },
       { icon: <ClientIcon />, text: 'Clientes', href: '/clientes' },
     ],
