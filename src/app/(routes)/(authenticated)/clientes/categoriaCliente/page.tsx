@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Info, Edit, Trash } from "lucide-react";
 import { Item } from "@/app/types/index";
-import { getClients } from "@/app/services/getClients";
+import { getCategoriaCliente } from "@/app/services/getCategoriaCliente";
 
 //components
 import Table from "@/app/components/organisms/Table";
@@ -14,38 +14,33 @@ import Modal from "@/app/components/molecules/Modal";
 import { TableCellProps } from "@/app/components/atoms/TableCell";
 
 const items = [
-  { name: "Cliente", route: "/clientes" },
-  { name: "Categoria Cliente", route: "/clientes/categoriaCliente" },
-  { name: "Item 3", route: "/item3" },
-];
+    { name: "Cliente", route: "/clientes" },
+    { name: "Categoria Cliente", route: "/clientes/categoriaCliente" },
+    { name: "Item 3", route: "/item3" },
+  ];
 
 const generateHeaders = (): TableCellProps[] => {
   return [
-    { text: "Nome", type: "header" },
-    { text: "Email", type: "header" },
-    { text: "Telefone", type: "header" },
-    { text: "Cidade", type: "header" },
-    { text: "CEP", type: "header" },
-    { text: "Ações", type: "header" },
+    { text: "ID", type: "header" },
+    { text: "Descrição", type: "header" },
+
   ];
 };
 
-const mapRowData = (client: Item, onInfoClick: (item: Item) => void): TableCellProps[] => {
+const mapRowData = (categoriaCliente: Item, onInfoClick: (item: Item) => void): TableCellProps[] => {
 
 
   const rowData: TableCellProps[] = [
-    { text: client.nomeCliente?.toString() || "N/A", type: "body" },
-    { text: client.emailCliente?.toString() || "N/A", type: "body" },
-    { text: client.telefoneCliente?.toString() || "N/A", type: "body" },
-    { text: client.cidade?.toString() || "N/A", type: "body" },
-    { text: client.cep?.toString() || "N/A", type: "body" },
+    { text: categoriaCliente.idCategoria?.toString() || "N/A", type: "body" },
+    { text: categoriaCliente.desCategoriaCliente?.toString() || "N/A", type: "body" },
+
     {
       icon: (
         <div className="flex space-x-2">
           <Info
             className="cursor-pointer text-gray-500 hover:text-yellow-400"
             size={20}
-            onClick={() => onInfoClick(client)}
+            onClick={() => onInfoClick(categoriaCliente)}
           />
           <Edit className="cursor-pointer text-gray-500 hover:text-primary-400" size={20} />
           <Trash className="cursor-pointer text-gray-500 hover:text-red-500" size={20} />
@@ -58,7 +53,7 @@ const mapRowData = (client: Item, onInfoClick: (item: Item) => void): TableCellP
   return rowData;
 };
 
-export default function Clientes() {
+export default function CategoriaCliente() {
   const [fullItemsList, setFullItemsList] = useState<Item[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
@@ -75,8 +70,8 @@ export default function Clientes() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const clientes = await getClients();
-      setFullItemsList(clientes);
+      const categoriaClientes = await getCategoriaCliente();
+      setFullItemsList(categoriaClientes);
     };
 
     fetchData();
@@ -85,15 +80,15 @@ export default function Clientes() {
   return (
     <>
       <div className="my-4 w-full p-10">
-        <h1 className="text-primary-900 text-2xl font-extrabold">Clientes</h1>
+        <h1 className="text-primary-900 text-2xl font-extrabold">Categoria Cliente</h1>
         <div className="pb-3">
           <SwitchPageHeader itemHeader="" items={items} />
         </div>
 
-        <PainelHeader title="Tabela de Clientes" />
+        <PainelHeader title="Tabela de Categoria Cliente" />
         <Divider />
         <Table<Item>
-          fetchData={async () => fullItemsList }
+          fetchData={async () => fullItemsList}
           generateHeaders={generateHeaders}
           mapRowData={(item) => mapRowData(item, handleInfoClick)}
         />
