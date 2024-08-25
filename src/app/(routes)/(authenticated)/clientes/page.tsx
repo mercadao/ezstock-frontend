@@ -16,7 +16,6 @@ import { TableCellProps } from "@/app/components/atoms/TableCell";
 const items = [
   { name: "Cliente", route: "/clientes" },
   { name: "Categoria Cliente", route: "/clientes/categoriaCliente" },
-  { name: "Item 3", route: "/item3" },
 ];
 
 const generateHeaders = (): TableCellProps[] => {
