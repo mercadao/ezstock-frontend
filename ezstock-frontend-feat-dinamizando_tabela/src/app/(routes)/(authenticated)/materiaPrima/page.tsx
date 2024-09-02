@@ -4,8 +4,6 @@ import { useState } from "react";
 import { Info, Edit, Trash } from "lucide-react";
 import { Item } from "@/app/types/index";
 
-import { getProdutos } from "@/app/services/getProdutos";
-
 //components
 import Table from "@/app/components/organisms/Table";
 import Divider from "@/app/components/atoms/Divider";
@@ -76,7 +74,7 @@ const mapRowData = (product: Item, onInfoClick: (item: Item) => void): TableCell
     return rowData;
 };
 
-export default function ProductsPage() {
+export default function materiaPrima() {
     const [fullItemsList, setFullItemsList] = useState<Item[]>([]);
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -94,21 +92,21 @@ export default function ProductsPage() {
     return (
         <div className="my-4 w-full p-10">
             <h1 className="text-primary-900 text-2xl font-extrabold">
-                Gerencie seus produtos
+                Gerencie sua materia prima
             </h1>
             <div className="pb-3">
                 <SwitchPageHeader itemHeader="" items={items} />
             </div>
 
-            <PainelHeader title="Tabela de Produtos" />
+            <PainelHeader title="Materia Prima" />
 
             <Divider />
 
             <Table<Item>
                 fetchData={async () => {
-                    const products = await getProdutos();
+                    const products = await getMateriaPrima();
                     setFullItemsList(products);
-                    return products;
+                    return products.slice(0, 3);
                 }}
                 generateHeaders={generateHeaders}
                 mapRowData={(item) => mapRowData(item, handleInfoClick)}
