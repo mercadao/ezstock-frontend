@@ -108,7 +108,7 @@ export default function ProductsPage() {
                 fetchData={async () => {
                     const products = await getProdutos();
                     setFullItemsList(products);
-                    return products.slice(0, 3);
+                    return products;
                 }}
                 generateHeaders={generateHeaders}
                 mapRowData={(item) => mapRowData(item, handleInfoClick)}

@@ -93,7 +93,7 @@ export default function Clientes() {
         <PainelHeader title="Tabela de Clientes" />
         <Divider />
         <Table<Item>
-          fetchData={async () => fullItemsList.slice(0, 3)}
+          fetchData={async () => fullItemsList}
           generateHeaders={generateHeaders}
           mapRowData={(item) => mapRowData(item, handleInfoClick)}
         />
