@@ -21,7 +21,7 @@ const items = [
 const generateHeaders = (): TableCellProps[] => {
   return [
     { text: "ID", type: "header" },
-    { text: "Descrição", type: "header" },
+    { text: "Descriçãos", type: "header" },
     { text: "Ações", type: "header" },
 
   ];
