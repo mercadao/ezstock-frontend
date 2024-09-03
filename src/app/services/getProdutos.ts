@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://villavitoria-development.up.railway.app/api/Produto/ListaProdutos';
+const BASE_URL = 'https://villavitoria-development.up.railway.app/api/Produto/ListaProduto';
 
 interface Produto {
   idProduto: number;
