@@ -14,9 +14,8 @@ import Modal from "@/app/components/molecules/Modal";
 import { TableCellProps } from "@/app/components/atoms/TableCell";
 
 const items = [
-  { name: "Item 1", route: "/item1" },
-  { name: "Item 2", route: "/item2" },
-  { name: "Item 3", route: "/item3" },
+  { name: "Cliente", route: "/clientes" },
+  { name: "Categoria Cliente", route: "/clientes/categoriaCliente" },
 ];
 
 const generateHeaders = (): TableCellProps[] => {
@@ -93,7 +92,7 @@ export default function Clientes() {
         <PainelHeader title="Tabela de Clientes" />
         <Divider />
         <Table<Item>
-          fetchData={async () => fullItemsList}
+          fetchData={async () => fullItemsList }
           generateHeaders={generateHeaders}
           mapRowData={(item) => mapRowData(item, handleInfoClick)}
         />
