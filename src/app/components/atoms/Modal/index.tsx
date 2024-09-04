@@ -50,7 +50,7 @@ export default function Modal({ inputs, isOpen, onClose, onAdd }: ModalProps) {
                                         checked={input.checked ?? false} 
                                         onChange={input.onChange}
                                         className="mr-2 h-5 w-5"
-                                        name={input.name} // Adicione o name
+                                        name={input.name}
                                     />
                                     {input.placeholder}
                                 </div>
@@ -62,7 +62,7 @@ export default function Modal({ inputs, isOpen, onClose, onAdd }: ModalProps) {
                                     value={input.value ?? ""}
                                     onChange={input.onChange}
                                     icon={input.icon}
-                                    name={input.name} // Adicione o name
+                                    name={input.name}
                                 />
                             )
                         ))}

@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { useState } from "react";
 import { Info, Edit, Trash, User, Weight } from "lucide-react";
@@ -197,7 +197,10 @@ export default function ProductsPage() {
                 <SwitchPageHeader itemHeader="" items={items} />
             </div>
 
-            <PainelHeader title="Tabela de Produtos" />
+            <PainelHeader 
+                title="Tabela de Produtos" 
+                onAddProductClick={() => setIsModalOpen(true)} 
+            />
 
             <Divider />
 
