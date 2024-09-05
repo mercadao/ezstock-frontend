@@ -13,10 +13,11 @@ interface Cliente {
   cidade: string;
   cep: string;
   endereco: string;
-  numero: string;
+  numero: number;
   complemento: string;
   bairro: string;
   estado: string;
+  logradouro: string;
 }
 
 

@@ -81,6 +81,7 @@ export default function Clientes() {
     complemento: "",
     bairro: "",
     estado: "",
+    logradouro: ""
   });
 
   useEffect(() => {
@@ -112,6 +113,7 @@ export default function Clientes() {
       complemento: item.complemento || "",
       bairro: item.bairro || "",
       estado: item.estado || "",
+      logradouro: item.logradouro || ""
     });
     setIsEditModalOpen(true);
   };
@@ -126,22 +128,104 @@ export default function Clientes() {
     setSelectedItem(null);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    console.log(`Input changed: ${name} = ${value}`); // Adicione este log para verificar o que está sendo capturado
-    setInputValues(prevValues => ({
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
       ...prevValues,
-      [name]: value,
+      nomeCliente: e.target.value,
     }));
-  };
-  
+  }
+
+const handleCepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      cep: e.target.value,
+    }));
+  }
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      emailCliente: e.target.value,
+    }));
+  }
+
+  const handleTelefoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      telefoneCliente: e.target.value,
+    }));
+  }
+
+  const handleCidadeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      cidade: e.target.value,
+    }));
+  }
+
+  const handleInscricaoEstadualChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      inscricaoEstadual: e.target.value,
+    }));
+  }
+
+  const handleCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      cnpj: e.target.value,
+    }));
+  }
+
+  const handleEnderecoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      endereco: e.target.value,
+    }));
+  }
+
+  const handleNumeroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      numero: e.target.value,
+    }));
+  }
+
+  const handleComplementoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      complemento: e.target.value,
+    }));
+  }
+
+  const handleBairroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      bairro: e.target.value,
+    }));
+  }
+
+  const handleEstadoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      estado: e.target.value,
+    }));
+  }
+
+  const handleLogradouroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      logradouro: e.target.value,
+    }));
+  }
+
 
   const handleAddClient = async () => {
     try {
       const newClient = { ...inputValues };
       await postClient(newClient);
       setIsModalOpen(false);
-      setInputValues({ nomeCliente: "", emailCliente: "", telefoneCliente: "", cidade: "", cep: "", inscricaoEstadual: "", cnpj: "", endereco: "", numero: "", complemento: "", bairro: "", estado: "" });
+      setInputValues({ nomeCliente: "", emailCliente: "", telefoneCliente: "", cidade: "", cep: "", inscricaoEstadual: "", cnpj: "", endereco: "", numero: "", complemento: "", bairro: "", estado: "", logradouro: "" });
       const clients = await getClients();
       setFullItemsList(clients);
       toast.success('Cliente adicionado com sucesso!');
@@ -174,86 +258,93 @@ export default function Clientes() {
       type: "text",
       placeholder: "Digite o nome do cliente...",
       value: inputValues.nomeCliente,
-      onChange: handleInputChange,
+      onChange: handleNameChange,
       name: "nomeCliente"
     },
     {
       type: "email",
       placeholder: "Digite o email do cliente...",
       value: inputValues.emailCliente,
-      onChange: handleInputChange,
+      onChange: handleEmailChange,
       name: "emailCliente"
     },
     {
       type: "text",
       placeholder: "Digite o telefone do cliente...",
       value: inputValues.telefoneCliente,
-      onChange: handleInputChange,
+      onChange: handleTelefoneChange,
       name: "telefoneCliente"
     },
     {
       type: "text",
       placeholder: "Digite a cidade do cliente...",
       value: inputValues.cidade,
-      onChange: handleInputChange,
+      onChange: handleCidadeChange,
       name: "cidade"
     },
     {
       type: "text",
       placeholder: "Digite o CEP do cliente...",
       value: inputValues.cep,
-      onChange: handleInputChange,
+      onChange: handleCepChange,
       name: "cep"
     },
     {
       type: "text",
       placeholder: "Digite a inscrição estadual do cliente...",
       value: inputValues.inscricaoEstadual,
-      onChange: handleInputChange,
+      onChange: handleInscricaoEstadualChange,
       name: "inscricaoEstadual"
     },
     {
       type: "text",
       placeholder: "Digite o CNPJ do cliente...",
       value: inputValues.cnpj,
-      onChange: handleInputChange,
+      onChange: handleCnpjChange,
       name: "cnpj"
     },
     {
       type: "text",
       placeholder: "Digite o endereço do cliente...",
       value: inputValues.endereco,
-      onChange: handleInputChange,
+      onChange: handleEnderecoChange,
       name: "endereco"
     },
     {
       type: "text",
       placeholder: "Digite o número do cliente...",
       value: inputValues.numero,
-      onChange: handleInputChange,
+      onChange: handleNumeroChange,
       name: "numero"
     },
     {
       type: "text",
       placeholder: "Digite o complemento do cliente...",
       value: inputValues.complemento,
-      onChange: handleInputChange,
+      onChange: handleComplementoChange,
       name: "complemento"
     },
     {
       type: "text",
       placeholder: "Digite o bairro do cliente...",
       value: inputValues.bairro,
-      onChange: handleInputChange,
+      onChange: handleBairroChange,
       name: "bairro"
     },
     {
       type: "text",
       placeholder: "Digite o estado do cliente...",
       value: inputValues.estado,
-      onChange: handleInputChange,
+      onChange: handleEstadoChange,
       name: "estado"
     },
+    {
+      type: "text",
+      placeholder: "Digite o Logradouro do cliente...",
+      value: inputValues.logradouro,
+      onChange: handleLogradouroChange,
+      name: "logradouro"
+    }
   ];
 
   return (
