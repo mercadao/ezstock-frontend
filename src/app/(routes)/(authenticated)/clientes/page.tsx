@@ -5,7 +5,7 @@ import { Info, Edit, Trash } from "lucide-react";
 import { Item } from "@/app/types/index";
 import { getClients } from "@/app/services/getClients";
 import { postClient } from "@/app/services/postClient";
-import { putClient} from "@/app/services/putClient" // Certifique-se de que esta função está importada
+import { putClient } from "@/app/services/putClient" // Certifique-se de que esta função está importada
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -20,7 +20,7 @@ import { TableCellProps } from "@/app/components/atoms/TableCell";
 const items = [
   { name: "Cliente", route: "/clientes" },
   { name: "Categoria Cliente", route: "/clientes/categoriaCliente" },
-];
+];  
 
 const generateHeaders = (): TableCellProps[] => {
   return [
@@ -74,6 +74,13 @@ export default function Clientes() {
     telefoneCliente: "",
     cidade: "",
     cep: "",
+    inscricaoEstadual: "",
+    cnpj: "",
+    endereco: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    estado: "",
   });
 
   useEffect(() => {
@@ -98,6 +105,13 @@ export default function Clientes() {
       telefoneCliente: item.telefoneCliente || "",
       cidade: item.cidade || "",
       cep: item.cep || "",
+      inscricaoEstadual: item.inscricaooEstadual || "",
+      cnpj: item.cnpj || "",
+      endereco: item.endereco || "",
+      numero: item.numero || "",
+      complemento: item.complemento || "",
+      bairro: item.bairro || "",
+      estado: item.estado || "",
     });
     setIsEditModalOpen(true);
   };
@@ -108,24 +122,26 @@ export default function Clientes() {
   };
 
   const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
+    setIsEditModalOpen(false);  
     setSelectedItem(null);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    console.log(`Input changed: ${name} = ${value}`); // Adicione este log para verificar o que está sendo capturado
     setInputValues(prevValues => ({
       ...prevValues,
       [name]: value,
     }));
   };
+  
 
   const handleAddClient = async () => {
     try {
       const newClient = { ...inputValues };
       await postClient(newClient);
       setIsModalOpen(false);
-      setInputValues({ nomeCliente: "", emailCliente: "", telefoneCliente: "", cidade: "", cep: "" });
+      setInputValues({ nomeCliente: "", emailCliente: "", telefoneCliente: "", cidade: "", cep: "", inscricaoEstadual: "", cnpj: "", endereco: "", numero: "", complemento: "", bairro: "", estado: "" });
       const clients = await getClients();
       setFullItemsList(clients);
       toast.success('Cliente adicionado com sucesso!');
@@ -142,7 +158,7 @@ export default function Clientes() {
         await putClient(updatedClient);
         setIsEditModalOpen(false);
         setSelectedItem(null);
-        setInputValues({ nomeCliente: "", emailCliente: "", telefoneCliente: "", cidade: "", cep: "" });
+        setInputValues({ nomeCliente: "", emailCliente: "", telefoneCliente: "", cidade: "", cep: "" , inscricaoEstadual: "", cnpj: "", endereco: "", numero: "", complemento: "", bairro: "", estado: "" });
         const clients = await getClients();
         setFullItemsList(clients);
         toast.success('Cliente editado com sucesso!');
@@ -188,7 +204,56 @@ export default function Clientes() {
       value: inputValues.cep,
       onChange: handleInputChange,
       name: "cep"
-    }
+    },
+    {
+      type: "text",
+      placeholder: "Digite a inscrição estadual do cliente...",
+      value: inputValues.inscricaoEstadual,
+      onChange: handleInputChange,
+      name: "inscricaoEstadual"
+    },
+    {
+      type: "text",
+      placeholder: "Digite o CNPJ do cliente...",
+      value: inputValues.cnpj,
+      onChange: handleInputChange,
+      name: "cnpj"
+    },
+    {
+      type: "text",
+      placeholder: "Digite o endereço do cliente...",
+      value: inputValues.endereco,
+      onChange: handleInputChange,
+      name: "endereco"
+    },
+    {
+      type: "text",
+      placeholder: "Digite o número do cliente...",
+      value: inputValues.numero,
+      onChange: handleInputChange,
+      name: "numero"
+    },
+    {
+      type: "text",
+      placeholder: "Digite o complemento do cliente...",
+      value: inputValues.complemento,
+      onChange: handleInputChange,
+      name: "complemento"
+    },
+    {
+      type: "text",
+      placeholder: "Digite o bairro do cliente...",
+      value: inputValues.bairro,
+      onChange: handleInputChange,
+      name: "bairro"
+    },
+    {
+      type: "text",
+      placeholder: "Digite o estado do cliente...",
+      value: inputValues.estado,
+      onChange: handleInputChange,
+      name: "estado"
+    },
   ];
 
   return (

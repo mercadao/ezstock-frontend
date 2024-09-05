@@ -9,16 +9,16 @@ interface Cliente {
   nomeCliente: string;
   emailCliente: string;
   telefoneCliente: string;
-  cnpj?: string; // Opcional, dependendo da necessidade
+  cnpj: string;
   indAtivo: boolean;
   idCategoria: number;
-  inscricaoEstadual?: string; // Opcional, dependendo da necessidade
+  inscricaoEstadual?: string; 
   estado: string;
   cidade: string;
-  bairro?: string; // Opcional, dependendo da necessidade
+  bairro?: string; 
   logradouro: string;
   numero: number;
-  complemento?: string; // Opcional, dependendo da necessidade
+  complemento?: string; 
   cep: string;
 }
 
