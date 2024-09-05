@@ -24,7 +24,6 @@ interface Cliente {
 export const getClients = async (): Promise<Cliente[]> => {
   try {
     const response = await axios.get<Cliente[]>(BASE_URL);
-    console.log(response.data);
     return response.data.cliente;
   } catch (error) {
     console.error('Erro ao buscar clientes:', error);
