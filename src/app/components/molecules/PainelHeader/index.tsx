@@ -7,13 +7,12 @@ import FilterIcon from "../../../../../public/assets/icons/FilterIcon";
 import SwapIcon from "../../../../../public/assets/icons/SwapIcon";
 import { useProductStore } from "@/app/hooks/productHook";
 
-// Define a interface para as propriedades do PainelHeader
 interface PainelHeaderProps {
     title: string;
-    onAddProductClick: () => void;
+    onAddClientClick: () => void; 
 }
 
-export default function PainelHeader({ title, onAddProductClick }: PainelHeaderProps) {
+export default function PainelHeader({ title, onAddClientClick }: PainelHeaderProps) {
     const setSearchQuery = useProductStore((state) => state.setSearchQuery);
 
     return (
@@ -22,8 +21,8 @@ export default function PainelHeader({ title, onAddProductClick }: PainelHeaderP
 
             <div className="flex gap-4">
                 <Button
-                    text="+ Adicionar produto"
-                    onClick={onAddProductClick} // Chama a função ao clicar
+                    text="+ Adicionar cliente" 
+                    onClick={onAddClientClick} 
                     customColorText="text-offwhite"
                     customColorBg="bg-primary-900"
                 />

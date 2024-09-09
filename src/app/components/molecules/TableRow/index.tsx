@@ -1,35 +1,36 @@
-import TableCell, { TableCellProps } from "../../atoms/TableCell";
-import { ReactNode } from "react";
+import TableCellDefault from "@/app/components/atoms/TableCell/default";
+import TableCellAction from "@/app/components/atoms/TableCell/action";
 
 interface TableRowProps {
-    data: TableCellProps[];
-    isHeader?: boolean;
-    onInfoClick?: (item: any) => void; // Adiciona prop para lidar com o clique no Info
-    item?: any; // Adiciona prop para passar o item da linha
+  data: any[];
+  isHeader?: boolean;
+  onClickRead?: () => void;
+  onClickEdit?: () => void;
+  onClickDelete?: () => void;
 }
 
-export default function TableRow({ data, isHeader = false, onInfoClick, item }: TableRowProps) {
-    const handleInfoClick = () => {
-        if (onInfoClick && item) {
-            onInfoClick(item);
-        }
-    };
+export default function TableRow({
+  data,
+  isHeader = false,
+  onClickRead,
+  onClickEdit,
+  onClickDelete,
+}: TableRowProps) {
+  return (
+    <div
+      className={`flex border-y-[1px] ${isHeader ? "font-bold" : "hover:bg-gray-100"} w-full cursor-pointer transition-colors duration-200`}
+    >
+      {data.map((item, index) => (
+        <TableCellDefault key={index} data={item} />
+      ))}
 
-    return (
-        <div
-            className={`flex w-full bg-offwhite ${isHeader ? 'bg-gray-50 border-b border-gray-300' : 'border-b border-gray-200'} hover:opacity-80 cursor-pointer`}
-        >
-            <div className="flex w-full">
-                {data.map((cell, index) => (
-                    <TableCell
-                        key={index}
-                        text={cell.text}
-                        icon={cell.icon}
-                        type={cell.type}
-                        onClick={cell.type === 'body' && cell.icon ? handleInfoClick : undefined} // Adiciona onClick para o ícone
-                    />
-                ))}
-            </div>
-        </div>
-    );
+      {!isHeader && (
+        <TableCellAction
+          onClickRead={onClickRead}
+          onClickEdit={onClickEdit}
+          onClickDelete={onClickDelete}
+        />
+      )}
+    </div>
+  );
 }

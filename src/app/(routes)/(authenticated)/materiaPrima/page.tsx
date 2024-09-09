@@ -1,122 +1,199 @@
-"use client"
+"use client";
+import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import { useRouter } from 'next/navigation'; 
+import "react-toastify/dist/ReactToastify.css";
 
-import { useState } from "react";
-import { Info, Edit, Trash } from "lucide-react";
-import { Item } from "@/app/types/index";
-
-//components
-import Table from "@/app/components/organisms/Table";
+// Components
 import Divider from "@/app/components/atoms/Divider";
 import PainelHeader from "@/app/components/molecules/PainelHeader";
-import SwitchPageHeader from "@/app/components/atoms/SwitchPageHeader";
-import Modal from "@/app/components/molecules/Modal";
-import { TableCellProps } from "@/app/components/atoms/TableCell";
-import { getMateriaPrima } from "@/app/services/getMateriaPrima";
+import Table from "@/app/components/organisms/Table";
+import DynamicModal from "@/app/components/molecules/DinamicModal";
 
-const items = [
-    { name: "Item 1", route: "/item1" },
-    { name: "Item 2", route: "/item2" },
-    { name: "Item 3", route: "/item3" },
-];
+// Services
+import {
+  getMateriaPrima,
+  addMateriaPrima,
+  editMateriaPrima,
+  deleteMateriaPrima,
+  MateriaPrima,
+} from "@/app/services/materiaPrimaService";
 
-const generateHeaders = (products: Item[]): TableCellProps[] => {
-    if (products.length === 0) return [];
+export default function MateriaPrimaPage() {
+  const [materiasPrimas, setMateriasPrimas] = useState<MateriaPrima[]>([]);
+  const [selectedMateriaPrima, setSelectedMateriaPrima] =
+    useState<MateriaPrima | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [isEditMode, setEditMode] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [readMode, setReadMode] = useState(false);
 
-    const keys = Object.keys(products[0]);
-    const headers: TableCellProps[] = keys.map(key => ({
-        text: key === 'idProduto' ? 'ID' : 
-              key === 'nomeProduto' ? 'Nome' : 
-              key === 'valorKG' ? 'Valor por KG' : 
-              key === 'dataCriacao' ? 'Data de Criação' : 
-              key,
-        type: 'header'
-    }));
-    headers.push({ text: "Ações", type: "header" });
-    return headers;
-};
+  const router = useRouter();
 
-const mapRowData = (product: Item, onInfoClick: (item: Item) => void): TableCellProps[] => {
-    const keys = Object.keys(product);
-    const rowData: TableCellProps[] = keys.map(key => {
-        if (key === 'valorKG') {
-            return {
-                text: product[key] ? `${(product[key] as number).toFixed(2)} R$` : 'N/A',
-                type: 'body'
-            };
-        }
-        return {
-            text: product[key]?.toString() || 'N/A',
-            type: 'body'
-        };
-    });
-
-    rowData.push({
-        icon: (
-            <div className="flex space-x-2">
-                <Info
-                    className="cursor-pointer text-gray-500 hover:text-yellow-400"
-                    size={20}
-                    onClick={() => onInfoClick(product)}
-                />
-                <Edit
-                    className="cursor-pointer text-gray-500 hover:text-primary-400"
-                    size={20}
-                />
-                <Trash
-                    className="cursor-pointer text-gray-500 hover:text-red-500"
-                    size={20}
-                />
-            </div>
-        ),
-        type: "body",
-    });
-
-    return rowData;
-};
-
-export default function materiaPrima() {
-    const [fullItemsList, setFullItemsList] = useState<Item[]>([]);
-    const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const handleInfoClick = (item: Item) => {
-        setSelectedItem(item);
-        setIsModalOpen(true); 
+  useEffect(() => {
+    const fetchMateriasPrimas = async () => {
+      try {
+        const response = await getMateriaPrima();
+        setMateriasPrimas(response);
+      } catch (error) {
+        console.error("Erro ao buscar matérias-primas:", error);
+        toast.error("Erro ao buscar matérias-primas.");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    const handleCloseModal = () => {
-        setIsModalOpen(false); 
-        setSelectedItem(null);
-    };
+    fetchMateriasPrimas();
+  }, []);
 
-    return (
-        <div className="my-4 w-full p-10">
-            <h1 className="text-primary-900 text-2xl font-extrabold">
-                Gerencie sua materia prima
-            </h1>
-            <div className="pb-3">
-                <SwitchPageHeader itemHeader="" items={items} />
-            </div>
+  const headerData = ["Descrição", "Ações"];
 
-            <PainelHeader title="Materia Prima" />
+  const tableData = materiasPrimas.map((materiaPrima) => [
+    materiaPrima.dscMateriaPrima,
+  ]);
 
-            <Divider />
+  const handleRead = (rowIndex: number) => {
+    const materiaPrima = materiasPrimas[rowIndex];
+    setSelectedMateriaPrima(materiaPrima);
+    setReadMode(true);
+    setEditMode(false);
+    setModalOpen(true);
+  };
 
-            <Table<Item>
-                fetchData={async () => {
-                    const products = await getMateriaPrima();
-                    setFullItemsList(products);
-                    return products.slice(0, 3);
-                }}
-                generateHeaders={generateHeaders}
-                mapRowData={(item) => mapRowData(item, handleInfoClick)}
-            />
+  const handleEdit = (rowIndex: number) => {
+    const materiaPrima = materiasPrimas[rowIndex];
+    setSelectedMateriaPrima(materiaPrima);
+    setReadMode(false);
+    setEditMode(true);
+    setModalOpen(true);
+  };
 
-            <Modal
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                items={selectedItem}
-            />
+  const confirmDelete = (rowIndex: number) => {
+    const id = materiasPrimas[rowIndex].idMateriaPrima;
+
+    toast.warn(
+      <>
+        <p className="text-[12px]">
+          Tem certeza que deseja excluir a matéria-prima:
+        </p>
+        <p>{materiasPrimas[rowIndex].dscMateriaPrima}?</p>
+        <div className="flex w-full justify-between">
+          <button
+            onClick={() => handleDelete(rowIndex)}
+            className="btn-confirm hover:text-green-400"
+          >
+            Confirmar
+          </button>
+          <button
+            onClick={() => toast.dismiss()}
+            className="btn-cancel hover:text-red-400"
+          >
+            Cancelar
+          </button>
         </div>
+      </>,
+      {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
+      }
     );
+  };
+
+  const handleDelete = async (rowIndex: number) => {
+    const id = materiasPrimas[rowIndex].idMateriaPrima;
+    try {
+      await deleteMateriaPrima(id);
+      toast.success(`Matéria-prima deletada`, {
+        className: "bg-green-500 text-white p-4 rounded",
+        progressClassName: "bg-white",
+      });
+      router.refresh(); // Recarrega a página após a exclusão bem-sucedida
+    } catch (error) {
+      toast.error(`Erro ao deletar matéria-prima`, {
+        className: "bg-red-500 text-white p-4 rounded",
+        progressClassName: "bg-white",
+      });
+      console.error(`Erro ao deletar matéria-prima`, error);
+    }
+  };
+
+  const handleSave = async (updatedMateriaPrima: MateriaPrima) => {
+    const { idMateriaPrima, ...materiaPrimaSemId } = updatedMateriaPrima;
+
+    try {
+      if (isEditMode) {
+        await editMateriaPrima(idMateriaPrima!, updatedMateriaPrima);
+        toast.success("Matéria-prima editada com sucesso!", {
+          className: "bg-blue-500 text-white p-4 rounded",
+          progressClassName: "bg-white",
+        });
+      } else {
+        await addMateriaPrima(materiaPrimaSemId);
+        toast.success("Nova matéria-prima adicionada!", {
+          className: "bg-green-500 text-white p-4 rounded",
+          progressClassName: "bg-white",
+        });
+      }
+      setModalOpen(false);
+      router.refresh(); // Recarrega a página após a adição ou edição bem-sucedida
+    } catch (error) {
+      toast.error("Erro ao salvar matéria-prima.", {
+        className: "bg-red-500 text-white p-4 rounded",
+        progressClassName: "bg-white",
+      });
+      console.error("Erro ao salvar matéria-prima:", error);
+    }
+  };
+
+  const handleAddMateriaPrima = () => {
+    setSelectedMateriaPrima({
+      idMateriaPrima: 0,
+      dscMateriaPrima: "",
+    });
+    setReadMode(false);
+    setEditMode(false);
+    setModalOpen(true);
+  };
+
+  if (loading) {
+    return <p>Carregando matérias-primas...</p>;
+  }
+
+  return (
+    <div className="my-4 w-full p-10">
+      <h1 className="text-primary-900 text-2xl font-extrabold">
+        Matérias-Primas
+      </h1>
+
+      <PainelHeader
+        title="Tabela de Matérias-Primas"
+        onAddClientClick={handleAddMateriaPrima}
+      />
+
+      <Divider />
+
+      <Table
+        headerData={headerData}
+        data={tableData}
+        onClickRead={handleRead}
+        onClickEdit={handleEdit}
+        onClickDelete={confirmDelete}
+      />
+
+      {selectedMateriaPrima && (
+        <DynamicModal
+          data={selectedMateriaPrima}
+          isEditMode={isEditMode}
+          isOpen={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          isReadOnly={readMode}
+          onSave={handleSave}
+        />
+      )}
+
+      <ToastContainer position="top-center" />
+    </div>
+  );
 }

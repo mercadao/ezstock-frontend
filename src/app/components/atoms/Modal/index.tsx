@@ -1,117 +1,44 @@
-import { motion } from "framer-motion";
 import { X } from "lucide-react";
-import Input from "../Input";
-import Button from "../Button/DefaultButton";
-
-interface InputConfig {
-    type: string;
-    placeholder: string;
-    value?: string;
-    checked?: boolean; 
-    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    icon: React.ReactNode;
-    name: string;
-}
+import { useEffect } from "react";
+import { motion } from "framer-motion";
 
 interface ModalProps {
-    inputs: InputConfig[];
-    isOpen: boolean;
-    onClose: () => void;
-    onAdd: () => void; 
+  children: React.ReactNode;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export default function Modal({ inputs, isOpen, onClose, onAdd }: ModalProps) {
-    
-    if (!isOpen) return null;
+export default function Modal({ children, isOpen, onClose }: ModalProps) {
+  useEffect(() => {
+    function handleOutsideClick(event: MouseEvent) {
+      const target = event.target as HTMLElement;
+      if (isOpen && target.id === "modal-overlay") {
+        onClose();
+      }
+    }
+    window.addEventListener("click", handleOutsideClick);
+    return () => window.removeEventListener("click", handleOutsideClick);
+  }, [isOpen, onClose]);
 
-    // Função para dividir os inputs em duas colunas
-    const splitInputsIntoColumns = (inputs: InputConfig[]) => {
-        const middleIndex = Math.ceil(inputs.length / 2);
-        return [
-            inputs.slice(0, middleIndex), // Primeira coluna
-            inputs.slice(middleIndex)     // Segunda coluna
-        ];
-    };
+  if (!isOpen) return null;
 
-    // Dividir os inputs em duas colunas
-    const [leftColumn, rightColumn] = splitInputsIntoColumns(inputs);
-
-    return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 w-full">
-            <motion.div
-                className="relative bg-white p-6 rounded-md w-full max-w-4xl h-fit"
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 50, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-            >
-                <div
-                    className='w-full text-black flex justify-end hover:text-red-400 cursor-pointer'
-                    onClick={onClose}
-                >
-                    <X size={32} />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div className="flex flex-col gap-4">
-                        {leftColumn.map((input, index) => (
-                            input.type === "checkbox" ? (
-                                <div key={index} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={input.checked ?? false} 
-                                        onChange={input.onChange}
-                                        className="mr-2 h-5 w-5"
-                                        name={input.name}
-                                    />
-                                    {input.placeholder}
-                                </div>
-                            ) : (
-                                <Input
-                                    key={index}
-                                    type={input.type}
-                                    placeholder={input.placeholder}
-                                    value={input.value ?? ""}
-                                    onChange={input.onChange}
-                                    icon={input.icon}
-                                    name={input.name}
-                                />
-                            )
-                        ))}
-                    </div>
-                    <div className="flex flex-col gap-4">
-                        {rightColumn.map((input, index) => (
-                            input.type === "checkbox" ? (
-                                <div key={index} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={input.checked ?? false} 
-                                        onChange={input.onChange}
-                                        className="mr-2 h-5 w-5"
-                                        name={input.name}
-                                    />
-                                    {input.placeholder}
-                                </div>
-                            ) : (
-                                <Input
-                                    key={index}
-                                    type={input.type}
-                                    placeholder={input.placeholder}
-                                    value={input.value ?? ""}
-                                    onChange={input.onChange}
-                                    icon={input.icon}
-                                    name={input.name}
-                                />
-                            )
-                        ))}
-                    </div>
-                </div>
-
-                <Button
-                    text='Adicionar'
-                    onClick={onAdd}  
-                />
-            </motion.div>
-        </div>
-    );
+  return (
+    <div
+      id="modal-overlay"
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+    >
+      <motion.div
+        initial={{ y: 300, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 300, opacity: 0 }}
+        transition={{ duration: 0.4, ease: "easeInOut" }}
+        className="bg-white p-6 rounded-md w-full max-w-lg relative text-black max-h-[800px] overflow-auto"
+      >
+        <button onClick={onClose} className="absolute top-3 right-3">
+          <X className="text-black hover:text-red-600" />
+        </button>
+        {children}
+      </motion.div>
+    </div>
+  );
 }

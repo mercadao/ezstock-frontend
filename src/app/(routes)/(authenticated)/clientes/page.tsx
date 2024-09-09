@@ -1,384 +1,199 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Info, Edit, Trash } from "lucide-react";
-import { Item } from "@/app/types/index";
-import { getClients } from "@/app/services/getClients";
-import { postClient } from "@/app/services/postClient";
-import { putClient } from "@/app/services/putClient" // Certifique-se de que esta função está importada
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-// Components
-import Table from "@/app/components/organisms/Table";
+import { useEffect, useState } from "react";
 import Divider from "@/app/components/atoms/Divider";
 import PainelHeader from "@/app/components/molecules/PainelHeader";
-import SwitchPageHeader from "@/app/components/atoms/SwitchPageHeader";
-import Modal from "@/app/components/atoms/Modal";
-import { TableCellProps } from "@/app/components/atoms/TableCell";
-
-const items = [
-  { name: "Cliente", route: "/clientes" },
-  { name: "Categoria Cliente", route: "/clientes/categoriaCliente" },
-];  
-
-const generateHeaders = (): TableCellProps[] => {
-  return [
-    { text: "Nome", type: "header" },
-    { text: "Email", type: "header" },
-    { text: "Telefone", type: "header" },
-    { text: "Cidade", type: "header" },
-    { text: "CEP", type: "header" },
-    { text: "Ações", type: "header" },
-  ];
-};
-
-const mapRowData = (client: Item, onInfoClick: (item: Item) => void, onEditClick: (item: Item) => void): TableCellProps[] => {
-  const rowData: TableCellProps[] = [
-    { text: client.nomeCliente?.toString() || "N/A", type: "body" },
-    { text: client.emailCliente?.toString() || "N/A", type: "body" },
-    { text: client.telefoneCliente?.toString() || "N/A", type: "body" },
-    { text: client.cidade?.toString() || "N/A", type: "body" },
-    { text: client.cep?.toString() || "N/A", type: "body" },
-    {
-      icon: (
-        <div className="flex space-x-2">
-          <Info
-            className="cursor-pointer text-gray-500 hover:text-yellow-400"
-            size={20}
-            onClick={() => onInfoClick(client)}
-          />
-          <Edit
-            className="cursor-pointer text-gray-500 hover:text-primary-400"
-            size={20}
-            onClick={() => onEditClick(client)}
-          />
-          <Trash className="cursor-pointer text-gray-500 hover:text-red-500" size={20} />
-        </div>
-      ),
-      type: "body",
-    },
-  ];
-
-  return rowData;
-};
+import Table from "@/app/components/organisms/Table";
+import DynamicModal from "@/app/components/molecules/DinamicModal";
+import {
+  getClients,
+  deleteClient,
+  Cliente,
+  editClient,
+  postClient,
+} from "@/app/services/clientService";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Clientes() {
-  const [fullItemsList, setFullItemsList] = useState<Item[]>([]);
-  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [inputValues, setInputValues] = useState({
-    nomeCliente: "",
-    emailCliente: "",
-    telefoneCliente: "",
-    cidade: "",
-    cep: "",
-    inscricaoEstadual: "",
-    cnpj: "",
-    endereco: "",
-    numero: "",
-    complemento: "",
-    bairro: "",
-    estado: "",
-    logradouro: ""
-  });
+  const [clientData, setClientData] = useState<Cliente[]>([]);
+  const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [readMode, setReadMode] = useState(false);
+  const [isEditMode, setEditMode] = useState(false);
+  const [isCreate, setIscreate] = useState(false);
+
+  const headerData = [
+    "ID",
+    "Nome",
+    "Email",
+    "Telefone",
+    "CNPJ",
+    "Cidade",
+    "Estado",
+    "Ações",
+  ];
+
+  const fetchData = async () => {
+    try {
+      const clients = await getClients();
+      setClientData(clients);
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const clientes = await getClients();
-      setFullItemsList(clientes);
-    };
-
     fetchData();
   }, []);
 
-  const handleInfoClick = (item: Item) => {
-    setSelectedItem(item);
-    setIsModalOpen(true);
+  const handleRead = (rowIndex: number) => {
+    setSelectedClient(clientData[rowIndex]);
+    setReadMode(true);
+    setEditMode(false);
+    setModalOpen(true);
   };
 
-  const handleEditClick = (item: Item) => {
-    setSelectedItem(item);
-    setInputValues({
-      nomeCliente: item.nomeCliente || "",
-      emailCliente: item.emailCliente || "",
-      telefoneCliente: item.telefoneCliente || "",
-      cidade: item.cidade || "",
-      cep: item.cep || "",
-      inscricaoEstadual: item.inscricaooEstadual || "",
-      cnpj: item.cnpj || "",
-      endereco: item.endereco || "",
-      numero: item.numero || "",
-      complemento: item.complemento || "",
-      bairro: item.bairro || "",
-      estado: item.estado || "",
-      logradouro: item.logradouro || ""
-    });
-    setIsEditModalOpen(true);
+  const handleEdit = (rowIndex: number) => {
+    setSelectedClient(clientData[rowIndex]);
+    setReadMode(false);
+    setEditMode(true);
+    setModalOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedItem(null);
-  };
+  const confirmDelete = (rowIndex: number) => {
+    const id = clientData[rowIndex].idCliente;
 
-  const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);  
-    setSelectedItem(null);
-  };
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      nomeCliente: e.target.value,
-    }));
-  }
-
-const handleCepChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      cep: e.target.value,
-    }));
-  }
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      emailCliente: e.target.value,
-    }));
-  }
-
-  const handleTelefoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      telefoneCliente: e.target.value,
-    }));
-  }
-
-  const handleCidadeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      cidade: e.target.value,
-    }));
-  }
-
-  const handleInscricaoEstadualChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      inscricaoEstadual: e.target.value,
-    }));
-  }
-
-  const handleCnpjChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      cnpj: e.target.value,
-    }));
-  }
-
-  const handleEnderecoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      endereco: e.target.value,
-    }));
-  }
-
-  const handleNumeroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      numero: e.target.value,
-    }));
-  }
-
-  const handleComplementoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      complemento: e.target.value,
-    }));
-  }
-
-  const handleBairroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      bairro: e.target.value,
-    }));
-  }
-
-  const handleEstadoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      estado: e.target.value,
-    }));
-  }
-
-  const handleLogradouroChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValues((prevValues) => ({
-      ...prevValues,
-      logradouro: e.target.value,
-    }));
-  }
-
-
-  const handleAddClient = async () => {
-    try {
-      const newClient = { ...inputValues };
-      await postClient(newClient);
-      setIsModalOpen(false);
-      setInputValues({ nomeCliente: "", emailCliente: "", telefoneCliente: "", cidade: "", cep: "", inscricaoEstadual: "", cnpj: "", endereco: "", numero: "", complemento: "", bairro: "", estado: "", logradouro: "" });
-      const clients = await getClients();
-      setFullItemsList(clients);
-      toast.success('Cliente adicionado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao adicionar cliente:', error);
-      toast.error('Erro ao adicionar o cliente. Por favor, tente novamente.');
-    }
-  };
-
-  const handleEditClient = async () => {
-    try {
-      if (selectedItem) {
-        const updatedClient = { ...inputValues, idCliente: selectedItem.idCliente };
-        await putClient(updatedClient);
-        setIsEditModalOpen(false);
-        setSelectedItem(null);
-        setInputValues({ nomeCliente: "", emailCliente: "", telefoneCliente: "", cidade: "", cep: "" , inscricaoEstadual: "", cnpj: "", endereco: "", numero: "", complemento: "", bairro: "", estado: "" });
-        const clients = await getClients();
-        setFullItemsList(clients);
-        toast.success('Cliente editado com sucesso!');
+    toast.warn(
+      <>
+        <p className="text-[12px]">Tem certeza que deseja excluir o cliente:</p>
+        <p>{clientData[rowIndex].nomeCliente}?</p>
+        <div className="flex w-full justify-between">
+          <button onClick={() => handleDelete(rowIndex)} className="btn-confirm hover:text-green-400">
+            Confirmar
+          </button>
+          <button onClick={() => toast.dismiss()} className="btn-cancel hover:text-red-400">
+            Cancelar
+          </button>
+        </div>
+      </>,
+      {
+        position: "top-center",
+        autoClose: false,
+        closeOnClick: false,
+        closeButton: false,
       }
+    );
+  };
+
+  const handleDelete = async (rowIndex: number) => {
+    const id = clientData[rowIndex].idCliente;
+    try {
+      await deleteClient(id);
+      await fetchData();
+      toast.success(`Cliente deletado: ${id}`, {
+        className: "bg-green-500 text-white p-4 rounded",
+        progressClassName: "bg-white",
+      });
     } catch (error) {
-      console.error('Erro ao editar cliente:', error);
-      toast.error('Erro ao editar o cliente. Por favor, tente novamente.');
+      toast.error(`Erro ao deletar cliente: ${id}`, {
+        className: "bg-red-500 text-white p-4 rounded",
+        progressClassName: "bg-white",
+      });
+      console.error(`Erro ao deletar cliente: ${id}`, error);
     }
   };
 
-  const inputs = [
-    {
-      type: "text",
-      placeholder: "Digite o nome do cliente...",
-      value: inputValues.nomeCliente,
-      onChange: handleNameChange,
-      name: "nomeCliente"
-    },
-    {
-      type: "email",
-      placeholder: "Digite o email do cliente...",
-      value: inputValues.emailCliente,
-      onChange: handleEmailChange,
-      name: "emailCliente"
-    },
-    {
-      type: "text",
-      placeholder: "Digite o telefone do cliente...",
-      value: inputValues.telefoneCliente,
-      onChange: handleTelefoneChange,
-      name: "telefoneCliente"
-    },
-    {
-      type: "text",
-      placeholder: "Digite a cidade do cliente...",
-      value: inputValues.cidade,
-      onChange: handleCidadeChange,
-      name: "cidade"
-    },
-    {
-      type: "text",
-      placeholder: "Digite o CEP do cliente...",
-      value: inputValues.cep,
-      onChange: handleCepChange,
-      name: "cep"
-    },
-    {
-      type: "text",
-      placeholder: "Digite a inscrição estadual do cliente...",
-      value: inputValues.inscricaoEstadual,
-      onChange: handleInscricaoEstadualChange,
-      name: "inscricaoEstadual"
-    },
-    {
-      type: "text",
-      placeholder: "Digite o CNPJ do cliente...",
-      value: inputValues.cnpj,
-      onChange: handleCnpjChange,
-      name: "cnpj"
-    },
-    {
-      type: "text",
-      placeholder: "Digite o endereço do cliente...",
-      value: inputValues.endereco,
-      onChange: handleEnderecoChange,
-      name: "endereco"
-    },
-    {
-      type: "text",
-      placeholder: "Digite o número do cliente...",
-      value: inputValues.numero,
-      onChange: handleNumeroChange,
-      name: "numero"
-    },
-    {
-      type: "text",
-      placeholder: "Digite o complemento do cliente...",
-      value: inputValues.complemento,
-      onChange: handleComplementoChange,
-      name: "complemento"
-    },
-    {
-      type: "text",
-      placeholder: "Digite o bairro do cliente...",
-      value: inputValues.bairro,
-      onChange: handleBairroChange,
-      name: "bairro"
-    },
-    {
-      type: "text",
-      placeholder: "Digite o estado do cliente...",
-      value: inputValues.estado,
-      onChange: handleEstadoChange,
-      name: "estado"
-    },
-    {
-      type: "text",
-      placeholder: "Digite o Logradouro do cliente...",
-      value: inputValues.logradouro,
-      onChange: handleLogradouroChange,
-      name: "logradouro"
+  const handleSave = async (updatedData: Cliente) => {
+    const { idCliente, ...clientWithoutId } = updatedData;
+
+    try {
+      if (isEditMode) {
+        await editClient(clientWithoutId, idCliente);
+        toast.success("Cliente editado com sucesso!", {
+          className: "bg-blue-500 text-white p-4 rounded",
+          progressClassName: "bg-white",
+        });
+      } else {
+        await postClient(clientWithoutId);
+        toast.success("Novo cliente adicionado!", {
+          className: "bg-green-500 text-white p-4 rounded",
+          progressClassName: "bg-white",
+        });
+      }
+      setModalOpen(false);
+      await fetchData(); 
+    } catch (error) {
+      toast.error("Erro ao salvar cliente.", {
+        className: "bg-red-500 text-white p-4 rounded",
+        progressClassName: "bg-white",
+      });
+      console.error("Erro ao salvar cliente:", error);
     }
-  ];
+  };
+
+  const handleAddClient = () => {
+    setSelectedClient({
+      idCliente: 0,
+      nomeCliente: "",
+      emailCliente: "",
+      telefoneCliente: "",
+      cnpj: "",
+      cidade: "",
+      estado: "",
+      idCategoria: 0,
+      inscricaoEstadual: "",
+      bairro: "",
+      logradouro: "",
+      numero: 0,
+      complemento: "",
+      cep: "",
+    });
+    setReadMode(false);
+    setEditMode(false);
+    setIscreate(true)
+    setModalOpen(true);
+  };
 
   return (
     <div className="my-4 w-full p-10">
       <h1 className="text-primary-900 text-2xl font-extrabold">Clientes</h1>
-      <div className="pb-3">
-        <SwitchPageHeader itemHeader="" items={items} />
-      </div>
 
-      <PainelHeader title="Tabela de Clientes" onAddProductClick={() => setIsModalOpen(true)} />
+      <PainelHeader
+        title="Tabela de Clientes"
+        onAddClientClick={handleAddClient}
+      />
+
       <Divider />
-      <Table<Item>
-        fetchData={async () => {
-          const clients = await getClients();
-          setFullItemsList(clients);
-          return clients;
-        }}
-        generateHeaders={generateHeaders}
-        mapRowData={(item) => mapRowData(item, handleInfoClick, handleEditClick)}
+
+      <Table
+        headerData={headerData}
+        data={clientData.map(client => [
+          client.idCliente,
+          client.nomeCliente,
+          client.emailCliente,
+          client.telefoneCliente,
+          client.cnpj,
+          client.cidade,
+          client.estado,
+        ])}
+        onClickRead={handleRead}
+        onClickEdit={handleEdit}
+        onClickDelete={confirmDelete}
       />
-      <Modal
-        inputs={inputs}
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        onAdd={handleAddClient}
-        title="Adicionar Cliente"
-      />
-      <Modal
-        inputs={inputs}
-        isOpen={isEditModalOpen}
-        onClose={handleCloseEditModal}
-        onAdd={handleEditClient}
-        title="Editar Cliente"
-      />
+
+      {selectedClient && (
+        <DynamicModal
+          data={selectedClient}
+          isEditMode={isEditMode}
+          isOpen={isModalOpen}
+          onClose={() => setModalOpen(false)}
+          isReadOnly={readMode}
+          onSave={handleSave}
+        />
+      )}
+
+      <ToastContainer position="top-center"/>
     </div>
   );
 }
