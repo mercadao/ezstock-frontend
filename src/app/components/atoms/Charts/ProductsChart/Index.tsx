@@ -48,13 +48,12 @@ export default function ProductsChart() {
     theme: {
       monochrome: {
         enabled: true,
-        color: "#F88743",
+        color: "#9F572B",
         transparent: "true",
       },
     },
     stroke: {
-      show: true,
-      width: 3,
+      show: false,
     },
     legend: {
       show: false,

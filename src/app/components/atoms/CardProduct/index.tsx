@@ -1,3 +1,6 @@
+import { EditIcon } from "lucide-react";
+import { CheckBox } from "../CheckBox";
+
 interface CardProductProps {
   isActive: boolean;
   name: string;
@@ -11,25 +14,40 @@ export default function CardProduct({
   price,
   id,
 }: CardProductProps) {
+
+  const BgStyle = isActive ? "bg-primary-900" : "bg-white";
+  const TextColorStyle = isActive ? "text-white" : "text-black";
+  const IconColor = isActive ? "white" : "black";
+
   return (
     <>
-      <div className="w-full h-[100px] bg-primary-900 rounded-xl shadow-2xl items-center flex justify-between ">
-        <div className=" ml-6 flex items-center gap-10 ">
-          <div className="flex items-center gap-4">
-            <div className="  h-[40px] rounded-xl w-[40px] bg-white shadow-xl"></div>
+      <div 
+        className={`w-full h-[100px] rounded-xl shadow-2xl items-center flex justify-between
+        ${BgStyle} transition-transform duration-300 hover:transform hover:translate-y-[-5px] cursor-pointer hover:opacity-95
+        `}
+      >
+        <div className="ml-6 flex items-center gap-10">
+          <div className="flex items-center gap-4 w-[200px]">
+            <CheckBox isActive={isActive} />
             <div className="">
-              <h1 className="text-white text-xl ">Ativo</h1>
+              {isActive ? (
+                <h1 className="text-white">Ativo</h1>
+              ) : (
+                <h1 className="text-black">Desativado</h1>
+              )}
             </div>
           </div>
-          <div className=" gap-6">
-            <h1 className="text-white text-xl ">{name}</h1>
+
+          <div className="w-[200px]">
+            <h1 className={`${TextColorStyle} text-xl`}>{name}</h1>
           </div>
-          <div className="">
-            <h1 className="text-white text-xl ">Valor Kg: {price}</h1>
+
+          <div className="w-[200px]">
+            <h1 className={`${TextColorStyle} text-xl`}>Valor por Kg: {price} R$</h1>
           </div>
         </div>
         <div className="mr-5">
-          <h1>Editar</h1>
+          <EditIcon size={24} color={IconColor} />
         </div>
       </div>
     </>
