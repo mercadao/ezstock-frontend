@@ -5,6 +5,9 @@ import Divider from "@/app/components/atoms/Divider";
 import PainelHeader from "@/app/components/molecules/PainelHeader";
 import Table from "@/app/components/organisms/Table";
 import DynamicModal from "@/app/components/molecules/DinamicModal";
+
+// import SwitchPageHeader from "@/app/components/atoms/SwitchPageHeader";
+
 import {
   getClients,
   deleteClient,
@@ -131,6 +134,10 @@ export default function Clientes() {
       console.error("Erro ao salvar cliente:", error);
     }
   };
+  const items = [
+    { name: "Cliente", route: "/clientes" },
+    { name: "Categoria Cliente", route: "/clientes/categoriaCliente" },
+  ];  
 
   const handleAddClient = () => {
     setSelectedClient({
@@ -158,6 +165,9 @@ export default function Clientes() {
   return (
     <div className="my-4 w-full p-10">
       <h1 className="text-primary-900 text-2xl font-extrabold">Clientes</h1>
+
+      {/* <SwitchPageHeader itemHeader="" items={items} /> */}
+
 
       <PainelHeader
         title="Tabela de Clientes"
