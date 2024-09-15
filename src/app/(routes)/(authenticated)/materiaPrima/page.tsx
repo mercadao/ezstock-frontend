@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { useRouter } from 'next/navigation'; 
+import { useRouter } from "next/navigation";
 import "react-toastify/dist/ReactToastify.css";
 
 // Components
@@ -21,8 +21,7 @@ import {
 
 export default function MateriaPrimaPage() {
   const [materiasPrimas, setMateriasPrimas] = useState<MateriaPrima[]>([]);
-  const [selectedMateriaPrima, setSelectedMateriaPrima] =
-    useState<MateriaPrima | null>(null);
+  const [selectedMateriaPrima, setSelectedMateriaPrima] = useState<MateriaPrima | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -73,9 +72,7 @@ export default function MateriaPrimaPage() {
 
     toast.warn(
       <>
-        <p className="text-[12px]">
-          Tem certeza que deseja excluir a matéria-prima:
-        </p>
+        <p className="text-[12px]">Tem certeza que deseja excluir a matéria-prima:</p>
         <p>{materiasPrimas[rowIndex].dscMateriaPrima}?</p>
         <div className="flex w-full justify-between">
           <button

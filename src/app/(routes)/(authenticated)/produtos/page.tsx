@@ -106,6 +106,7 @@ export default function ProductsPage() {
         className: "bg-green-500 text-white p-4 rounded",
         progressClassName: "bg-white",
       });
+      setProdutos(produtos.filter((p) => p.idProduto !== id));
     } catch (error) {
       toast.error(`Erro ao deletar produto: ${id}`, {
         className: "bg-red-500 text-white p-4 rounded",
@@ -133,6 +134,7 @@ export default function ProductsPage() {
         });
       }
       setModalOpen(false);
+      setProdutos(await getProdutos());
     } catch (error) {
       toast.error("Erro ao salvar produto.", {
         className: "bg-red-500 text-white p-4 rounded",
@@ -147,6 +149,7 @@ export default function ProductsPage() {
       idProduto: 0,
       nomeProduto: "",
       valorKG: 0,
+      indAtivo: false,
     });
     setReadMode(false);
     setEditMode(false);
