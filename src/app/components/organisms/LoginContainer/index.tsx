@@ -1,6 +1,6 @@
 import Image from "next/image";
 import LoginForm from "@/app/components/molecules/LoginForm";
-import PhoneImage from  '../../../../public/assets/images/phoneImage.png'
+import PhoneImage from  '../../../../../public/assets/images/phoneImage.png'
 
 export default function LoginContainer(){
     return(
@@ -22,9 +22,9 @@ export default function LoginContainer(){
                     </div>
                    
                     <Image 
-                        sizes="400"
                         alt="phone image"
                         src={PhoneImage}
+                        className="w-[70%]"
                     />
                 </div>
 

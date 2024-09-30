@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import SideBar from "@/app/components/organisms/SideBar";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -30,6 +32,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       >
         {children}
       </main>
+      <ToastContainer />
     </div>
   );
 };
