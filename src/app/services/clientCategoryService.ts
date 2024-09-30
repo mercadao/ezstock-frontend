@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://villavitoria-development.up.railway.app/api/CategoriaCliente';
+const BASE_URL = 'https://villavitoriaapi-production.up.railway.app/api/CategoriaCliente';
 
 export interface CategoriaCliente {
     idCategoria: number;

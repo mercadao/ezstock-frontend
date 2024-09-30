@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://villavitoria-development.up.railway.app/api/MateriaPrima';
+const BASE_URL = 'https://villavitoriaapi-production.up.railway.app/api/MateriaPrima';
 
 export interface MateriaPrima {
   idMateriaPrima: number;
