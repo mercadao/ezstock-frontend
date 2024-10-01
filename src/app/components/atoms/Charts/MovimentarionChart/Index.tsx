@@ -1,8 +1,56 @@
 "use client";
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
+import axios from "axios";
+
+// Interface para representar a transação de estoque
+interface TransacaoEstoque {
+  idTransacao: number;
+  idProduto: number;
+  idUsuario: number;
+  idEstoque: number;
+  idCliente: number;
+  tipoTransacao: number;
+  quantidadeKG: number;
+  dataTransacao: string;
+  valorTransacao: number;
+}
 
 export default function MovimentationChart() {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [seriesData, setSeriesData] = useState<{ x: string; y: number }[]>([]);
+
+  // Função para buscar as últimas transações de estoque
+  const fetchTransacoes = async () => {
+    try {
+      const response = await axios.get<TransacaoEstoque[]>(
+        "https://villavitoriaapi-production.up.railway.app/api/Estoque/ListaTransacao",
+        {
+          headers: { accept: "text/plain" },
+        }
+      );
+
+      // Mapeando as categorias e os dados da série
+      const categorias = response.data.map(
+        (transacao, index) => `Produto ${transacao.idProduto} - Transação ${index + 1}`
+      );
+      const series = response.data.map((transacao, index) => ({
+        x: `Produto ${transacao.idProduto} - Transação ${index + 1}`,
+        y: transacao.quantidadeKG,
+      }));
+
+      setCategories(categorias);
+      setSeriesData(series);
+    } catch (error) {
+      console.error("Erro ao buscar transações:", error);
+    }
+  };
+
+  // Busca os dados da API ao montar o componente
+  useEffect(() => {
+    fetchTransacoes();
+  }, []);
+
   const option = {
     chart: {
       id: "apexchart-example",
@@ -19,14 +67,7 @@ export default function MovimentationChart() {
       },
     },
     xaxis: {
-      categories: [
-        "Produto 1",
-        "Produto 2",
-        "Produto 3",
-        "Produto 4",
-        "Produto 5",
-        "Produto 6",
-      ],
+      categories: categories, // Atualiza as categorias dinamicamente
       labels: {
         show: false, // Esconde os indicadores do eixo X
       },
@@ -64,32 +105,7 @@ export default function MovimentationChart() {
 
   const series = [
     {
-      data: [
-        {
-          x: "Produto 1",
-          y: 10,
-        },
-        {
-          x: "Produto 2",
-          y: 18,
-        },
-        {
-          x: "Produto 3",
-          y: 13,
-        },
-        {
-          x: "Produto 4",
-          y: 30,
-        },
-        {
-          x: "Produto 5",
-          y: 17,
-        },
-        {
-          x: "Produto 6",
-          y: 6,
-        },
-      ],
+      data: seriesData, // Atualiza os dados da série dinamicamente
     },
   ];
 

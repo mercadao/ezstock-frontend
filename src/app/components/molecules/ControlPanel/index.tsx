@@ -6,7 +6,6 @@ export default function ControlPanel() {
   return (
     <div className="text-brownText p-10 bg-white rounded-2xl border flex flex-col gap-4 h-full">
       <p className="text-2xl font-medium">Painel de controle</p>
-      <SearchInput />
       <div className="mt-4">
         <p className="font-bold">Ultimas movimentações</p>
         <p className="text-sm">Ultimas movimentações</p>
@@ -15,10 +14,7 @@ export default function ControlPanel() {
       <div className="flex flex-col h-full justify-between items-start">
         <div className="flex flex-col gap-8 w-full">
           <DashboardItem />
-          <DashboardItem />
-          <DashboardItem />
-          <DashboardItem />
-          <DashboardItem />
+          
         </div>
         <DashboardButton text="Ver mais" />
       </div>

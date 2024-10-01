@@ -1,11 +1,39 @@
-"use client";
-import React, { Component } from "react";
+'use client';
+import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
+import axios from "axios";
 
 export default function SalesChart() {
-  const option = {
+  const [series, setSeries] = useState([]);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    // Fazendo a requisição para a API de transações
+    axios.get('https://villavitoriaapi-production.up.railway.app/api/Estoque/ListaTransacao')
+      .then(response => {
+        const salesTransactions = response.data.filter(transaction => transaction.tipoTransacao === 2);
+
+        const groupedData = salesTransactions.reduce((acc, transaction) => {
+          const productIndex = acc.findIndex(item => item.x === `Produto ${transaction.idProduto}`);
+          if (productIndex !== -1) {
+            acc[productIndex].y += transaction.quantidadeKG;
+          } else {
+            acc.push({ x: `Produto ${transaction.idProduto}`, y: transaction.quantidadeKG });
+          }
+          return acc;
+        }, []);
+
+        setSeries([{ data: groupedData }]);
+        setCategories(groupedData.map(item => item.x));
+      })
+      .catch(error => {
+        console.error("Erro ao buscar transações:", error);
+      });
+  }, []);
+
+  const options = {
     chart: {
-      id: "apexchart-example",
+      id: "sales-chart",
       toolbar: {
         show: false,
       },
@@ -19,84 +47,45 @@ export default function SalesChart() {
       },
     },
     xaxis: {
-      categories: [
-        "Produto 1",
-        "Produto 2",
-        "Produto 3",
-        "Produto 4",
-        "Produto 5",
-        "Produto 6",
-      ],
+      categories: categories,
       labels: {
-        show: false, // Esconde os indicadores do eixo X
+        show: true,
+        style: {
+          colors: ["#FFF"],
+        },
       },
     },
     yaxis: {
-      show: false,
+      labels: {
+        style: {
+          colors: ["#FFF"],
+        },
+      },
     },
     fill: {
-      colors: ["#FFFFFF"],
+      colors: ["#D27339"],
       opacity: 1,
-      type: "solid",
     },
     dataLabels: {
       enabled: true,
       style: {
-        colors: ["#D27339"],
-        weight: "bold",
+        colors: ["#FFF"],
+        fontWeight: "bold",
       },
     },
-    markers: {
-      colors: ["#F44336", "#E91E63", "#9C27B0"],
-    },
-    colors: ["#FFFFFF"],
     grid: {
       show: true,
     },
     tooltip: {
       theme: "dark",
-      style: {
-        fontSize: "12px",
-        color: "FFFFFF",
-      },
     },
+    colors: ["#D27339"],
   };
-
-  const series = [
-    {
-      data: [
-        {
-          x: "Produto 1",
-          y: 10,
-        },
-        {
-          x: "Produto 2",
-          y: 18,
-        },
-        {
-          x: "Produto 3",
-          y: 13,
-        },
-        {
-          x: "Produto 4",
-          y: 30,
-        },
-        {
-          x: "Produto 5",
-          y: 17,
-        },
-        {
-          x: "Produto 6",
-          y: 6,
-        },
-      ],
-    },
-  ];
 
   return (
     <Chart
       type="bar"
-      options={option}
+      options={options}
       series={series}
       height="100%"
       width="100%"

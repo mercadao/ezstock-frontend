@@ -1,8 +1,57 @@
 "use client";
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import Chart from "react-apexcharts";
+import axios from "axios";
+
+// Interface para representar os dados do estoque
+interface Estoque {
+  idEstoque: number;
+  idProduto: number;
+  quantidadeAtual: number;
+  dataInicioValidade: string;
+  dataFinalValidade: string;
+  dataCadastro: string;
+}
 
 export default function ProductsChart() {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [seriesData, setSeriesData] = useState<number[]>([]);
+
+  // Função para buscar os dados de estoque da API
+  const fetchEstoque = async () => {
+    try {
+      const response = await axios.get<Estoque[]>(
+        "https://villavitoriaapi-production.up.railway.app/api/Estoque/ObterEstoque?somenteAtivos=true",
+        {
+          headers: { accept: "*/*" },
+        }
+      );
+
+      // Mapeando os produtos e a quantidade atual para o gráfico
+      const produtosUnicos = Array.from(
+        new Set(response.data.map((estoque) => estoque.idProduto))
+      );
+
+      const categorias = produtosUnicos.map((produtoId, index) => `Produto ${produtoId}`);
+      const series = produtosUnicos.map(
+        (produtoId) =>
+          response.data
+            .filter((estoque) => estoque.idProduto === produtoId)
+            .reduce((acc, estoque) => acc + estoque.quantidadeAtual, 0) // Soma as quantidades do mesmo produto
+      );
+
+      setCategories(categorias);
+      setSeriesData(series);
+    } catch (error) {
+      console.error("Erro ao buscar os dados de estoque:", error);
+    }
+  };
+
+  // Busca os dados ao montar o componente
+  useEffect(() => {
+    fetchEstoque();
+  }, []);
+
   const options = {
     chart: {
       id: "apexchart-example",
@@ -18,14 +67,7 @@ export default function ProductsChart() {
         opacity: 0.1,
       },
     },
-    labels: [
-      "Produto 1",
-      "Produto 2",
-      "Produto 3",
-      "Produto 4",
-      "Produto 5",
-      "Produto 6",
-    ],
+    labels: categories, // Atualiza as categorias dinamicamente
     fill: {
       opacity: 1,
       type: "solid",
@@ -70,12 +112,10 @@ export default function ProductsChart() {
     },
   };
 
-  const series = [10, 20, 15, 30, 25, 40];
-
   return (
     <Chart
       options={options}
-      series={series}
+      series={seriesData} // Atualiza a série dinamicamente
       type="donut"
       height="100%"
       width="100%"
