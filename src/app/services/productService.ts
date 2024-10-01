@@ -20,6 +20,18 @@ export const getProdutos = async (): Promise<Produto[]> => {
   }
 };
 
+// Serviço para buscar um produto específico pelo ID
+export const getProdutoEspecifico = async (id: number): Promise<Produto> => {
+  try {
+    const response = await axios.get<Produto>(`${BASE_URL}/ListaProduto/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Erro ao buscar o produto com ID: ${id}`, error);
+    throw error;
+  }
+};
+
+
 // Serviço para adicionar produto
 export const addProduto = async (produto: Omit<Produto, 'idProduto' | 'indAtivo'>): Promise<void> => {
 

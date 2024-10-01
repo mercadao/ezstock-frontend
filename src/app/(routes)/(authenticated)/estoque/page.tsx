@@ -1,200 +1,162 @@
 "use client";
-
 import { useEffect, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Components
 import Divider from "@/app/components/atoms/Divider";
 import PainelHeader from "@/app/components/molecules/PainelHeader";
 import Table from "@/app/components/organisms/Table";
 import DynamicModal from "@/app/components/molecules/DinamicModal";
 
-// import SwitchPageHeader from "@/app/components/atoms/SwitchPageHeader";
-
+// Services
 import {
-  getClients,
-  deleteClient,
-  Cliente,
-  editClient,
-  postClient,
-} from "@/app/services/clientService";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+  getEstoques,
+  postAdicionaEstoque,
+  postBaixaEstoque,
+  Estoque,
+} from "@/app/services/stockService";
+import { getProdutoEspecifico } from "@/app/services/productService"; 
 
-export default function Estoque() {
-  const [clientData, setClientData] = useState<Cliente[]>([]);
-  const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
+import { useProductSearchStore } from "@/app/hooks/searchHook";
+
+export default function EstoquePage() {
+  const [estoques, setEstoques] = useState<Estoque[]>([]);
+  const [produtos, setProdutos] = useState<{ [key: number]: string }>({});
+  const [selectedEstoque, setSelectedEstoque] = useState<Estoque | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
-  const [readMode, setReadMode] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
-  const [isCreate, setIscreate] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [readMode, setReadMode] = useState(false);
 
-  const headerData = [
-    "ID",
-    "Nome",
-    "Email",
-    "Telefone",
-    "CNPJ",
-    "Cidade",
-    "Estado",
-    "Ações",
-  ];
-
-  const fetchData = async () => {
-    try {
-      const clients = await getClients();
-      setClientData(clients);
-    } catch (error) {
-      console.error("Erro ao buscar clientes:", error);
-    }
-  };
+  const { productSearch, setProductSearch } = useProductSearchStore();
 
   useEffect(() => {
-    fetchData();
+    const fetchEstoques = async () => {
+      try {
+        const response = await getEstoques();
+        setEstoques(response);
+        
+        // Para cada estoque, busque o nome do produto e armazene no estado 'produtos'
+        const produtoNames: { [key: number]: string } = {};
+        await Promise.all(
+          response.map(async (estoque) => {
+            try {
+              const produtoResponse = await getProdutoEspecifico(estoque.idProduto);
+              if (produtoResponse.sucesso && produtoResponse.produto) {
+                produtoNames[estoque.idProduto] = produtoResponse.produto.nomeProduto;
+              } else {
+                produtoNames[estoque.idProduto] = "Produto não encontrado";
+              }
+            } catch (error) {
+              console.error(`Erro ao buscar produto ${estoque.idProduto}:`, error);
+              produtoNames[estoque.idProduto] = "Erro ao carregar produto";
+            }
+          })
+        );
+        setProdutos(produtoNames);
+      } catch (error) {
+        console.error("Erro ao buscar estoques:", error);
+        toast.error("Erro ao buscar estoques.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEstoques();
   }, []);
 
+  const filteredEstoques = estoques.filter((estoque) =>
+    estoque.idProduto.toString().includes(productSearch)
+  );
+
+  const headerData = ["Nome Produto", "Qtd Total", "Ativo", "Ações"];
+
+  const tableData = filteredEstoques.map((estoque) => [
+    produtos[estoque.idProduto] || "Carregando...",
+    estoque.quantidadeAtual,
+    estoque.indAtivo ? "Sim" : "Não",
+  ]);
+
   const handleRead = (rowIndex: number) => {
-    setSelectedClient(clientData[rowIndex]);
+    const estoque = filteredEstoques[rowIndex];
+    setSelectedEstoque(estoque);
     setReadMode(true);
     setEditMode(false);
     setModalOpen(true);
   };
 
-  const handleEdit = (rowIndex: number) => {
-    setSelectedClient(clientData[rowIndex]);
+  const handleAddEstoque = () => {
+    setSelectedEstoque({
+      idProduto: 0,
+      idCliente: 0,
+      idEstoque: 0,
+      idUsuario: 0,
+      valorNovo: 0,
+      qtdTotalEmTela: 0,
+      dataInicioValidade: "",
+      dataFinalValidade: "",
+      indAtivo: 1,
+      tipoTransacao: 1,
+    });
     setReadMode(false);
-    setEditMode(true);
+    setEditMode(false);
     setModalOpen(true);
   };
 
-  const confirmDelete = (rowIndex: number) => {
-    const id = clientData[rowIndex].idCliente;
-
-    toast.warn(
-      <>
-        <p className="text-[12px]">Tem certeza que deseja excluir o cliente:</p>
-        <p>{clientData[rowIndex].nomeCliente}?</p>
-        <div className="flex w-full justify-between">
-          <button onClick={() => handleDelete(rowIndex)} className="btn-confirm hover:text-green-400">
-            Confirmar
-          </button>
-          <button onClick={() => toast.dismiss()} className="btn-cancel hover:text-red-400">
-            Cancelar
-          </button>
-        </div>
-      </>,
-      {
-        position: "top-center",
-        autoClose: false,
-        closeOnClick: false,
-        closeButton: false,
-      }
-    );
-  };
-
-  const handleDelete = async (rowIndex: number) => {
-    const id = clientData[rowIndex].idCliente;
-    try {
-      await deleteClient(id);
-      await fetchData();
-      toast.success(`Cliente deletado: ${id}`, {
-        className: "bg-green-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
-      });
-    } catch (error) {
-      toast.error(`Erro ao deletar cliente: ${id}`, {
-        className: "bg-red-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
-      });
-      console.error(`Erro ao deletar cliente: ${id}`, error);
-    }
-  };
-
-  const handleSave = async (updatedData: Cliente) => {
-    const { idCliente, ...clientWithoutId } = updatedData;
-
+  const handleSave = async (updatedEstoque: Estoque) => {
     try {
       if (isEditMode) {
-        await editClient(clientWithoutId, idCliente);
-        toast.success("Cliente editado com sucesso!", {
+        await postBaixaEstoque(updatedEstoque);
+        toast.success("Baixa de estoque realizada com sucesso!", {
           className: "bg-blue-500 text-white p-4 rounded",
           progressClassName: "bg-white",
         });
       } else {
-        await postClient(clientWithoutId);
-        toast.success("Novo cliente adicionado!", {
+        await postAdicionaEstoque(updatedEstoque);
+        toast.success("Novo estoque adicionado!", {
           className: "bg-green-500 text-white p-4 rounded",
           progressClassName: "bg-white",
         });
       }
       setModalOpen(false);
-      await fetchData(); 
+      setEstoques(await getEstoques());
     } catch (error) {
-      toast.error("Erro ao salvar cliente.", {
+      toast.error("Erro ao salvar estoque.", {
         className: "bg-red-500 text-white p-4 rounded",
         progressClassName: "bg-white",
       });
-      console.error("Erro ao salvar cliente:", error);
+      console.error("Erro ao salvar estoque:", error);
     }
   };
-  const items = [
-    { name: "Cliente", route: "/clientes" },
-    { name: "Categoria Cliente", route: "/clientes/categoriaCliente" },
-  ];  
 
-  const handleAddClient = () => {
-    setSelectedClient({
-      idCliente: 0,
-      nomeCliente: "",
-      emailCliente: "",
-      telefoneCliente: "",
-      cnpj: "",
-      cidade: "",
-      estado: "",
-      idCategoria: 0,
-      inscricaoEstadual: "",
-      bairro: "",
-      logradouro: "",
-      numero: 0,
-      complemento: "",
-      cep: "",
-    });
-    setReadMode(false);
-    setEditMode(false);
-    setIscreate(true)
-    setModalOpen(true);
-  };
+  if (loading) {
+    return <p>Carregando estoques...</p>;
+  }
 
   return (
     <div className="my-4 w-full p-10">
-      <h1 className="text-primary-900 text-2xl font-extrabold">Clientes</h1>
-
-      {/* <SwitchPageHeader itemHeader="" items={items} /> */}
-
+      <h1 className="text-primary-900 text-2xl font-extrabold">Estoque</h1>
 
       <PainelHeader
-        title="Tabela de Clientes"
-        onAddClientClick={handleAddClient}
+        title="Tabela de Estoques"
+        onAddClientClick={handleAddEstoque}
+        buttonText="+ Adicionar Estoque"
+        productSearch={productSearch}
+        setProductSearch={setProductSearch}
       />
 
       <Divider />
 
       <Table
         headerData={headerData}
-        data={clientData.map(client => [
-          client.idCliente,
-          client.nomeCliente,
-          client.emailCliente,
-          client.telefoneCliente,
-          client.cnpj,
-          client.cidade,
-          client.estado,
-        ])}
+        data={tableData}
         onClickRead={handleRead}
-        onClickEdit={handleEdit}
-        onClickDelete={confirmDelete}
       />
 
-      {selectedClient && (
+      {selectedEstoque && (
         <DynamicModal
-          data={selectedClient}
+          data={selectedEstoque}
           isEditMode={isEditMode}
           isOpen={isModalOpen}
           onClose={() => setModalOpen(false)}
@@ -203,7 +165,7 @@ export default function Estoque() {
         />
       )}
 
-      <ToastContainer position="top-center"/>
+      <ToastContainer position="top-center" />
     </div>
   );
 }
