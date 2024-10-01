@@ -18,6 +18,8 @@ import {
   Produto,
 } from "@/app/services/productService";
 
+import { useProductSearchStore } from "@/app/hooks/searchHook"; 
+
 export default function ProductsPage() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [selectedProduto, setSelectedProduto] = useState<Produto | null>(null);
@@ -25,6 +27,8 @@ export default function ProductsPage() {
   const [isEditMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [readMode, setReadMode] = useState(false);
+
+  const { productSearch, setProductSearch } = useProductSearchStore(); // Mantendo o state no ProductsPage
 
   useEffect(() => {
     const fetchProdutos = async () => {
@@ -42,9 +46,13 @@ export default function ProductsPage() {
     fetchProdutos();
   }, []);
 
+  const filteredProdutos = produtos.filter((produto) =>
+    produto.nomeProduto.toLowerCase().includes(productSearch.toLowerCase())
+  );
+
   const headerData = ["ID", "Nome do Produto", "Ativo", "Valor/Kg", "Ações"];
 
-  const tableData = produtos.map((produto) => [
+  const tableData = filteredProdutos.map((produto) => [
     produto.idProduto,
     produto.nomeProduto,
     produto.indAtivo ? "Sim" : "Não",
@@ -52,7 +60,7 @@ export default function ProductsPage() {
   ]);
 
   const handleRead = (rowIndex: number) => {
-    const produto = produtos[rowIndex];
+    const produto = filteredProdutos[rowIndex];
     setSelectedProduto(produto);
     setReadMode(true);
     setEditMode(false);
@@ -60,7 +68,7 @@ export default function ProductsPage() {
   };
 
   const handleEdit = (rowIndex: number) => {
-    const produto = produtos[rowIndex];
+    const produto = filteredProdutos[rowIndex];
     setSelectedProduto(produto);
     setReadMode(false);
     setEditMode(true);
@@ -68,12 +76,12 @@ export default function ProductsPage() {
   };
 
   const confirmDelete = (rowIndex: number) => {
-    const id = produtos[rowIndex].idProduto;
+    const id = filteredProdutos[rowIndex].idProduto;
 
     toast.warn(
       <>
         <p className="text-[12px]">Tem certeza que deseja excluir o produto:</p>
-        <p>{produtos[rowIndex].nomeProduto}?</p>
+        <p>{filteredProdutos[rowIndex].nomeProduto}?</p>
         <div className="flex w-full justify-between">
           <button
             onClick={() => handleDelete(rowIndex)}
@@ -99,7 +107,7 @@ export default function ProductsPage() {
   };
 
   const handleDelete = async (rowIndex: number) => {
-    const id = produtos[rowIndex].idProduto;
+    const id = filteredProdutos[rowIndex].idProduto;
     try {
       await deleteProduto(id);
       toast.success(`Produto deletado: ${id}`, {
@@ -167,6 +175,9 @@ export default function ProductsPage() {
       <PainelHeader
         title="Tabela de Produtos"
         onAddClientClick={handleAddProduct}
+        buttonText="+ Adicionar Produto"
+        productSearch={productSearch}    
+        setProductSearch={setProductSearch}  
       />
 
       <Divider />
