@@ -159,7 +159,6 @@ export default function ProductsPage() {
       idProduto: 0,
       nomeProduto: "",
       valorKG: 0,
-      indAtivo: false,
     });
     setReadMode(false);
     setEditMode(false);
