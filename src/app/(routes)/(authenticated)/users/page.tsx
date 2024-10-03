@@ -181,7 +181,11 @@ export default function Usuarios() {
     <div className="my-4 w-full p-10">
       <h1 className="text-primary-900 text-2xl font-extrabold">Usuários</h1>
 
-      <PainelHeader title="Tabela de Usuários" onAddClientClick={handleAddUser} />
+      <PainelHeader 
+        title="Tabela de Usuários" 
+        onAddClientClick={handleAddUser}
+        buttonText="+ Adicionar usuário"
+      />
 
       <Divider />
 

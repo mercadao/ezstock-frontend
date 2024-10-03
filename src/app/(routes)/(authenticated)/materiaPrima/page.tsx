@@ -167,6 +167,7 @@ export default function MateriaPrimaPage() {
       <PainelHeader
         title="Tabela de Matérias-Primas"
         onAddClientClick={handleAddMateriaPrima}
+        buttonText="+ Matéria-Prima"
       />
 
       <Divider />
