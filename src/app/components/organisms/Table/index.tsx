@@ -7,13 +7,15 @@ interface TableProps {
   onClickRead?: (rowIndex: number) => void;
   onClickEdit?: (rowIndex: number) => void;
   onClickDelete?: (rowIndex: number) => void;
+  deleteHidden?: boolean; 
 }
 
-export default function Table({ headerData, data, onClickRead, onClickEdit, onClickDelete }: TableProps) {
+export default function Table({ headerData, data, onClickRead, onClickEdit, onClickDelete, deleteHidden }: TableProps) {
+
   return (
     <div className="border border-[#E5E7EB] rounded-lg my-4 w-full">
       {headerData && (
-        <TableRow data={headerData} isHeader />
+        <TableRow data={headerData} isHeader/>
       )}
       
       {data.map((rowData, rowIndex) => (
@@ -28,6 +30,7 @@ export default function Table({ headerData, data, onClickRead, onClickEdit, onCl
             onClickRead={() => onClickRead?.(rowIndex)}
             onClickEdit={() => onClickEdit?.(rowIndex)}
             onClickDelete={() => onClickDelete?.(rowIndex)}
+            deleteHidden={deleteHidden} 
           />
         </motion.div>
       ))}

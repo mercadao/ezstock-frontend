@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import moment from "moment-timezone";
 
 // Components
 import Divider from "@/app/components/atoms/Divider";
@@ -16,9 +17,10 @@ import {
   postBaixaEstoque,
   Estoque,
 } from "@/app/services/stockService";
-import { getProdutoEspecifico } from "@/app/services/productService"; 
+import { getProdutoEspecifico } from "@/app/services/productService";
 
-import { useProductSearchStore } from "@/app/hooks/searchHook";
+// Importando o hook SearchStore correto
+import { useSearchStore } from "@/app/hooks/searchHook"; 
 
 export default function EstoquePage() {
   const [estoques, setEstoques] = useState<Estoque[]>([]);
@@ -29,18 +31,35 @@ export default function EstoquePage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [readMode, setReadMode] = useState(false);
 
-  const { productSearch, setProductSearch } = useProductSearchStore();
+ 
+  // Usando o hook com as buscas de produto
+  const { estoqueSearch, setEstoqueSearch } = useSearchStore();
+
 
   useEffect(() => {
     const fetchEstoques = async () => {
       try {
         const response = await getEstoques();
-        setEstoques(response);
-        
-        // Para cada estoque, busque o nome do produto e armazene no estado 'produtos'
+
+        // Formatando as datas para timezone de Brasília
+        const formattedEstoques = response.map((estoque) => ({
+          ...estoque,
+          dataInicioValidade: moment(estoque.dataInicioValidade)
+            .tz("America/Sao_Paulo")
+            .format("DD/MM/YYYY HH:mm:ss"),
+          dataFinalValidade: moment(estoque.dataFinalValidade)
+            .tz("America/Sao_Paulo")
+            .format("DD/MM/YYYY HH:mm:ss"),
+          dataCadastro: moment(estoque.dataCadastro)
+            .tz("America/Sao_Paulo")
+            .format("DD/MM/YYYY HH:mm:ss"),
+        }));
+
+        setEstoques(formattedEstoques);
+
         const produtoNames: { [key: number]: string } = {};
         await Promise.all(
-          response.map(async (estoque) => {
+          formattedEstoques.map(async (estoque) => {
             try {
               const produtoResponse = await getProdutoEspecifico(estoque.idProduto);
               if (produtoResponse.sucesso && produtoResponse.produto) {
@@ -67,7 +86,7 @@ export default function EstoquePage() {
   }, []);
 
   const filteredEstoques = estoques.filter((estoque) =>
-    estoque.idProduto.toString().includes(productSearch)
+    produtos[estoque.idProduto]?.toLowerCase().includes(estoqueSearch.toLowerCase())
   );
 
   const headerData = ["Nome Produto", "Qtd Total", "Ativo", "Ações"];
@@ -142,8 +161,8 @@ export default function EstoquePage() {
         title="Tabela de Estoques"
         onAddClientClick={handleAddEstoque}
         buttonText="+ Adicionar Estoque"
-        productSearch={productSearch}
-        setProductSearch={setProductSearch}
+        itemSearch={estoqueSearch}
+        setItemSearch={setEstoqueSearch}
       />
 
       <Divider />
@@ -152,6 +171,7 @@ export default function EstoquePage() {
         headerData={headerData}
         data={tableData}
         onClickRead={handleRead}
+        deleteHidden={true}
       />
 
       {selectedEstoque && (

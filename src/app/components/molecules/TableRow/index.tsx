@@ -7,6 +7,7 @@ interface TableRowProps {
   onClickRead?: () => void;
   onClickEdit?: () => void;
   onClickDelete?: () => void;
+  deleteHidden?: boolean; 
 }
 
 export default function TableRow({
@@ -15,6 +16,7 @@ export default function TableRow({
   onClickRead,
   onClickEdit,
   onClickDelete,
+  deleteHidden
 }: TableRowProps) {
   return (
     <div
@@ -29,6 +31,7 @@ export default function TableRow({
           onClickRead={onClickRead}
           onClickEdit={onClickEdit}
           onClickDelete={onClickDelete}
+          deleteHidden={deleteHidden}
         />
       )}
     </div>

@@ -18,7 +18,8 @@ import {
   Produto,
 } from "@/app/services/productService";
 
-import { useProductSearchStore } from "@/app/hooks/searchHook"; 
+// Importando o hook SearchStore correto
+import { useSearchStore } from "@/app/hooks/searchHook"; 
 
 export default function ProductsPage() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -28,7 +29,8 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [readMode, setReadMode] = useState(false);
 
-  const { productSearch, setProductSearch } = useProductSearchStore(); // Mantendo o state no ProductsPage
+  // Usando o hook com as buscas de produto
+  const { productSearch, setProductSearch } = useSearchStore();
 
   useEffect(() => {
     const fetchProdutos = async () => {
@@ -176,8 +178,8 @@ export default function ProductsPage() {
         title="Tabela de Produtos"
         onAddClientClick={handleAddProduct}
         buttonText="+ Adicionar Produto"
-        productSearch={productSearch}    
-        setProductSearch={setProductSearch}  
+        itemSearch={productSearch}    
+        setItemSearch={setProductSearch}  
       />
 
       <Divider />

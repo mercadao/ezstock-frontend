@@ -4,9 +4,11 @@ interface TableCellActionProps {
   onClickRead?: () => void;
   onClickEdit?: () => void;
   onClickDelete?: () => void;
+  deleteHidden?: boolean; 
 }
 
-export default function TableCellAction({ onClickRead, onClickEdit, onClickDelete }: TableCellActionProps) {
+export default function TableCellAction({ onClickRead, onClickEdit, onClickDelete, deleteHidden }: TableCellActionProps) {
+
   return (
     <div className="flex justify-center items-center py-2 gap-2 flex-1">
       <Info
@@ -19,7 +21,8 @@ export default function TableCellAction({ onClickRead, onClickEdit, onClickDelet
       />
       <Trash
         onClick={onClickDelete}
-        className="cursor-pointer text-gray-400 hover:text-red-500 transition-colors duration-200"
+        className={`cursor-pointer text-gray-400 hover:text-red-500 transition-colors duration-200
+        ${deleteHidden ? "hidden" : ""}`}
       />
     </div>
   );

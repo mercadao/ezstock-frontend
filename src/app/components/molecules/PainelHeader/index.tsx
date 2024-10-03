@@ -5,21 +5,22 @@ import SmallButton from "@/app/components/atoms/Button/SmallButton";
 import Input from "@/app/components/atoms/Input";
 import FilterIcon from "../../../../../public/assets/icons/FilterIcon";
 import SwapIcon from "../../../../../public/assets/icons/SwapIcon";
+import { Search } from "lucide-react";
 
 interface PainelHeaderProps {
     title: string;
     onAddClientClick: () => void;
     buttonText?: string;
-    productSearch: string;            
-    setProductSearch: (value: string) => void;  
+    itemSearch: string;            
+    setItemSearch: (value: string) => void;  
 }
 
 export default function PainelHeader({
     title,
     onAddClientClick,
     buttonText,
-    productSearch,            
-    setProductSearch          
+    itemSearch,            
+    setItemSearch          
 }: PainelHeaderProps) {
 
     return (
@@ -37,20 +38,21 @@ export default function PainelHeader({
 
                 <div className="w-[200px]">
                     <Input
-                        onChange={(e) => setProductSearch(e.target.value)}
+                        onChange={(e) => setItemSearch(e.target.value)}
                         placeholder="Pesquisar produtos"
                         type="text"
-                        value={productSearch}  
+                        value={itemSearch}  
+                        icon={<Search />}
                     />
                 </div>
 
-                <div className="text-primary-900 hover:text-white">
+                {/* <div className="text-primary-900 hover:text-white">
                     <SmallButton icon={<FilterIcon />} />
                 </div>
 
                 <div className="text-primary-900 hover:text-white">
                     <SmallButton icon={<SwapIcon />} />
-                </div>
+                </div> */}
             </div>
 
         </div>
