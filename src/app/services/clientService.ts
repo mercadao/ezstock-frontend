@@ -17,6 +17,8 @@ export interface Cliente {
   numero: number;
   complemento?: string;
   cep: string;
+  
+
 }
 
 export const getClients = async (): Promise<Cliente[]> => {

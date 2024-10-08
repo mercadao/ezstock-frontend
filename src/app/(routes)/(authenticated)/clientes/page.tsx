@@ -17,6 +17,7 @@ import {
 } from "@/app/services/clientService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { CategoriaCliente } from '../../../services/clientCategoryService';
 
 export default function Clientes() {
   const [clientData, setClientData] = useState<Cliente[]>([]);
@@ -109,6 +110,10 @@ export default function Clientes() {
 
   const handleSave = async (updatedData: Cliente) => {
     const { idCliente, ...clientWithoutId } = updatedData;
+
+    // Garantir que idCategoria e numero sejam números
+    clientWithoutId.idCategoria = Number(clientWithoutId.idCategoria);
+    clientWithoutId.numero = Number(clientWithoutId.numero);
 
     try {
       if (isEditMode) {
