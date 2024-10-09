@@ -57,7 +57,7 @@ export default function SideBar({ onToggle }: SideBarProps) {
 
   return (
     <div
-      className={`flex flex-col gap-4 h-full border-r-2 border-primary-400 bg-offwhite px-4 ${
+      className={`flex flex-col gap-4 h-full border-r-2 border-primary-400 bg-offwhite overflow-auto px-4 ${
         isClosed ? "w-[100px]" : "w-sidebar-width"
       } transition-all duration-300`}
     >

@@ -1,12 +1,11 @@
-"use client";
+"use client"
 
 import { useEffect, useState } from "react";
 import Divider from "@/app/components/atoms/Divider";
 import PainelHeader from "@/app/components/molecules/PainelHeader";
 import Table from "@/app/components/organisms/Table";
 import DynamicModal from "@/app/components/molecules/DinamicModal";
-
-// import SwitchPageHeader from "@/app/components/atoms/SwitchPageHeader";
+import { getCategoriaClientes } from "@/app/services/clientCategoryService";
 
 import {
   getClients,
@@ -17,10 +16,11 @@ import {
 } from "@/app/services/clientService";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { CategoriaCliente } from '../../../services/clientCategoryService';
 
 export default function Clientes() {
   const [clientData, setClientData] = useState<Cliente[]>([]);
+  const [clientCategorysData, setClientCategorysData] = useState<any[]>([]);
+  const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
   const [selectedClient, setSelectedClient] = useState<Cliente | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [readMode, setReadMode] = useState(false);
@@ -41,7 +41,18 @@ export default function Clientes() {
   const fetchData = async () => {
     try {
       const clients = await getClients();
+      const clienteCategoryData = await getCategoriaClientes();
+      console.log("clienteCategoryData: ", clienteCategoryData.categoriaCliente);
+
+      // Mapeando as categorias para o formato correto
+      const options = clienteCategoryData.categoriaCliente.map((category: any) => ({
+        value: category.idCategoria,
+        label: category.desCategoriaCliente,
+      }));
+
       setClientData(clients);
+      setClientCategorysData(clienteCategoryData);
+      setCategoryOptions(options); // Atualizando categoryOptions dinamicamente
     } catch (error) {
       console.error("Erro ao buscar clientes:", error);
     }
@@ -139,10 +150,6 @@ export default function Clientes() {
       console.error("Erro ao salvar cliente:", error);
     }
   };
-  const items = [
-    { name: "Cliente", route: "/clientes" },
-    { name: "Categoria Cliente", route: "/clientes/categoriaCliente" },
-  ];  
 
   const handleAddClient = () => {
     setSelectedClient({
@@ -153,7 +160,7 @@ export default function Clientes() {
       cnpj: "",
       cidade: "",
       estado: "",
-      idCategoria: 0,
+      idCategoria: 3,
       inscricaoEstadual: "",
       bairro: "",
       logradouro: "",
@@ -163,7 +170,7 @@ export default function Clientes() {
     });
     setReadMode(false);
     setEditMode(false);
-    setIscreate(true)
+    setIscreate(true);
     setModalOpen(true);
   };
 
@@ -172,7 +179,6 @@ export default function Clientes() {
       <h1 className="text-primary-900 text-2xl font-extrabold">Clientes</h1>
 
       {/* <SwitchPageHeader itemHeader="" items={items} /> */}
-
 
       <PainelHeader
         title="Tabela de Clientes"
@@ -205,6 +211,8 @@ export default function Clientes() {
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
+          selectLabel="Categoria do Cliente"  // Passando a label do select
+          selectOptions={categoryOptions} // Usando a lista dinâmica de categorias
         />
       )}
 

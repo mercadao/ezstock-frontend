@@ -33,6 +33,7 @@ export const getClients = async (): Promise<Cliente[]> => {
 
 export const postClient = async (cliente: Omit<Cliente, 'idCliente' | 'indAtivo'>): Promise<void> => {
   try {
+    console.log("cliente: ", cliente)
     await axios.post(`${BASE_URL}/AdicionaCliente`, cliente);
   } catch (error) {
     console.error('Erro ao adicionar cliente:', error);

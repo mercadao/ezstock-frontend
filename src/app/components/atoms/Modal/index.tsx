@@ -32,7 +32,7 @@ export default function Modal({ children, isOpen, onClose }: ModalProps) {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 300, opacity: 0 }}
         transition={{ duration: 0.4, ease: "easeInOut" }}
-        className="bg-white p-6 rounded-md w-full max-w-lg relative text-black max-h-[800px] overflow-auto"
+        className="bg-white p-6 rounded-md w-full max-w-lg relative text-black max-h-[500px] overflow-auto"
       >
         <button onClick={onClose} className="absolute top-3 right-3">
           <X className="text-black hover:text-red-600" />

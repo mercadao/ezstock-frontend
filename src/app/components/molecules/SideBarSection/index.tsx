@@ -10,7 +10,7 @@ interface SideBarSectionProps {
 
 export default function SideBarSection({ title, items, isClosed }: SideBarSectionProps) {
   return (
-    <div className="flex flex-col gap-4 mx-2">
+    <div className="flex flex-col gap-4 mx-2 py-[10px]">
       <Divider />
       {!isClosed && (
         <h2 className="text-offgray font-semibold text-sm">{title}</h2>

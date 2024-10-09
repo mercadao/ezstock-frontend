@@ -9,6 +9,8 @@ interface DynamicModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave?: (updatedData: Record<string, any>) => void;
+  selectLabel?: string;  // Label para o select dinâmico
+  selectOptions?: { value: number; label: string }[];  // Opções dinâmicas do select
 }
 
 export default function DynamicModal({
@@ -18,6 +20,8 @@ export default function DynamicModal({
   isOpen,
   onClose,
   onSave,
+  selectLabel = "Categoria",  // Valor padrão para a label
+  selectOptions = [],  // Array vazio padrão para as opções
 }: DynamicModalProps) {
   const [formData, setFormData] = useState(data);
 
@@ -46,12 +50,18 @@ export default function DynamicModal({
     }
   };
 
+  // Encontrar a categoria selecionada para exibição no modo de leitura
+  const selectedCategory = selectOptions.find(
+    (option) => option.value === formData.idCategoria
+  );
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-bold mb-4">{title()}</h2>
 
+      {/* Iterar sobre os campos de dados */}
       {Object.keys(formData)
-        .filter((key) => !key.toLowerCase().startsWith("id")) 
+        .filter((key) => !key.toLowerCase().startsWith("id"))
         .map((key) => (
           <div key={key} className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -66,6 +76,41 @@ export default function DynamicModal({
             />
           </div>
         ))}
+
+      {/* Campo de seleção dinâmico */}
+      {!isReadOnly && selectLabel.length > 0
+       ? (
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            {selectLabel}
+          </label>
+          <select
+            value={formData.idCategoria || ""}
+            onChange={(e) => handleChange("idCategoria", Number(e.target.value))}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+            disabled={isReadOnly}
+          >
+            <option value="" disabled>Selecione {selectLabel}</option>
+            {selectOptions.map(option => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      ) : (
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            {selectLabel}
+          </label>
+          <input
+            type="text"
+            value={selectedCategory?.label || "Categoria não definida"}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+            disabled
+          />
+        </div>
+      )}
 
       {!isReadOnly && (
         <Button
