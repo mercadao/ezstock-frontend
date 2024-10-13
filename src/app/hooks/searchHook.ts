@@ -12,6 +12,9 @@ interface SearchStore {
 
   materiaPrimaSearch: string;
   setMateriaPrimaSearch: (search: string) => void;
+
+  clientsSearch: string;
+  setClientsSearch: (search: string) => void;
 }
 
 export const useSearchStore = create<SearchStore>((set) => ({
@@ -26,4 +29,7 @@ export const useSearchStore = create<SearchStore>((set) => ({
 
   materiaPrimaSearch: '',
   setMateriaPrimaSearch: (search) => set({ materiaPrimaSearch: search }),
+
+  clientsSearch: '',
+  setClientsSearch: (search) => set({ clientsSearch: search }),
 }));
