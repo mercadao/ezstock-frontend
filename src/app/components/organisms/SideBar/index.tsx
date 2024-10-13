@@ -16,7 +16,6 @@ const sections = [
     title: "Paineis",
     items: [
       { icon: <HomeIcon />, text: "Início", href: "/home" },
-      { icon: <ChartIcon />, text: "Análise", href: "/analysis" },
     ],
   },
   {

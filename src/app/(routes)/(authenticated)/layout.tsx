@@ -27,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       </div>
       <main
         className={`flex-grow w-full ml-0 ${
-          isSidebarClosed ? "md:ml-[100px]" : "md:ml-sidebar-width"
+          isSidebarClosed ? "md:ml-[50px]" : "md:ml-sidebar-width"
         } bg-offwhite min-h-screen transition-all duration-300`}
       >
         {children}

@@ -17,7 +17,7 @@ export default function SiderBarItem({ icon, text, href, isClosed }: SiderBarIte
       }`}
       href={href}
     >
-      {icon}
+      <p>{icon}</p>
       {!isClosed && <p>{text}</p>}
     </a>
   );
