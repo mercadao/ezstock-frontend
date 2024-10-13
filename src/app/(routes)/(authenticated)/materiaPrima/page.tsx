@@ -19,6 +19,9 @@ import {
   MateriaPrima,
 } from "@/app/services/materiaPrimaService";
 
+import { useSearchStore } from "@/app/hooks/searchHook"; 
+
+
 export default function MateriaPrimaPage() {
   const [materiasPrimas, setMateriasPrimas] = useState<MateriaPrima[]>([]);
   const [selectedMateriaPrima, setSelectedMateriaPrima] = useState<MateriaPrima | null>(null);
@@ -28,6 +31,9 @@ export default function MateriaPrimaPage() {
   const [readMode, setReadMode] = useState(false);
 
   const router = useRouter();
+
+  const { materiaPrimaSearch, setMateriaPrimaSearch } = useSearchStore();
+
 
   useEffect(() => {
     const fetchMateriasPrimas = async () => {
@@ -45,9 +51,13 @@ export default function MateriaPrimaPage() {
     fetchMateriasPrimas();
   }, []);
 
+  const filteredMateriaPrimaData = materiasPrimas.filter((materiaPrima) =>
+    materiaPrima.dscMateriaPrima.toLowerCase().includes(materiaPrimaSearch.toLowerCase())
+  );
+
   const headerData = ["Descrição", "Ações"];
 
-  const tableData = materiasPrimas.map((materiaPrima) => [
+  const tableData = filteredMateriaPrimaData.map((materiaPrima) => [
     materiaPrima.dscMateriaPrima,
   ]);
 
@@ -168,6 +178,8 @@ export default function MateriaPrimaPage() {
         title="Tabela de Matérias-Primas"
         onAddClientClick={handleAddMateriaPrima}
         buttonText="+ Matéria-Prima"
+        itemSearch={materiaPrimaSearch}
+        setItemSearch={setMateriaPrimaSearch}
       />
 
       <Divider />

@@ -15,6 +15,9 @@ interface SearchStore {
 
   clientsSearch: string;
   setClientsSearch: (search: string) => void;
+
+  categoryClientsSearch: string;
+  setCategoryClientsSearch: (search: string) => void;
 }
 
 export const useSearchStore = create<SearchStore>((set) => ({
@@ -32,4 +35,7 @@ export const useSearchStore = create<SearchStore>((set) => ({
 
   clientsSearch: '',
   setClientsSearch: (search) => set({ clientsSearch: search }),
+
+  categoryClientsSearch: '',
+  setCategoryClientsSearch: (search) => set({ categoryClientsSearch: search }),
 }));
