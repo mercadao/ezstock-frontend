@@ -168,7 +168,11 @@ export default function ClienteCategorias() {
     <div className="my-4 w-full p-10">
       <h1 className="text-primary-900 text-2xl font-extrabold">Categorias de Clientes</h1>
 
-      <PainelHeader title="Tabela de Categorias de Clientes" onAddClientClick={handleAddClientCategory} />
+      <PainelHeader 
+        title="Tabela de Categorias de Clientes" 
+        onAddClientClick={handleAddClientCategory}
+        buttonText="+ Categoria de Cliente"
+      />
 
       <Divider />
 

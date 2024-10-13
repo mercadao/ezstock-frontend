@@ -183,6 +183,7 @@ export default function Clientes() {
       <PainelHeader
         title="Tabela de Clientes"
         onAddClientClick={handleAddClient}
+        buttonText="+ Adicionar cliente"
       />
 
       <Divider />
