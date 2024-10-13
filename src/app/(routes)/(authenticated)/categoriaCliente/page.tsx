@@ -15,6 +15,8 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import { useSearchStore } from "@/app/hooks/searchHook"; 
+
 export default function ClienteCategorias() {
   const [clientCategoryData, setClientCategoryData] = useState<CategoriaCliente[]>([]);
   const [selectedClientCategory, setSelectedClientCategory] = useState<CategoriaCliente | null>(null);
@@ -24,6 +26,9 @@ export default function ClienteCategorias() {
   const [isCreateMode, setIsCreateMode] = useState(false);
 
   const headerData = ["ID", "Nome da Categoria", "Ações"];
+
+  // Usando o hook com as buscas de produto
+  const { categoryClientsSearch, setCategoryClientsSearch } = useSearchStore();
 
   const fetchData = async () => {
     try {
@@ -43,6 +48,10 @@ export default function ClienteCategorias() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const filteredCategoryClientDada = clientCategoryData.filter((categoryClient) =>
+    categoryClient.desCategoriaCliente.toLowerCase().includes(categoryClientsSearch.toLowerCase())
+  );
 
   const handleRead = (rowIndex: number) => {
     setSelectedClientCategory(clientCategoryData[rowIndex]);
@@ -172,13 +181,15 @@ export default function ClienteCategorias() {
         title="Tabela de Categorias de Clientes" 
         onAddClientClick={handleAddClientCategory}
         buttonText="+ Categoria de Cliente"
+        itemSearch={categoryClientsSearch}    
+        setItemSearch={setCategoryClientsSearch} 
       />
 
       <Divider />
 
       <Table
         headerData={headerData}
-        data={clientCategoryData.map((clientCategory) => [
+        data={filteredCategoryClientDada.map((clientCategory) => [
           clientCategory.idCategoria,
           clientCategory.desCategoriaCliente,
         ])}

@@ -17,6 +17,8 @@ import {
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import { useSearchStore } from "@/app/hooks/searchHook"; 
+
 export default function Clientes() {
   const [clientData, setClientData] = useState<Cliente[]>([]);
   const [clientCategorysData, setClientCategorysData] = useState<any[]>([]);
@@ -26,6 +28,10 @@ export default function Clientes() {
   const [readMode, setReadMode] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [isCreate, setIscreate] = useState(false);
+
+  
+  // Usando o hook com as buscas de produto
+  const { clientsSearch, setClientsSearch } = useSearchStore();
 
   const headerData = [
     "ID",
@@ -61,6 +67,10 @@ export default function Clientes() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  const filteredClients = clientData.filter((client) =>
+    client.nomeCliente.toLowerCase().includes(clientsSearch.toLowerCase())
+  );
 
   const handleRead = (rowIndex: number) => {
     setSelectedClient(clientData[rowIndex]);
@@ -184,13 +194,15 @@ export default function Clientes() {
         title="Tabela de Clientes"
         onAddClientClick={handleAddClient}
         buttonText="+ Adicionar cliente"
+        itemSearch={clientsSearch}    
+        setItemSearch={setClientsSearch}  
       />
 
       <Divider />
 
       <Table
         headerData={headerData}
-        data={clientData.map(client => [
+        data={filteredClients.map(client => [
           client.idCliente,
           client.nomeCliente,
           client.emailCliente,
