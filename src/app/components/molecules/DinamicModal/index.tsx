@@ -20,7 +20,7 @@ export default function DynamicModal({
   isOpen,
   onClose,
   onSave,
-  selectLabel = "Categoria",  // Valor padrão para a label
+  selectLabel,
   selectOptions = [],  // Array vazio padrão para as opções
 }: DynamicModalProps) {
   const [formData, setFormData] = useState(data);
@@ -78,7 +78,7 @@ export default function DynamicModal({
         ))}
 
       {/* Campo de seleção dinâmico */}
-      {!isReadOnly && selectLabel.length > 0
+      {!isReadOnly && selectLabel
        ? (
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">
@@ -99,17 +99,7 @@ export default function DynamicModal({
           </select>
         </div>
       ) : (
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2">
-            {selectLabel}
-          </label>
-          <input
-            type="text"
-            value={selectedCategory?.label || "Categoria não definida"}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-            disabled
-          />
-        </div>
+        <></>
       )}
 
       {!isReadOnly && (
