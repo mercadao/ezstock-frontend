@@ -76,7 +76,10 @@ export default function ClienteCategorias() {
           <p className="text-[12px]">Tem certeza que deseja excluir a categoria:</p>
           <p>{clientCategoryData[rowIndex].desCategoriaCliente}?</p>
           <div className="flex w-full justify-between">
-            <button onClick={() => handleDelete(rowIndex)} className="btn-confirm hover:text-green-400">
+            <button onClick={() => {
+              handleDelete(rowIndex) 
+              toast.dismiss();
+            }} className="btn-confirm hover:text-green-400">
               Confirmar
             </button>
             <button onClick={() => toast.dismiss(toastId)} className="btn-cancel hover:text-red-400">

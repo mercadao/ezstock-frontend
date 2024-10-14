@@ -94,7 +94,9 @@ export default function Clientes() {
         <p className="text-[12px]">Tem certeza que deseja excluir o cliente:</p>
         <p>{clientData[rowIndex].nomeCliente}?</p>
         <div className="flex w-full justify-between">
-          <button onClick={() => handleDelete(rowIndex)} className="btn-confirm hover:text-green-400">
+          <button onClick={() => 
+            handleDelete(rowIndex)
+          } className="btn-confirm hover:text-green-400">
             Confirmar
           </button>
           <button onClick={() => toast.dismiss()} className="btn-cancel hover:text-red-400">

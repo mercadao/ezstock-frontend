@@ -19,7 +19,7 @@ import {
 } from "@/app/services/productService";
 
 // Importando o hook SearchStore correto
-import { useSearchStore } from "@/app/hooks/searchHook"; 
+import { useSearchStore } from "@/app/hooks/searchHook";
 
 export default function ProductsPage() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -86,7 +86,10 @@ export default function ProductsPage() {
         <p>{filteredProdutos[rowIndex].nomeProduto}?</p>
         <div className="flex w-full justify-between">
           <button
-            onClick={() => handleDelete(rowIndex)}
+            onClick={() => {
+              handleDelete(rowIndex);
+              toast.dismiss();
+            }}
             className="btn-confirm hover:text-green-400"
           >
             Confirmar
@@ -177,8 +180,8 @@ export default function ProductsPage() {
         title="Tabela de Produtos"
         onAddClientClick={handleAddProduct}
         buttonText="+ Adicionar Produto"
-        itemSearch={productSearch}    
-        setItemSearch={setProductSearch}  
+        itemSearch={productSearch}
+        setItemSearch={setProductSearch}
       />
 
       <Divider />
