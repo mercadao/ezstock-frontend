@@ -6,7 +6,7 @@ export interface CategoriaCliente {
     idCategoria: number;
     desCategoriaCliente: string;
     descricao?: string;
-  }
+}
   
 export const getCategoriaClientes = async (): Promise<CategoriaCliente[]> => {
   try {

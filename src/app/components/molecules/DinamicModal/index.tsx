@@ -29,6 +29,9 @@ export default function DynamicModal({
     setFormData(data);
   }, [data]);
 
+  console.log("selectedClientCategory: ", data);
+
+
   const handleChange = (key: string, value: any) => {
     setFormData({ ...formData, [key]: value });
   };

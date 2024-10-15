@@ -7,6 +7,7 @@ import Table from "@/app/components/organisms/Table";
 import DynamicModal from "@/app/components/molecules/DinamicModal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import moment from 'moment';
 
 import {
   getUsuarios,
@@ -47,21 +48,28 @@ export default function Usuarios() {
   }, []);
 
   const handleRead = (rowIndex: number) => {
-    setSelectedUser(userData[rowIndex]);
+
+    const { indAtivo, ...filteredSetSelectedUser } = userData[rowIndex];
+  
+    setSelectedUser(filteredSetSelectedUser);
     setReadMode(true);
     setEditMode(false);
     setModalOpen(true);
   };
+  
 
   const handleEdit = (rowIndex: number) => {
-    setSelectedUser(userData[rowIndex]);
+
+    const { indAtivo, ...filteredSetSelectedUser } = userData[rowIndex];
+
+    setSelectedUser(filteredSetSelectedUser);
     setReadMode(false);
     setEditMode(true);
     setModalOpen(true);
   };
 
   const confirmDelete = (rowIndex: number) => {
-    const toastId = `delete_${userData[rowIndex].idUsuario}`; // Identificador único para o toast
+    const toastId = `delete_${userData[rowIndex].idUsuario}`; 
 
     if (!toast.isActive(toastId)) {
       toast.warn(
@@ -122,13 +130,22 @@ export default function Usuarios() {
   };
 
   const handleSave = async (updatedData: Usuario) => {
-    const { idUsuario, ...userWithoutId } = updatedData;
-    const toastId = isEditMode ? `edit_${idUsuario}` : "create_new";
 
+    const formattedDate = moment(updatedData.dataNascimentoUsuario, "DD/MM/YYYY").toISOString();
+  
+    const { idUsuario, ...userWithoutId } = {
+      ...updatedData,
+      dataNascimentoUsuario: formattedDate, 
+    };
+    
+    const toastId = isEditMode ? `edit_${idUsuario}` : "create_new";
+  
+    console.log("update data: ", { ...updatedData, dataNascimentoUsuario: formattedDate });
+  
     try {
       if (isEditMode) {
         await editUsuario(userWithoutId, idUsuario);
-
+  
         if (!toast.isActive(toastId)) {
           toast.success("Usuário editado com sucesso!", {
             className: "bg-blue-500 text-white p-4 rounded",
@@ -138,7 +155,7 @@ export default function Usuarios() {
         }
       } else {
         await postUsuario(userWithoutId);
-
+  
         if (!toast.isActive(toastId)) {
           toast.success("Novo usuário adicionado!", {
             className: "bg-green-500 text-white p-4 rounded",
