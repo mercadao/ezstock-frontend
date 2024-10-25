@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import moment from "moment-timezone";
 
 // Components
 import Divider from "@/app/components/atoms/Divider";
@@ -31,39 +30,37 @@ export default function EstoquePage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [readMode, setReadMode] = useState(false);
 
- 
-  // Usando o hook com as buscas de produto
   const { estoqueSearch, setEstoqueSearch } = useSearchStore();
-
 
   useEffect(() => {
     const fetchEstoques = async () => {
       try {
         const response = await getEstoques();
 
-        // Formatando as datas para timezone de Brasília
-        const formattedEstoques = response.map((estoque) => ({
-          ...estoque,
-          dataInicioValidade: moment(estoque.dataInicioValidade)
-            .tz("America/Sao_Paulo")
-            .format("DD/MM/YYYY HH:mm:ss"),
-          dataFinalValidade: moment(estoque.dataFinalValidade)
-            .tz("America/Sao_Paulo")
-            .format("DD/MM/YYYY HH:mm:ss"),
-          dataCadastro: moment(estoque.dataCadastro)
-            .tz("America/Sao_Paulo")
-            .format("DD/MM/YYYY HH:mm:ss"),
-        }));
+        // Filtrando para pegar a primeira incidência de cada produto
+        const firstOccurrenceEstoques = response.reduce(
+          (acc: Estoque[], current: Estoque) => {
+            const alreadyExists = acc.find(
+              (item) => item.idProduto === current.idProduto
+            );
+            if (!alreadyExists) {
+              acc.push(current);
+            }
+            return acc;
+          },
+          []
+        );
 
-        setEstoques(formattedEstoques);
+        setEstoques(firstOccurrenceEstoques);
 
         const produtoNames: { [key: number]: string } = {};
         await Promise.all(
-          formattedEstoques.map(async (estoque) => {
+          firstOccurrenceEstoques.map(async (estoque) => {
             try {
               const produtoResponse = await getProdutoEspecifico(estoque.idProduto);
               if (produtoResponse.sucesso && produtoResponse.produto) {
-                produtoNames[estoque.idProduto] = produtoResponse.produto.nomeProduto;
+                produtoNames[estoque.idProduto] =
+                  produtoResponse.produto.nomeProduto;
               } else {
                 produtoNames[estoque.idProduto] = "Produto não encontrado";
               }
@@ -86,8 +83,12 @@ export default function EstoquePage() {
   }, []);
 
   const filteredEstoques = estoques.filter((estoque) =>
-    produtos[estoque.idProduto]?.toLowerCase().includes(estoqueSearch.toLowerCase())
+    produtos[estoque.idProduto]
+      ?.toLowerCase()
+      .includes(estoqueSearch.toLowerCase())
   );
+
+  console.log("filteredEstoques: ", filteredEstoques);
 
   const headerData = ["Nome Produto", "Qtd Total", "Ativo", "Ações"];
 
@@ -126,26 +127,21 @@ export default function EstoquePage() {
   const handleEdit = (rowIndex: number) => {
     const estoque = filteredEstoques[rowIndex];
 
-    console.log('estoqui: ', estoque);
-
     setSelectedEstoque({
       idEstoque: estoque.idEstoque,
-      valorNovo: 1
+      valorNovo: 1,
     });
     setReadMode(false);
     setEditMode(true);
     setModalOpen(true);
   };
 
-  
-
   const handleSave = async (updatedEstoque: Estoque) => {
     try {
       if (isEditMode) {
-        postBaixaEstoque(updatedEstoque)
+        await postBaixaEstoque(updatedEstoque);
         toast.success("Baixa de estoque realizada com sucesso!", {
           className: "bg-blue-500 text-white p-4 rounded",
-          progressClassName: "bg-white",
         });
       } else {
         await postAdicionaEstoque(updatedEstoque);
