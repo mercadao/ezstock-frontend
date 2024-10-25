@@ -8,9 +8,9 @@ interface DynamicModalProps {
   isEditMode: boolean;
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (updatedData: Record<string, any>) => void;
-  selectLabel?: string;  // Label para o select dinâmico
-  selectOptions?: { value: number; label: string }[];  // Opções dinâmicas do select
+  onSave?:any;
+  selectLabel?: string; 
+  selectOptions?: { value: number; label: string }[];  
 }
 
 export default function DynamicModal({
@@ -21,16 +21,16 @@ export default function DynamicModal({
   onClose,
   onSave,
   selectLabel,
-  selectOptions = [],  // Array vazio padrão para as opções
+  selectOptions = [], 
 }: DynamicModalProps) {
   const [formData, setFormData] = useState(data);
+
+
+  console.log("data", data);
 
   useEffect(() => {
     setFormData(data);
   }, [data]);
-
-  console.log("selectedClientCategory: ", data);
-
 
   const handleChange = (key: string, value: any) => {
     setFormData({ ...formData, [key]: value });
@@ -53,7 +53,6 @@ export default function DynamicModal({
     }
   };
 
-  // Encontrar a categoria selecionada para exibição no modo de leitura
   const selectedCategory = selectOptions.find(
     (option) => option.value === formData.idCategoria
   );
@@ -62,7 +61,6 @@ export default function DynamicModal({
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-bold mb-4">{title()}</h2>
 
-      {/* Iterar sobre os campos de dados */}
       {Object.keys(formData)
         .filter((key) => !key.toLowerCase().startsWith("id"))
         .map((key) => (
@@ -80,7 +78,6 @@ export default function DynamicModal({
           </div>
         ))}
 
-      {/* Campo de seleção dinâmico */}
       {!isReadOnly && selectLabel
        ? (
         <div className="mb-4">

@@ -16,6 +16,11 @@ export interface Estoque {
   tipoTransacao: number;
 }
 
+export interface MenosEstoque {
+  idEstoque: number;
+  valorNovo: number;
+}
+
 export const getEstoques = async (): Promise<Estoque[]> => {
   try {
     const response = await axios.get<Estoque[]>(`${BASE_URL}/ObterEstoque`);
@@ -46,7 +51,10 @@ export const getProdutoEstoque = async (id: number): Promise<Estoque> => {
   }
 };
 
-export const postBaixaEstoque = async (estoque: Estoque): Promise<void> => {
+export const postBaixaEstoque = async (estoque: MenosEstoque): Promise<void> => {
+
+  console.log("baixa estoque", estoque);
+
   try {
     await axios.post(`${BASE_URL}/BaixaEstoque`, estoque);
   } catch (error) {

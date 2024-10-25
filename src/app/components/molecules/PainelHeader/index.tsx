@@ -1,10 +1,7 @@
 "use client";
 
 import Button from "@/app/components/atoms/Button/DefaultButton";
-import SmallButton from "@/app/components/atoms/Button/SmallButton";
 import Input from "@/app/components/atoms/Input";
-import FilterIcon from "../../../../../public/assets/icons/FilterIcon";
-import SwapIcon from "../../../../../public/assets/icons/SwapIcon";
 import { Search } from "lucide-react";
 
 interface PainelHeaderProps {
@@ -20,7 +17,7 @@ export default function PainelHeader({
     onAddClientClick,
     buttonText,
     itemSearch,            
-    setItemSearch          
+    setItemSearch,
 }: PainelHeaderProps) {
 
     return (
@@ -45,14 +42,6 @@ export default function PainelHeader({
                         icon={<Search />}
                     />
                 </div>
-
-                {/* <div className="text-primary-900 hover:text-white">
-                    <SmallButton icon={<FilterIcon />} />
-                </div>
-
-                <div className="text-primary-900 hover:text-white">
-                    <SmallButton icon={<SwapIcon />} />
-                </div> */}
             </div>
 
         </div>

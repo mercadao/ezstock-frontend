@@ -25,7 +25,7 @@ import { useSearchStore } from "@/app/hooks/searchHook";
 export default function EstoquePage() {
   const [estoques, setEstoques] = useState<Estoque[]>([]);
   const [produtos, setProdutos] = useState<{ [key: number]: string }>({});
-  const [selectedEstoque, setSelectedEstoque] = useState<Estoque | null>(null);
+  const [selectedEstoque, setSelectedEstoque] = useState<any | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -123,10 +123,26 @@ export default function EstoquePage() {
     setModalOpen(true);
   };
 
+  const handleEdit = (rowIndex: number) => {
+    const estoque = filteredEstoques[rowIndex];
+
+    console.log('estoqui: ', estoque);
+
+    setSelectedEstoque({
+      idEstoque: estoque.idEstoque,
+      valorNovo: 1
+    });
+    setReadMode(false);
+    setEditMode(true);
+    setModalOpen(true);
+  };
+
+  
+
   const handleSave = async (updatedEstoque: Estoque) => {
     try {
       if (isEditMode) {
-        await postBaixaEstoque(updatedEstoque);
+        postBaixaEstoque(updatedEstoque)
         toast.success("Baixa de estoque realizada com sucesso!", {
           className: "bg-blue-500 text-white p-4 rounded",
           progressClassName: "bg-white",
@@ -171,6 +187,7 @@ export default function EstoquePage() {
         headerData={headerData}
         data={tableData}
         onClickRead={handleRead}
+        onClickEdit={handleEdit}
         deleteHidden={true}
       />
 
