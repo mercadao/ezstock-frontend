@@ -35,7 +35,7 @@ export default function MovimentationChart() {
         (transacao, index) => `Produto ${transacao.idProduto} - Transação ${index + 1}`
       );
       const series = response.data.map((transacao, index) => ({
-        x: `Produto ${transacao.idProduto} - Transação ${index + 1}`,
+        x: `Produto ${transacao.nomeProduto} - Transação ${index + 1}`,
         y: transacao.quantidadeKG,
       }));
 
@@ -57,6 +57,16 @@ export default function MovimentationChart() {
       toolbar: {
         show: false,
       },
+      
+    dataLabels: {
+      enabled: false,
+    },
+    series:[
+      {
+        name: "Valor"
+      }
+
+    ],
       dropShadow: {
         enabled: true,
         color: "#000",
@@ -65,6 +75,7 @@ export default function MovimentationChart() {
         blur: 10,
         opacity: 0.2,
       },
+      
     },
     xaxis: {
       categories: categories, // Atualiza as categorias dinamicamente

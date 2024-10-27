@@ -49,13 +49,6 @@ export default function MovimentationPanel() {
     <div className="w-full h-full p-6 flex flex-col justify-between">
       <div className="flex justify-between items-end">
         <p className="text-2xl font-semibold">Movimentações</p>
-        <DashboardButton
-          text="Ver mais"
-          customBorderColor="border-white"
-          customColorText="text-white"
-          hoverBGColor="hover:bg-white"
-          hoverColorText="hover:text-primary-400"
-        />
       </div>
       <div className="h-[80%] flex justify-between items-center">
         <div className="w-[60%] h-full">

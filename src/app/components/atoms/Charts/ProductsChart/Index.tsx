@@ -11,6 +11,7 @@ interface Estoque {
   dataInicioValidade: string;
   dataFinalValidade: string;
   dataCadastro: string;
+  nomeProduto: string;
 }
 
 export default function ProductsChart() {
@@ -18,34 +19,44 @@ export default function ProductsChart() {
   const [seriesData, setSeriesData] = useState<number[]>([]);
 
   // Função para buscar os dados de estoque da API
-  const fetchEstoque = async () => {
-    try {
-      const response = await axios.get<Estoque[]>(
-        "https://villavitoriaapi-production.up.railway.app/api/Estoque/ObterEstoque?somenteAtivos=true",
-        {
-          headers: { accept: "*/*" },
-        }
-      );
+  // Função para buscar os dados de estoque da API
+const fetchEstoque = async () => {
+  try {
+    const response = await axios.get<Estoque[]>(
+      "https://villavitoriaapi-production.up.railway.app/api/Estoque/ObterEstoque?somenteAtivos=true",
+      {
+        headers: { accept: "*/*" },
+      }
+    );
 
-      // Mapeando os produtos e a quantidade atual para o gráfico
-      const produtosUnicos = Array.from(
-        new Set(response.data.map((estoque) => estoque.idProduto))
-      );
+    // Mapeando os produtos únicos e suas quantidades
+    const produtosUnicos = Array.from(
+      new Set(response.data.map((estoque) => estoque.idProduto))
+    );
 
-      const categorias = produtosUnicos.map((produtoId, index) => `Produto ${produtoId}`);
-      const series = produtosUnicos.map(
-        (produtoId) =>
-          response.data
-            .filter((estoque) => estoque.idProduto === produtoId)
-            .reduce((acc, estoque) => acc + estoque.quantidadeAtual, 0) // Soma as quantidades do mesmo produto
-      );
+    // Criando um objeto para mapear o idProduto para seu respectivo nome
+    const nomeProdutosMap = response.data.reduce((acc, estoque) => {
+      acc[estoque.idProduto] = estoque.nomeProduto;
+      return acc;
+    }, {} as Record<number, string>);
 
-      setCategories(categorias);
-      setSeriesData(series);
-    } catch (error) {
-      console.error("Erro ao buscar os dados de estoque:", error);
-    }
-  };
+    const categorias = produtosUnicos.map((produtoId) => {
+      return `${produtoId} - ${nomeProdutosMap[produtoId] || "Desconhecido"}`;
+    });
+
+    const series = produtosUnicos.map((produtoId) =>
+      response.data
+        .filter((estoque) => estoque.idProduto === produtoId)
+        .reduce((acc, estoque) => acc + estoque.quantidadeAtual, 0) // Soma as quantidades do mesmo produto
+    );
+
+    setCategories(categorias);
+    setSeriesData(series);
+  } catch (error) {
+    console.error("Erro ao buscar os dados de estoque:", error);
+  }
+};
+
 
   // Busca os dados ao montar o componente
   useEffect(() => {

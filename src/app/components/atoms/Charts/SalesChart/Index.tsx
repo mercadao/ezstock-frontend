@@ -18,7 +18,7 @@ export default function SalesChart() {
           if (productIndex !== -1) {
             acc[productIndex].y += transaction.quantidadeKG;
           } else {
-            acc.push({ x: `Produto ${transaction.idProduto}`, y: transaction.quantidadeKG });
+            acc.push({ x: ` ${transaction.nomeProduto}`, y: transaction.quantidadeKG });
           }
           return acc;
         }, []);

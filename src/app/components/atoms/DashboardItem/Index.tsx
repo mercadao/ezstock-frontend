@@ -41,7 +41,7 @@ export default function DashboardItem() {
       {transactions.map((transaction) => (
         <div key={transaction.idTransacao} className="border p-4 rounded-md">
           <div className="text-brownText flex justify-between">
-            <p className="font-semibold">Produto ID: {transaction.idProduto}</p>
+            <p className="font-semibold">{transaction.nomeProduto}</p>
             <p className="font-normal">
               R$ {transaction.valorTransacao.toFixed(3).replace('.', ',')}
             </p>
