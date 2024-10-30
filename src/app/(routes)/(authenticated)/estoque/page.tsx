@@ -16,12 +16,18 @@ import {
   postBaixaEstoque,
   Estoque,
 } from "@/app/services/stockService";
+
+import { getClients, Cliente } from "@/app/services/clientService";
+import { getCategoriaClientes } from "@/app/services/clientCategoryService";
+
+
 import { getProdutoEspecifico } from "@/app/services/productService";
 
 // Importando o hook SearchStore correto
 import { useSearchStore } from "@/app/hooks/searchHook"; 
 
 export default function EstoquePage() {
+
   const [estoques, setEstoques] = useState<Estoque[]>([]);
   const [produtos, setProdutos] = useState<{ [key: number]: string }>({});
   const [selectedEstoque, setSelectedEstoque] = useState<any | null>(null);
@@ -29,6 +35,10 @@ export default function EstoquePage() {
   const [isEditMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [readMode, setReadMode] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
+  const [clientData, setClientData] = useState<Cliente[]>([]);
+  const [clientCategorysData, setClientCategorysData] = useState<any[]>([]);
+  const [clienteSelectedId, setClienteSelectedId] = useState<number>(0);
 
   const { estoqueSearch, setEstoqueSearch } = useSearchStore();
 
@@ -38,18 +48,7 @@ export default function EstoquePage() {
         const response = await getEstoques();
 
         // Filtrando para pegar a primeira incidência de cada produto
-        const firstOccurrenceEstoques = response.reduce(
-          (acc: Estoque[], current: Estoque) => {
-            const alreadyExists = acc.find(
-              (item) => item.idProduto === current.idProduto
-            );
-            if (!alreadyExists) {
-              acc.push(current);
-            }
-            return acc;
-          },
-          []
-        );
+        const firstOccurrenceEstoques = response;
 
         setEstoques(firstOccurrenceEstoques);
 
@@ -71,6 +70,7 @@ export default function EstoquePage() {
           })
         );
         setProdutos(produtoNames);
+        fetchData();
       } catch (error) {
         console.error("Erro ao buscar estoques:", error);
         toast.error("Erro ao buscar estoques.");
@@ -82,13 +82,27 @@ export default function EstoquePage() {
     fetchEstoques();
   }, []);
 
+  const fetchData = async () => {
+    try {
+      const clients = await getClients();
+
+      const options = clients.map((client: any) => ({
+        value: client.idCliente,
+        label: client.nomeCliente,
+      }));
+
+      setCategoryOptions(options);
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error);
+    }
+  };
+
+
   const filteredEstoques = estoques.filter((estoque) =>
     produtos[estoque.idProduto]
       ?.toLowerCase()
       .includes(estoqueSearch.toLowerCase())
   );
-
-  console.log("filteredEstoques: ", filteredEstoques);
 
   const headerData = ["Nome Produto", "Qtd Total", "Ativo", "Ações"];
 
@@ -124,12 +138,18 @@ export default function EstoquePage() {
     setModalOpen(true);
   };
 
-  const handleEdit = (rowIndex: number) => {
+  const handleEdit = (rowIndex: number, idCliente: number) => {
     const estoque = filteredEstoques[rowIndex];
+
+    console.log("estoque json:", estoque);
 
     setSelectedEstoque({
       idEstoque: estoque.idEstoque,
       valorNovo: 1,
+      idProduto: estoque.idProduto,
+      idUsuario: 13,
+      idCliente: clienteSelectedId,
+      tipoTransacao: 1,
     });
     setReadMode(false);
     setEditMode(true);
@@ -137,6 +157,10 @@ export default function EstoquePage() {
   };
 
   const handleSave = async (updatedEstoque: Estoque) => {
+
+    const idCliente = clienteSelectedId;
+    updatedEstoque.idCliente = idCliente;
+    
     try {
       if (isEditMode) {
         await postBaixaEstoque(updatedEstoque);
@@ -164,6 +188,7 @@ export default function EstoquePage() {
   if (loading) {
     return <p>Carregando estoques...</p>;
   }
+
 
   return (
     <div className="my-4 w-full p-10">
@@ -195,6 +220,9 @@ export default function EstoquePage() {
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
+          selectLabel="Selecione o Cliente"  
+          selectOptions={categoryOptions} 
+          selecetData={setClienteSelectedId}
         />
       )}
 

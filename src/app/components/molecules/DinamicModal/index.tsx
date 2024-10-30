@@ -11,6 +11,7 @@ interface DynamicModalProps {
   onSave?:any;
   selectLabel?: string; 
   selectOptions?: { value: number; label: string }[];  
+  selecetData?: any;
 }
 
 export default function DynamicModal({
@@ -22,11 +23,9 @@ export default function DynamicModal({
   onSave,
   selectLabel,
   selectOptions = [], 
+  selecetData
 }: DynamicModalProps) {
   const [formData, setFormData] = useState(data);
-
-
-  console.log("data", data);
 
   useEffect(() => {
     setFormData(data);
@@ -42,6 +41,14 @@ export default function DynamicModal({
     }
     onClose();
   };
+
+  const handleSelectChange = (e: any) => {
+    handleChange("idCategoria", Number(e.target.value));
+    if(selecetData){
+      console.log("teste: ", Number(e.target.value));
+      selecetData(Number(e.target.value));
+    }
+  }
 
   const title = () => {
     if (isReadOnly) {
@@ -86,11 +93,11 @@ export default function DynamicModal({
           </label>
           <select
             value={formData.idCategoria || ""}
-            onChange={(e) => handleChange("idCategoria", Number(e.target.value))}
+            onChange={handleSelectChange}
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
             disabled={isReadOnly}
           >
-            <option value="" disabled>Selecione {selectLabel}</option>
+            <option value="" disabled>{selectLabel}</option>
             {selectOptions.map(option => (
               <option key={option.value} value={option.value}>
                 {option.label}
