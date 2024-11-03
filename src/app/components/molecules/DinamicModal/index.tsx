@@ -4,14 +4,15 @@ import Button from "../../atoms/Button/DefaultButton";
 
 interface DynamicModalProps {
   data: Record<string, any>;
-  isReadOnly?: boolean; 
+  isReadOnly?: boolean;
   isEditMode: boolean;
   isOpen: boolean;
   onClose: () => void;
-  onSave?:any;
-  selectLabel?: string; 
-  selectOptions?: { value: number; label: string }[];  
+  onSave?: any;
+  selectLabel?: string;
+  selectOptions?: { value: number; label: string }[];
   selecetData?: any;
+  labelNames?: string[]; 
 }
 
 export default function DynamicModal({
@@ -22,9 +23,13 @@ export default function DynamicModal({
   onClose,
   onSave,
   selectLabel,
-  selectOptions = [], 
-  selecetData
+  selectOptions = [],
+  selecetData,
+  labelNames = [], 
 }: DynamicModalProps) {
+
+  console.log("data: ", data);
+
   const [formData, setFormData] = useState(data);
 
   useEffect(() => {
@@ -44,11 +49,11 @@ export default function DynamicModal({
 
   const handleSelectChange = (e: any) => {
     handleChange("idCategoria", Number(e.target.value));
-    if(selecetData){
+    if (selecetData) {
       console.log("teste: ", Number(e.target.value));
       selecetData(Number(e.target.value));
     }
-  }
+  };
 
   const title = () => {
     if (isReadOnly) {
@@ -64,16 +69,23 @@ export default function DynamicModal({
     (option) => option.value === formData.idCategoria
   );
 
+  const excludeFields = (key: any) => {
+    const excludePatterns = ["id", "tipoTransacao", "indAtivo"];
+    return !excludePatterns.some((pattern) =>
+      key.toLowerCase().includes(pattern.toLowerCase())
+    );
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-bold mb-4">{title()}</h2>
 
       {Object.keys(formData)
-        .filter((key) => !key.toLowerCase().startsWith("id"))
-        .map((key) => (
+        .filter(excludeFields)
+        .map((key, index) => (
           <div key={key} className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              {key}
+              {labelNames[index] || key}
             </label>
             <input
               type="text"
@@ -85,8 +97,7 @@ export default function DynamicModal({
           </div>
         ))}
 
-      {!isReadOnly && selectLabel
-       ? (
+      {!isReadOnly && selectLabel ? (
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">
             {selectLabel}
@@ -97,8 +108,10 @@ export default function DynamicModal({
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
             disabled={isReadOnly}
           >
-            <option value="" disabled>{selectLabel}</option>
-            {selectOptions.map(option => (
+            <option value="" disabled>
+              {selectLabel}
+            </option>
+            {selectOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

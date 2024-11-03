@@ -223,6 +223,7 @@ export default function EstoquePage() {
           selectLabel="Selecione o Cliente"  
           selectOptions={categoryOptions} 
           selecetData={setClienteSelectedId}
+          labelNames={["Valor a ser reduzido", "Selecione o cliente"]}
         />
       )}
 

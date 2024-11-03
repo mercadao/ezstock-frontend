@@ -185,6 +185,23 @@ export default function Clientes() {
     setModalOpen(true);
   };
 
+  const labelNames = [
+    "Nome do Cliente",
+    "Código do Cliente",
+    "Email do Cliente",
+    "Telefone do Cliente",
+    "CNPJ",
+    "Inscrição Estadual",
+    "Estado",
+    "Bairro",
+    "Logradouro",
+    "Número",
+    "Complemento",
+    "CEP",
+    "Categoria do Cliente"
+  ];
+  
+
   return (
     <div className="my-4 w-full p-10">
       <h1 className="text-primary-900 text-2xl font-extrabold">Clientes</h1>
@@ -227,6 +244,7 @@ export default function Clientes() {
           onSave={handleSave}
           selectLabel="Categoria do Cliente"  
           selectOptions={categoryOptions} 
+          labelNames={labelNames}
         />
       )}
 
