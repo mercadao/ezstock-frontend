@@ -4,17 +4,17 @@ import Chart from "react-apexcharts";
 import axios from "axios";
 
 export default function SalesChart() {
-  const [series, setSeries] = useState([]);
+  const [series, setSeries] = useState<{ data: { x: string; y: number }[] }[]>([]);
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     // Fazendo a requisição para a API de transações
     axios.get('https://villavitoriaapi-production.up.railway.app/api/Estoque/ListaTransacao')
       .then(response => {
-        const salesTransactions = response.data.filter(transaction => transaction.tipoTransacao === 2);
+        const salesTransactions = response.data.filter((transaction: any) => transaction.tipoTransacao === 2);
 
-        const groupedData = salesTransactions.reduce((acc, transaction) => {
-          const productIndex = acc.findIndex(item => item.x === `Produto ${transaction.idProduto}`);
+        const groupedData = salesTransactions.reduce((acc: any, transaction: any) => {
+          const productIndex = acc.findIndex((item: any) => item.x === `Produto ${transaction.idProduto}`);
           if (productIndex !== -1) {
             acc[productIndex].y += transaction.quantidadeKG;
           } else {
@@ -24,7 +24,7 @@ export default function SalesChart() {
         }, []);
 
         setSeries([{ data: groupedData }]);
-        setCategories(groupedData.map(item => item.x));
+        setCategories(groupedData.map((item: any) => item.x));
       })
       .catch(error => {
         console.error("Erro ao buscar transações:", error);

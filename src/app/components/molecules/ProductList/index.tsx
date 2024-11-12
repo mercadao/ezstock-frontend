@@ -1,15 +1,15 @@
 import CardProduct from "@/app/components/atoms/CardProduct";
-import productData from '@/app/data/product';
+import productData from "@/app/data/product";
 
 export default function ProductList() {
 
-    const activeProducts = productData.filter(product => product.isActive);
-    const inactiveProducts = productData.filter(product => !product.isActive);
+    const activeProducts = productData.filter((product: any ) => product.isActive);
+    const inactiveProducts = productData.filter((product: any) => !product.isActive);
 
     return(
         <>
             <div className="flex flex-col gap-6 py-4">
-                {activeProducts.map((product) => (
+                {activeProducts.map((product: any) => (
                     <CardProduct
                         key={product.id}
                         id={product.id}
@@ -18,7 +18,7 @@ export default function ProductList() {
                         isActive={product.isActive}
                     />
                 ))}
-                {inactiveProducts.map((product) => (
+                {inactiveProducts.map((product: any) => (
                     <CardProduct
                         key={product.id}
                         id={product.id}

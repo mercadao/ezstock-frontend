@@ -3,10 +3,13 @@ import axios from 'axios';
 const BASE_URL = 'https://villavitoriaapi-production.up.railway.app/api/Produto';
 
 export interface Produto {
+  sucesso: boolean;
+  produto: Produto[];
   idProduto?: number;
   nomeProduto: string;
   indAtivo?: boolean;
   valorKG: number;
+  
 }
 
 // Serviço para buscar produtos

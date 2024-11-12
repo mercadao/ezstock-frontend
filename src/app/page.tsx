@@ -1,3 +1,6 @@
+import React from "react";
+import HomePage from "@/app/(routes)/(authenticated)/home/page";
+
 export default function Home() {
   
   return (

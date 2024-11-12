@@ -185,6 +185,8 @@ export default function Usuarios() {
         title="Tabela de Usuários" 
         onAddClientClick={handleAddUser}
         buttonText="+ Adicionar usuário"
+        itemSearch=""
+        setItemSearch={() => {}}
       />
 
       <Divider />

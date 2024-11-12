@@ -38,7 +38,7 @@ export default function DashboardItem() {
 
   return (
     <div className="w-full flex flex-col gap-2">
-      {transactions.map((transaction) => (
+      {transactions.map((transaction: any) => (
         <div key={transaction.idTransacao} className="border p-4 rounded-md">
           <div className="text-brownText flex justify-between">
             <p className="font-semibold">{transaction.nomeProduto}</p>

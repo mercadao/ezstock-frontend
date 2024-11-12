@@ -114,7 +114,7 @@ export default function ProductsPage() {
   const handleDelete = async (rowIndex: number) => {
     const id = filteredProdutos[rowIndex].idProduto;
     try {
-      await deleteProduto(id);
+      await deleteProduto(id as number);
       toast.success(`Produto deletado: ${id}`, {
         className: "bg-green-500 text-white p-4 rounded",
         progressClassName: "bg-white",
@@ -162,6 +162,8 @@ export default function ProductsPage() {
       idProduto: 0,
       nomeProduto: "",
       valorKG: 0,
+      sucesso: true,
+      produto: []
     });
     setReadMode(false);
     setEditMode(false);
