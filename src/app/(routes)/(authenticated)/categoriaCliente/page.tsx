@@ -35,11 +35,11 @@ export default function ClienteCategorias() {
       const response = await getCategoriaClientes();
       console.log(response);
 
-      // if (response.sucesso) {
-      //   setClientCategoryData(response.categoriaCliente);
-      // } else {
-      //   console.error("Erro: ", response.mensagem);
-      // }
+      if (response.sucesso) {
+        setClientCategoryData(response.categoriaCliente);
+      } else {
+        console.error("Erro: ", response.mensagem);
+      }
     } catch (error) {
       console.error("Erro ao buscar categorias de clientes:", error);
     }
@@ -131,7 +131,7 @@ export default function ClienteCategorias() {
 
     try {
       if (isEditMode) {
-        await editCategoriaCliente(clientCategoryWithoutId, idCategoria);
+        await editCategoriaCliente({ ...clientCategoryWithoutId, idCategoria }, idCategoria);
 
         if (!toast.isActive(toastId)) {
           toast.success("Categoria editada com sucesso!", {
@@ -141,7 +141,7 @@ export default function ClienteCategorias() {
           });
         }
       } else {
-        await postCategoriaCliente(clientCategoryWithoutId);
+        await postCategoriaCliente({ ...clientCategoryWithoutId, idCategoria });
 
         if (!toast.isActive(toastId)) {
           toast.success("Nova categoria adicionada!", {
