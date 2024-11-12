@@ -17,13 +17,11 @@ export interface Cliente {
   numero: number;
   complemento?: string;
   cep: string;
-  
-
 }
 
 export const getClients = async (): Promise<Cliente[]> => {
   try {
-    const response = await axios.get<Cliente[]>(`${BASE_URL}/ListaCliente`);
+    const response = await axios.get< {cliente: Cliente[]}>(`${BASE_URL}/ListaCliente`);
     return response.data.cliente;
   } catch (error) {
     console.error('Erro ao buscar clientes:', error);

@@ -34,7 +34,6 @@ export default function ClienteCategorias() {
     try {
       const response = await getCategoriaClientes();
       console.log(response);
-
       if (response.sucesso) {
         setClientCategoryData(response.categoriaCliente);
       } else {

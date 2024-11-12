@@ -6,6 +6,11 @@ export interface CategoriaCliente {
     idCategoria: number;
     desCategoriaCliente: string;
     descricao?: string;
+    ativo: boolean;
+    sucesso: boolean;
+    categoriaCliente : CategoriaCliente[];
+    mensagem: string;
+    
   }
   
 export const getCategoriaClientes = async (): Promise<CategoriaCliente[]> => {
