@@ -8,7 +8,7 @@ interface DynamicModalProps {
   isEditMode: boolean;
   isOpen: boolean;
   onClose: () => void;
-  onSave?: (updatedData: Record<string, any>) => void;
+  onSave?: (updatedData: any) => void;
   selectLabel?: string;  // Label para o select dinâmico
   selectOptions?: { value: number; label: string }[];  // Opções dinâmicas do select
 }
