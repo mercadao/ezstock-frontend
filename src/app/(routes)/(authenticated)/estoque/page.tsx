@@ -50,9 +50,9 @@ export default function EstoquePage() {
           dataFinalValidade: moment(estoque.dataFinalValidade)
             .tz("America/Sao_Paulo")
             .format("DD/MM/YYYY HH:mm:ss"),
-          // dataCadastro: moment(estoque.dataCadastro)
-          //   .tz("America/Sao_Paulo")
-          //   .format("DD/MM/YYYY HH:mm:ss"),
+          dataCadastro: moment(estoque.dataCadastro)
+            .tz("America/Sao_Paulo")
+            .format("DD/MM/YYYY HH:mm:ss"),
         }));
 
         setEstoques(formattedEstoques);
@@ -62,9 +62,8 @@ export default function EstoquePage() {
           formattedEstoques.map(async (estoque) => {
             try {
               const produtoResponse = await getProdutoEspecifico(estoque.idProduto);
-              console.log(produtoResponse.sucesso)
               if (produtoResponse.sucesso && produtoResponse.produto) {
-                produtoNames[estoque.idProduto] = produtoResponse.produto[0].nomeProduto;
+                produtoNames[estoque.idProduto] = produtoResponse.produto.nomeProduto;
               } else {
                 produtoNames[estoque.idProduto] = "Produto não encontrado";
               }

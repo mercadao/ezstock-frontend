@@ -14,6 +14,8 @@ interface TransacaoEstoque {
   quantidadeKG: number;
   dataTransacao: string;
   valorTransacao: number;
+  nomeProduto: string;
+  
 }
 
 export default function MovimentationChart() {
