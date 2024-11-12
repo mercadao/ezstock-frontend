@@ -48,10 +48,10 @@ export default function Clientes() {
     try {
       const clients = await getClients();
       const clienteCategoryData = await getCategoriaClientes();
-      console.log("clienteCategoryData: ", clienteCategoryData.categoriaCliente);
+      console.log("clienteCategoryData: ", clienteCategoryData);
 
       // Mapeando as categorias para o formato correto
-      const options = clienteCategoryData.categoriaCliente.map((category: any) => ({
+      const options = clienteCategoryData.map((category: any) => ({
         value: category.idCategoria,
         label: category.desCategoriaCliente,
       }));
