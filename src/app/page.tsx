@@ -1,11 +1,18 @@
-import React from "react";
-import HomePage from "@/app/(routes)/(authenticated)/home/page";
+"use client";
+
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/home");
+  }, [router]);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <p>teste</p>
+      <p>Redirecting...</p>
     </main>
   );
 }
