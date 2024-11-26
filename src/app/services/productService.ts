@@ -10,6 +10,8 @@ export interface Produto {
   indAtivo?: boolean;
   valorKG: number;
   
+  produto: any;
+  sucesso: string;
 }
 
 // Serviço para buscar produtos

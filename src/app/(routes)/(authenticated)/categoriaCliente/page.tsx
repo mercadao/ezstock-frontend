@@ -208,6 +208,7 @@ export default function ClienteCategorias() {
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
+          labelNames={["Nome da categoria do cliente"]}
         />
       )}
 

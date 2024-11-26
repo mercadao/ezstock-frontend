@@ -200,6 +200,7 @@ export default function MateriaPrimaPage() {
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
+          labelNames={["Nome da matéria prima"]}
         />
       )}
 

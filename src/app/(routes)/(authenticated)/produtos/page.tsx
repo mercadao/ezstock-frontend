@@ -204,6 +204,7 @@ export default function ProductsPage() {
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
+          labelNames={["Nome do Produto", "Valor/Kg"]}
         />
       )}
 

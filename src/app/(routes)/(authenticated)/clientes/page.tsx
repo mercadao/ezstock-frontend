@@ -48,7 +48,6 @@ export default function Clientes() {
     try {
       const clients = await getClients();
       const clienteCategoryData = await getCategoriaClientes();
-      console.log("clienteCategoryData: ", clienteCategoryData.categoriaCliente);
 
       // Mapeando as categorias para o formato correto
       const options = clienteCategoryData.categoriaCliente.map((category: any) => ({
@@ -186,6 +185,23 @@ export default function Clientes() {
     setModalOpen(true);
   };
 
+  const labelNames = [
+    "Nome do Cliente",
+    "Código do Cliente",
+    "Email do Cliente",
+    "Telefone do Cliente",
+    "CNPJ",
+    "Inscrição Estadual",
+    "Estado",
+    "Bairro",
+    "Logradouro",
+    "Número",
+    "Complemento",
+    "CEP",
+    "Categoria do Cliente"
+  ];
+  
+
   return (
     <div className="my-4 w-full p-10">
       <h1 className="text-primary-900 text-2xl font-extrabold">Clientes</h1>
@@ -226,8 +242,9 @@ export default function Clientes() {
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
-          selectLabel="Categoria do Cliente"  // Passando a label do select
-          selectOptions={categoryOptions} // Usando a lista dinâmica de categorias
+          selectLabel="Categoria do Cliente"  
+          selectOptions={categoryOptions} 
+          labelNames={labelNames}
         />
       )}
 

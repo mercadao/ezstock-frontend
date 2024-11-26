@@ -5,7 +5,7 @@ const BASE_URL = 'https://villavitoriaapi-production.up.railway.app/api/Estoque'
 export interface Estoque {
   idProduto: number;
   idCliente?: number;
-  idEstoque?: number;
+  idEstoque?: number | undefined;
   idUsuario: number;
   valorNovo: number;
   qtdTotalEmTela: number;
@@ -14,6 +14,11 @@ export interface Estoque {
   dataFinalValidade: string;
   indAtivo: number;
   tipoTransacao: number;
+}
+
+export interface MenosEstoque {
+  idEstoque: number | undefined;
+  valorNovo: number;
 }
 
 export const getEstoques = async (): Promise<Estoque[]> => {
@@ -46,7 +51,10 @@ export const getProdutoEstoque = async (id: number): Promise<Estoque> => {
   }
 };
 
-export const postBaixaEstoque = async (estoque: Estoque): Promise<void> => {
+export const postBaixaEstoque = async (estoque: MenosEstoque): Promise<void> => {
+
+  console.log("payload enviado para baixa estoque: ", estoque);
+
   try {
     await axios.post(`${BASE_URL}/BaixaEstoque`, estoque);
   } catch (error) {

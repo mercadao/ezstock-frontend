@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import moment from "moment-timezone";
 
 // Components
 import Divider from "@/app/components/atoms/Divider";
@@ -17,53 +16,50 @@ import {
   postBaixaEstoque,
   Estoque,
 } from "@/app/services/stockService";
+
+import { getClients, Cliente } from "@/app/services/clientService";
+import { getCategoriaClientes } from "@/app/services/clientCategoryService";
+
+
 import { getProdutoEspecifico } from "@/app/services/productService";
 
 // Importando o hook SearchStore correto
 import { useSearchStore } from "@/app/hooks/searchHook"; 
 
 export default function EstoquePage() {
+
   const [estoques, setEstoques] = useState<Estoque[]>([]);
   const [produtos, setProdutos] = useState<{ [key: number]: string }>({});
-  const [selectedEstoque, setSelectedEstoque] = useState<Estoque | null>(null);
+  const [selectedEstoque, setSelectedEstoque] = useState<any | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [readMode, setReadMode] = useState(false);
+  const [categoryOptions, setCategoryOptions] = useState<any[]>([]);
+  const [clientData, setClientData] = useState<Cliente[]>([]);
+  const [clientCategorysData, setClientCategorysData] = useState<any[]>([]);
+  const [clienteSelectedId, setClienteSelectedId] = useState<number>(0);
 
- 
-  // Usando o hook com as buscas de produto
   const { estoqueSearch, setEstoqueSearch } = useSearchStore();
-
 
   useEffect(() => {
     const fetchEstoques = async () => {
       try {
         const response = await getEstoques();
 
-        // Formatando as datas para timezone de Brasília
-        const formattedEstoques = response.map((estoque) => ({
-          ...estoque,
-          dataInicioValidade: moment(estoque.dataInicioValidade)
-            .tz("America/Sao_Paulo")
-            .format("DD/MM/YYYY HH:mm:ss"),
-          dataFinalValidade: moment(estoque.dataFinalValidade)
-            .tz("America/Sao_Paulo")
-            .format("DD/MM/YYYY HH:mm:ss"),
-          dataCadastro: moment(estoque.dataCadastro)
-            .tz("America/Sao_Paulo")
-            .format("DD/MM/YYYY HH:mm:ss"),
-        }));
+        // Filtrando para pegar a primeira incidência de cada produto
+        const firstOccurrenceEstoques = response;
 
-        setEstoques(formattedEstoques);
+        setEstoques(firstOccurrenceEstoques);
 
         const produtoNames: { [key: number]: string } = {};
         await Promise.all(
-          formattedEstoques.map(async (estoque) => {
+          firstOccurrenceEstoques.map(async (estoque) => {
             try {
               const produtoResponse = await getProdutoEspecifico(estoque.idProduto);
               if (produtoResponse.sucesso && produtoResponse.produto) {
-                produtoNames[estoque.idProduto] = produtoResponse.produto.nomeProduto;
+                produtoNames[estoque.idProduto] =
+                  produtoResponse.produto.nomeProduto;
               } else {
                 produtoNames[estoque.idProduto] = "Produto não encontrado";
               }
@@ -74,6 +70,7 @@ export default function EstoquePage() {
           })
         );
         setProdutos(produtoNames);
+        fetchData();
       } catch (error) {
         console.error("Erro ao buscar estoques:", error);
         toast.error("Erro ao buscar estoques.");
@@ -85,8 +82,26 @@ export default function EstoquePage() {
     fetchEstoques();
   }, []);
 
+  const fetchData = async () => {
+    try {
+      const clients = await getClients();
+
+      const options = clients.map((client: any) => ({
+        value: client.idCliente,
+        label: client.nomeCliente,
+      }));
+
+      setCategoryOptions(options);
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error);
+    }
+  };
+
+
   const filteredEstoques = estoques.filter((estoque) =>
-    produtos[estoque.idProduto]?.toLowerCase().includes(estoqueSearch.toLowerCase())
+    produtos[estoque.idProduto]
+      ?.toLowerCase()
+      .includes(estoqueSearch.toLowerCase())
   );
 
   const headerData = ["Nome Produto", "Qtd Total", "Ativo", "Ações"];
@@ -123,13 +138,34 @@ export default function EstoquePage() {
     setModalOpen(true);
   };
 
+  const handleEdit = (rowIndex: number, idCliente: number) => {
+    const estoque = filteredEstoques[rowIndex];
+
+    console.log("estoque json:", estoque);
+
+    setSelectedEstoque({
+      idEstoque: estoque.idEstoque,
+      valorNovo: 1,
+      idProduto: estoque.idProduto,
+      idUsuario: 13,
+      idCliente: clienteSelectedId,
+      tipoTransacao: 1,
+    });
+    setReadMode(false);
+    setEditMode(true);
+    setModalOpen(true);
+  };
+
   const handleSave = async (updatedEstoque: Estoque) => {
+
+    const idCliente = clienteSelectedId;
+    updatedEstoque.idCliente = idCliente;
+    
     try {
       if (isEditMode) {
         await postBaixaEstoque(updatedEstoque);
         toast.success("Baixa de estoque realizada com sucesso!", {
           className: "bg-blue-500 text-white p-4 rounded",
-          progressClassName: "bg-white",
         });
       } else {
         await postAdicionaEstoque(updatedEstoque);
@@ -153,6 +189,7 @@ export default function EstoquePage() {
     return <p>Carregando estoques...</p>;
   }
 
+
   return (
     <div className="my-4 w-full p-10">
       <h1 className="text-primary-900 text-2xl font-extrabold">Estoque</h1>
@@ -171,6 +208,7 @@ export default function EstoquePage() {
         headerData={headerData}
         data={tableData}
         onClickRead={handleRead}
+        onClickEdit={handleEdit}
         deleteHidden={true}
       />
 
@@ -182,6 +220,10 @@ export default function EstoquePage() {
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
+          selectLabel="Selecione o Cliente"  
+          selectOptions={categoryOptions} 
+          selecetData={setClienteSelectedId}
+          labelNames={["Valor a ser reduzido", "Selecione o cliente"]}
         />
       )}
 
