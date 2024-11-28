@@ -28,6 +28,7 @@ export default function Clientes() {
   const [readMode, setReadMode] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [isCreate, setIscreate] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   
   // Usando o hook com as buscas de produto
@@ -132,35 +133,52 @@ export default function Clientes() {
 
   const handleSave = async (updatedData: Cliente) => {
     const { idCliente, ...clientWithoutId } = updatedData;
+    const toastId = isEditMode ? `edit_${idCliente}` : "create_new";
 
-    // Garantir que idCategoria e numero sejam números
     clientWithoutId.idCategoria = Number(clientWithoutId.idCategoria);
     clientWithoutId.numero = Number(clientWithoutId.numero);
+
+    if (isProcessing) return;
+
+    setIsProcessing(true); 
 
     try {
       if (isEditMode) {
         await editClient(clientWithoutId, idCliente);
+
+        toast.dismiss(toastId);
         toast.success("Cliente editado com sucesso!", {
           className: "bg-blue-500 text-white p-4 rounded",
           progressClassName: "bg-white",
+          toastId,
         });
       } else {
         await postClient(clientWithoutId);
+
+        toast.dismiss(toastId); 
         toast.success("Novo cliente adicionado!", {
           className: "bg-green-500 text-white p-4 rounded",
           progressClassName: "bg-white",
+          toastId,
         });
       }
+
       setModalOpen(false);
-      await fetchData(); 
+
+      await fetchData();
     } catch (error) {
+      toast.dismiss(toastId); 
       toast.error("Erro ao salvar cliente.", {
         className: "bg-red-500 text-white p-4 rounded",
         progressClassName: "bg-white",
+        toastId,
       });
       console.error("Erro ao salvar cliente:", error);
+    } finally {
+      setIsProcessing(false); 
     }
   };
+
 
   const handleAddClient = () => {
     setSelectedClient({
@@ -236,6 +254,7 @@ export default function Clientes() {
 
       {selectedClient && (
         <DynamicModal
+          modalName="Cliente"
           data={selectedClient}
           isEditMode={isEditMode}
           isOpen={isModalOpen}
