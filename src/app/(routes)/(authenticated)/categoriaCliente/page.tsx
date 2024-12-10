@@ -98,7 +98,11 @@ export default function ClienteCategorias() {
   };
 
   const handleDelete = async (rowIndex: number) => {
-    const id = clientCategoryData[rowIndex].idCategoria;
+    const id = clientCategoryData[rowIndex]?.idCategoria;
+    if (id === undefined) {
+      console.error("ID is undefined");
+      return;
+    }
     const toastId = `delete_${id}`;
 
     try {

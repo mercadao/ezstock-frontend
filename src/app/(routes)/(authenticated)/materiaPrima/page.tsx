@@ -194,6 +194,7 @@ export default function MateriaPrimaPage() {
 
       {selectedMateriaPrima && (
         <DynamicModal
+          modalName="Produto"
           data={selectedMateriaPrima}
           isEditMode={isEditMode}
           isOpen={isModalOpen}

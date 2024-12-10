@@ -3,15 +3,14 @@ import axios from 'axios';
 const BASE_URL = 'https://villavitoriaapi-production.up.railway.app/api/CategoriaCliente';
 
 export interface CategoriaCliente {
-    idCategoria: number;
+    idCategoria?: number;
     desCategoriaCliente: string;
     descricao?: string;
     categoriaCliente: any;
     ativo: boolean;
-    sucesso: boolean;
-    categoriaCliente : CategoriaCliente[];
-    mensagem: string;
     
+    sucesso: boolean;
+    mensagem: string;
 }
   
 export const getCategoriaClientes = async (): Promise<CategoriaCliente[]> => {

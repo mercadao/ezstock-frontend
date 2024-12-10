@@ -214,6 +214,7 @@ export default function EstoquePage() {
 
       {selectedEstoque && (
         <DynamicModal
+          modalName="Estoque"
           data={selectedEstoque}
           isEditMode={isEditMode}
           isOpen={isModalOpen}

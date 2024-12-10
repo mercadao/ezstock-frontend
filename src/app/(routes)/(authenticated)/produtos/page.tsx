@@ -198,6 +198,7 @@ export default function ProductsPage() {
 
       {selectedProduto && (
         <DynamicModal
+          modalName="Produto"
           data={selectedProduto}
           isEditMode={isEditMode}
           isOpen={isModalOpen}

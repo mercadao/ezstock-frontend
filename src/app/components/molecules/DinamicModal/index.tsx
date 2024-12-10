@@ -3,19 +3,21 @@ import Modal from "@/app/components/atoms/Modal";
 import Button from "../../atoms/Button/DefaultButton";
 
 interface DynamicModalProps {
+  modalName?: string;
   data: Record<string, any>;
   isReadOnly?: boolean;
   isEditMode: boolean;
   isOpen: boolean;
   onClose: () => void;
   onSave?: (updatedData: any) => void;
-  selectLabel?: string;  // Label para o select dinâmico
-  selectOptions?: { value: number; label: string }[];  // Opções dinâmicas do select
+  selectLabel?: string; 
+  selectOptions?: { value: number; label: string }[]; 
   selecetData?: any;
   labelNames?: string[]; 
 }
 
 export default function DynamicModal({
+  modalName = "entidade",
   data,
   isReadOnly,
   isEditMode,
@@ -27,8 +29,6 @@ export default function DynamicModal({
   selecetData,
   labelNames = [], 
 }: DynamicModalProps) {
-
-  console.log("data: ", data);
 
   const [formData, setFormData] = useState(data);
 
@@ -61,7 +61,7 @@ export default function DynamicModal({
     } else if (isEditMode) {
       return "Editar Entidade";
     } else {
-      return "Criar Entidade";
+      return `Criar ${modalName}`;
     }
   };
 
@@ -124,7 +124,7 @@ export default function DynamicModal({
 
       {!isReadOnly && (
         <Button
-          text={isEditMode ? "Salvar Alterações" : "Criar Entidade"}
+          text={isEditMode ? "Salvar Alterações" : `Criar  ${modalName}`}
           onClick={handleSubmit}
         />
       )}

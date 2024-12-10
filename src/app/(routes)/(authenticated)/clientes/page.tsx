@@ -136,7 +136,6 @@ export default function Clientes() {
     const toastId = isEditMode ? `edit_${idCliente}` : "create_new";
 
     clientWithoutId.idCategoria = Number(clientWithoutId.idCategoria);
-    clientWithoutId.numero = Number(clientWithoutId.numero);
 
     if (isProcessing) return;
 
@@ -205,18 +204,18 @@ export default function Clientes() {
 
   const labelNames = [
     "Nome do Cliente",
-    "Código do Cliente",
     "Email do Cliente",
     "Telefone do Cliente",
     "CNPJ",
-    "Inscrição Estadual",
     "Estado",
+    "Inscrição Estadual",
     "Bairro",
     "Logradouro",
-    "Número",
+    "Numero",
     "Complemento",
     "CEP",
-    "Categoria do Cliente"
+    "Categoria do Cliente",
+    "Cidade",
   ];
   
 

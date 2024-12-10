@@ -9,9 +9,6 @@ export interface Produto {
   nomeProduto: string;
   indAtivo?: boolean;
   valorKG: number;
-  
-  produto: any;
-  sucesso: string;
 }
 
 // Serviço para buscar produtos
