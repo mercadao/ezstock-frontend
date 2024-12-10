@@ -10,6 +10,7 @@ import UserIcon from "../../../../../public/assets/icons/UserIcon";
 import LockIcon from "../../../../../public/assets/icons/LockIcon";
 import { login } from '@/app/services/PostUser';
 import { toast } from 'react-toastify'; 
+import Cookies from 'js-cookie';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -17,11 +18,11 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-
+  
   const handleLogin = async () => {
     setEmailError(false);
     setPasswordError(false);
-
+  
     if (!email) {
       toast.error('Por favor, preencha o campo de email.');
       setEmailError(true);
@@ -32,15 +33,17 @@ export default function LoginForm() {
       setPasswordError(true);
       return;
     }
-
+  
     try {
-      const response = await login(email, password);
+      const response = await login(email, password); 
       if (response.sucesso) {
         toast.success('Login bem-sucedido');
         console.log('Login bem-sucedido', response);
-        router.push('/home'); // Redireciona para /home
+  
+        Cookies.set('userEmail', email, { expires: 7 });
+  
+        router.push('/home'); 
       } else {
-        // Mensagens específicas de erro baseadas na resposta da API
         if (response.mensagem === 'Não existe uma conta para o Email informado.') {
           toast.error('Email não encontrado. Verifique o endereço e tente novamente.');
           setEmailError(true);
@@ -53,8 +56,10 @@ export default function LoginForm() {
       }
     } catch (error) {
       toast.error('Erro ao tentar realizar o login.');
+      console.error('Erro ao tentar realizar o login:', error);
     }
   };
+  
 
   return (
     <div className="flex flex-col justify-center items-center w-[300px] bg-offwhite rounded-lg py-8 md:py-[5%] gap-2 px-8 shadow-2xl md:w-[60%]">
