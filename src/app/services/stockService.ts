@@ -64,6 +64,10 @@ export const postBaixaEstoque = async (estoque: MenosEstoque): Promise<void> => 
 };
 
 export const postAdicionaEstoque = async (estoque: Estoque): Promise<void> => {
+
+  console.log(`${BASE_URL}/AdicionaEstoque`);
+  console.log("post estoque: ", estoque);
+
   try {
     await axios.post(`${BASE_URL}/AdicionaEstoque`, estoque);
   } catch (error) {
