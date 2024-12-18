@@ -8,6 +8,7 @@ import Divider from "@/app/components/atoms/Divider";
 import PainelHeader from "@/app/components/molecules/PainelHeader";
 import Table from "@/app/components/organisms/Table";
 import DinamicModalStockPost from "@/app/components/molecules/DinamicModalStock/post";
+import DinamicModalStockReduce from "@/app/components/molecules/DinamicModalStock/reduce";
 
 // Services
 import {
@@ -28,6 +29,8 @@ export default function EstoquePage() {
   const [produtos, setProdutos] = useState<{ [key: number]: string }>({});
   const [selectedEstoque, setSelectedEstoque] = useState<Estoque | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
+  const [isModalPostOpen, setModalPostOpen] = useState(false);
+  const [isModalReduceOpen, setModalReduceOpen] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -79,14 +82,14 @@ export default function EstoquePage() {
 
   const handleAddEstoque = () => {
     setSelectedEstoque(null);
-    setModalOpen(true);
+    setModalPostOpen(true);
     setEditMode(false);
   };
 
-  const handleEdit = (rowIndex: number) => {
+  const handleReduce = (rowIndex: number) => {
     const estoque = filteredEstoques[rowIndex];
     setSelectedEstoque(estoque);
-    setModalOpen(true);
+    setModalReduceOpen(true);
     setEditMode(true);
   };
 
@@ -100,6 +103,8 @@ export default function EstoquePage() {
         toast.success("Novo estoque adicionado com sucesso!");
       }
       setModalOpen(false);
+      setModalPostOpen(false);
+      setModalReduceOpen(false);
       const updatedEstoques = await getEstoques();
       setEstoques(updatedEstoques);
     } catch (error) {
@@ -131,21 +136,27 @@ export default function EstoquePage() {
         headerData={headerData}
         data={tableData}
         onClickRead={handleRead}
-        onClickEdit={handleEdit}
+        onClickEdit={handleReduce}
         deleteHidden={true}
       />
-      {/* <DinamicModalStockPost
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
+      <DinamicModalStockPost
+        isOpen={isModalPostOpen}
+        onClose={() => setModalPostOpen(false)}
         initialData={selectedEstoque}
         onSave={handleSave}
-      /> */}
+      />
       <DinamicModalStockGet
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
         estoqueId={selectedEstoque?.idEstoque || 0}
       />
-      
+      <DinamicModalStockReduce
+        isOpen={isModalReduceOpen}
+        onClose={() => setModalReduceOpen(false)}
+        initialData={selectedEstoque}
+        onSave={handleSave}
+      />
+
       <ToastContainer position="top-center" />
     </div>
   );
