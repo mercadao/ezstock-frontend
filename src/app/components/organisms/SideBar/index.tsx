@@ -31,8 +31,7 @@ const sections = [
   {
     title: "Outros",
     items: [
-      { icon: <SettingsIcon />, text: "Configurações", href: "/settings" },
-      { icon: <LogOutIcon />, text: "Sair", href: "/logout" },
+      { icon: <LogOutIcon />, text: "Sair", href: "/login" },
     ],
   },
 ];

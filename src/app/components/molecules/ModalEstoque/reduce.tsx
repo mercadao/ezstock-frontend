@@ -31,7 +31,6 @@ export default function DinamicModalStockReduce({
     idProduto: 0,
     idUsuario: 0,
     idCliente: 0,
-    tipoTransacao: 1,
   });
 
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -60,26 +59,55 @@ export default function DinamicModalStockReduce({
   }, [isOpen]);
 
   useEffect(() => {
-    if (initialData) setFormData(initialData);
+    if (initialData) {
+      const { 
+        quantidadeAtual, 
+        dataInicioValidade, 
+        dataFinalValidade, 
+        dataCadastro, 
+        nomeProduto, 
+        indAtivo, 
+        valorKG,
+        ...filteredData 
+      } = initialData;
+  
+      // Adiciona tipoTransacao ao objeto filtrado
+      setFormData({
+        ...filteredData,
+        tipoTransacao: 2,
+      });
+    }
   }, [initialData]);
-
+  
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-
+  
     const formattedValue = ["idProduto", "idUsuario", "idCliente", "tipoTransacao", "valorNovo"].includes(
       name
     )
       ? parseInt(value, 10) || 0
       : value;
-
-    setFormData({ ...formData, [name]: formattedValue });
+  
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: formattedValue,
+    }));
   };
-
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Verificar se os campos obrigatórios foram preenchidos
+    if (!formData.idProduto || !formData.idUsuario || !formData.idCliente) {
+      console.error("Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+  
+    console.log("formData enviado: ", formData);
+  
     onSave(formData);
   };
-
+  
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-bold mb-4">Baixa de Estoque</h2>
@@ -159,7 +187,7 @@ export default function DinamicModalStockReduce({
         {/* Campo para Valor Novo */}
         <div>
           <label className="block text-sm font-medium text-gray-700" htmlFor="valorNovo">
-            Valor Novo
+            Diminuir Valor
           </label>
           <input
             type="number"

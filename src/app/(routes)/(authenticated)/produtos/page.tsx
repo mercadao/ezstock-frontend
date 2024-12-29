@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -48,8 +49,13 @@ export default function ProductsPage() {
     fetchProdutos();
   }, []);
 
+  // Regex dinâmica para o filtro de busca
+  const createDynamicRegex = (searchTerm: string) => {
+    return new RegExp(searchTerm.split('').join('.*'), 'i'); // Regex que permite busca por qualquer parte do termo
+  };
+
   const filteredProdutos = produtos.filter((produto) =>
-    produto.nomeProduto.toLowerCase().includes(productSearch.toLowerCase())
+    createDynamicRegex(productSearch).test(produto.nomeProduto)
   );
 
   const headerData = ["ID", "Nome do Produto", "Ativo", "Valor/Kg", "Ações"];
@@ -77,12 +83,13 @@ export default function ProductsPage() {
     setModalOpen(true);
   };
 
+  // Função para confirmar exclusão do produto
   const confirmDelete = (rowIndex: number) => {
     const id = filteredProdutos[rowIndex].idProduto;
 
     toast.warn(
       <>
-        <p className="text-[12px]">Tem certeza que deseja excluir o produto:</p>
+        <p className="text-[12px] font-bold">Tem certeza que deseja excluir o produto:</p>
         <p>{filteredProdutos[rowIndex].nomeProduto}?</p>
         <div className="flex w-full justify-between">
           <button
@@ -111,6 +118,7 @@ export default function ProductsPage() {
     );
   };
 
+  // Função para deletar o produto
   const handleDelete = async (rowIndex: number) => {
     const id = filteredProdutos[rowIndex].idProduto;
     try {

@@ -33,7 +33,6 @@ export default function DinamicModalStockGet({
     }
   }, [isOpen, estoqueId]);
 
-  if (loading) return <p>Carregando estoque...</p>;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>

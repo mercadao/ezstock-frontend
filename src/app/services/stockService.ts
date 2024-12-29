@@ -53,7 +53,6 @@ export const getProdutoEstoque = async (id: number): Promise<Estoque> => {
 
 export const postBaixaEstoque = async (estoque: MenosEstoque): Promise<void> => {
 
-  console.log("payload enviado para baixa estoque: ", estoque);
 
   try {
     await axios.post(`${BASE_URL}/BaixaEstoque`, estoque);

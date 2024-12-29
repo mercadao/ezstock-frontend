@@ -10,10 +10,11 @@ interface DynamicModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave?: (updatedData: any) => void;
-  selectLabel?: string; 
-  selectOptions?: { value: number; label: string }[]; 
+  selectLabel?: string;
+  selectOptions?: { value: number; label: string }[];
   selecetData?: any;
-  labelNames?: string[]; 
+  labelNames?: string[];
+  regexPatterns?: Record<string, RegExp>;
 }
 
 export default function DynamicModal({
@@ -27,16 +28,31 @@ export default function DynamicModal({
   selectLabel,
   selectOptions = [],
   selecetData,
-  labelNames = [], 
+  labelNames = [],
+  regexPatterns = {},
 }: DynamicModalProps) {
-
   const [formData, setFormData] = useState(data);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     setFormData(data);
+    setErrors({});
   }, [data]);
 
   const handleChange = (key: string, value: any) => {
+    // Validação do regex
+    if (regexPatterns[key] && !regexPatterns[key].test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [key]: `O valor inserido em "${key}" não é válido.`,
+      }));
+    } else {
+      setErrors((prevErrors) => {
+        const updatedErrors = { ...prevErrors };
+        delete updatedErrors[key];
+        return updatedErrors;
+      });
+    }
     setFormData({ ...formData, [key]: value });
   };
 
@@ -50,24 +66,15 @@ export default function DynamicModal({
   const handleSelectChange = (e: any) => {
     handleChange("idCategoria", Number(e.target.value));
     if (selecetData) {
-      console.log("teste: ", Number(e.target.value));
       selecetData(Number(e.target.value));
     }
   };
 
   const title = () => {
-    if (isReadOnly) {
-      return "Visualizar Entidade";
-    } else if (isEditMode) {
-      return "Editar Entidade";
-    } else {
-      return `Criar ${modalName}`;
-    }
+    if (isReadOnly) return "Visualizar Entidade";
+    if (isEditMode) return "Editar Entidade";
+    return `Criar ${modalName}`;
   };
-
-  const selectedCategory = selectOptions.find(
-    (option) => option.value === formData.idCategoria
-  );
 
   const excludeFields = (key: any) => {
     const excludePatterns = ["id", "tipoTransacao", "indAtivo"];
@@ -94,10 +101,13 @@ export default function DynamicModal({
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
               disabled={isReadOnly}
             />
+            {errors[key] && (
+              <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
+            )}
           </div>
         ))}
 
-      {!isReadOnly && selectLabel ? (
+      {!isReadOnly && selectLabel && (
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2">
             {selectLabel}
@@ -118,13 +128,11 @@ export default function DynamicModal({
             ))}
           </select>
         </div>
-      ) : (
-        <></>
       )}
 
       {!isReadOnly && (
         <Button
-          text={isEditMode ? "Salvar Alterações" : `Criar  ${modalName}`}
+          text={isEditMode ? "Salvar Alterações" : `Criar ${modalName}`}
           onClick={handleSubmit}
         />
       )}

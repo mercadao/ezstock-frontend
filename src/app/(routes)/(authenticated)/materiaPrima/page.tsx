@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import { useRouter } from "next/navigation";
-import "react-toastify/dist/ReactToastify.css";
+import { toast, Toaster } from "react-hot-toast"; // Alterado para react-hot-toast
 
 // Components
 import Divider from "@/app/components/atoms/Divider";
@@ -19,12 +18,12 @@ import {
   MateriaPrima,
 } from "@/app/services/materiaPrimaService";
 
-import { useSearchStore } from "@/app/hooks/searchHook"; 
-
+import { useSearchStore } from "@/app/hooks/searchHook";
 
 export default function MateriaPrimaPage() {
   const [materiasPrimas, setMateriasPrimas] = useState<MateriaPrima[]>([]);
-  const [selectedMateriaPrima, setSelectedMateriaPrima] = useState<MateriaPrima | null>(null);
+  const [selectedMateriaPrima, setSelectedMateriaPrima] =
+    useState<MateriaPrima | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,7 +33,6 @@ export default function MateriaPrimaPage() {
 
   const { materiaPrimaSearch, setMateriaPrimaSearch } = useSearchStore();
 
-
   useEffect(() => {
     const fetchMateriasPrimas = async () => {
       try {
@@ -42,7 +40,7 @@ export default function MateriaPrimaPage() {
         setMateriasPrimas(response);
       } catch (error) {
         console.error("Erro ao buscar matérias-primas:", error);
-        toast.error("Erro ao buscar matérias-primas.");
+        toast.error("Erro ao buscar matérias-primas."); // Alterado
       } finally {
         setLoading(false);
       }
@@ -52,7 +50,9 @@ export default function MateriaPrimaPage() {
   }, []);
 
   const filteredMateriaPrimaData = materiasPrimas.filter((materiaPrima) =>
-    materiaPrima.dscMateriaPrima.toLowerCase().includes(materiaPrimaSearch.toLowerCase())
+    materiaPrima.dscMateriaPrima
+      .toLowerCase()
+      .includes(materiaPrimaSearch.toLowerCase())
   );
 
   const headerData = ["Descrição", "Ações"];
@@ -79,31 +79,47 @@ export default function MateriaPrimaPage() {
 
   const confirmDelete = (rowIndex: number) => {
     const id = materiasPrimas[rowIndex].idMateriaPrima;
-
-    toast.warn(
-      <>
-        <p className="text-[12px]">Tem certeza que deseja excluir a matéria-prima:</p>
-        <p>{materiasPrimas[rowIndex].dscMateriaPrima}?</p>
-        <div className="flex w-full justify-between">
-          <button
-            onClick={() => handleDelete(rowIndex)}
-            className="btn-confirm hover:text-green-400"
-          >
-            Confirmar
-          </button>
-          <button
-            onClick={() => toast.dismiss()}
-            className="btn-cancel hover:text-red-400"
-          >
-            Cancelar
-          </button>
+    const materiaPrimaName = materiasPrimas[rowIndex].dscMateriaPrima;
+  
+    toast(
+      (t) => (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <p className="text-[12px] font-semibold text-[#856404]">
+              Tem certeza que deseja excluir a matéria-prima:
+            </p>
+          </div>
+          <p className="text-[12px] text-[#856404]">{materiaPrimaName}?</p>
+          <div className="flex w-full justify-between">
+            <button
+              onClick={() => {
+                handleDelete(rowIndex);
+                toast.dismiss(t.id); // Fechar o toast ao confirmar
+              }}
+              className="btn-confirm hover:text-green-400 text-[#856404]"
+            >
+              Confirmar
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)} // Fechar o toast ao cancelar
+              className="btn-cancel hover:text-red-400 text-[#856404]"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
-      </>,
+      ),
       {
-        position: "top-center",
-        autoClose: false,
-        closeOnClick: false,
-        closeButton: false,
+        position: 'top-center',
+        duration: Infinity, // Não fechar automaticamente
+        icon: '⚠️',
+        style: {
+          background: '#fff3cd', // Fundo amarelo
+          color: '#856404', // Texto escuro
+          border: '1px solid #ffeeba', // Borda suave
+          padding: '16px',
+          borderRadius: '8px',
+        },
       }
     );
   };
@@ -112,17 +128,16 @@ export default function MateriaPrimaPage() {
     const id = materiasPrimas[rowIndex].idMateriaPrima;
     try {
       await deleteMateriaPrima(id);
-      toast.success(`Matéria-prima deletada`, {
+      toast.success("Matéria-prima deletada", {
         className: "bg-green-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
       });
       router.refresh(); // Recarrega a página após a exclusão bem-sucedida
     } catch (error) {
-      toast.error(`Erro ao deletar matéria-prima`, {
+      toast.error("Erro ao deletar matéria-prima", {
+        // Alterado para react-hot-toast
         className: "bg-red-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
       });
-      console.error(`Erro ao deletar matéria-prima`, error);
+      console.error("Erro ao deletar matéria-prima", error);
     }
   };
 
@@ -133,22 +148,22 @@ export default function MateriaPrimaPage() {
       if (isEditMode) {
         await editMateriaPrima(idMateriaPrima!, updatedMateriaPrima);
         toast.success("Matéria-prima editada com sucesso!", {
+          // Alterado para react-hot-toast
           className: "bg-blue-500 text-white p-4 rounded",
-          progressClassName: "bg-white",
         });
       } else {
         await addMateriaPrima(materiaPrimaSemId);
         toast.success("Nova matéria-prima adicionada!", {
+          // Alterado para react-hot-toast
           className: "bg-green-500 text-white p-4 rounded",
-          progressClassName: "bg-white",
         });
       }
       setModalOpen(false);
-      router.refresh(); // Recarrega a página após a adição ou edição bem-sucedida
+      router.refresh();
     } catch (error) {
       toast.error("Erro ao salvar matéria-prima.", {
+        // Alterado para react-hot-toast
         className: "bg-red-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
       });
       console.error("Erro ao salvar matéria-prima:", error);
     }
@@ -205,7 +220,7 @@ export default function MateriaPrimaPage() {
         />
       )}
 
-      <ToastContainer position="top-center" />
+      <Toaster position="top-center" />
     </div>
   );
 }

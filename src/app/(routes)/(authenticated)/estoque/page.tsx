@@ -7,8 +7,8 @@ import "react-toastify/dist/ReactToastify.css";
 import Divider from "@/app/components/atoms/Divider";
 import PainelHeader from "@/app/components/molecules/PainelHeader";
 import Table from "@/app/components/organisms/Table";
-import DinamicModalStockPost from "@/app/components/molecules/DinamicModalStock/post";
-import DinamicModalStockReduce from "@/app/components/molecules/DinamicModalStock/reduce";
+import DinamicModalStockPost from "@/app/components/molecules/ModalEstoque/post";
+import DinamicModalStockReduce from "@/app/components/molecules/ModalEstoque/reduce";
 
 // Services
 import {
@@ -22,7 +22,7 @@ import { getProdutoEspecifico } from "@/app/services/productService";
 
 // Hook
 import { useSearchStore } from "@/app/hooks/searchHook";
-import DinamicModalStockGet from "@/app/components/molecules/DinamicModalStock/get";
+import DinamicModalStockGet from "@/app/components/molecules/ModalEstoque/get";
 
 export default function EstoquePage() {
   const [estoques, setEstoques] = useState<Estoque[]>([]);

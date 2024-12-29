@@ -8,8 +8,8 @@ interface EstoqueFormData {
   idProduto: number;
   idCliente: number;
   idUsuario: number;
-  valorNovo: number;
-  qtdTotalEmTela: number;
+  valorNovo: string;
+  qtdTotalEmTela: string;
   dataInicioValidade: string;
   dataFinalValidade: string;
   indAtivo: number;
@@ -33,8 +33,8 @@ export default function DinamicModalStockPost({
     idProduto: 0,
     idCliente: 0,
     idUsuario: 0,
-    valorNovo: 0,
-    qtdTotalEmTela: 0,
+    valorNovo: "",
+    qtdTotalEmTela: "",
     dataInicioValidade: "",
     dataFinalValidade: "",
     indAtivo: 1,
@@ -73,7 +73,7 @@ export default function DinamicModalStockPost({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
-    const formattedValue = ["idProduto", "idCliente", "idUsuario", "valorNovo", "qtdTotalEmTela"].includes(name)
+    const formattedValue = ["idProduto", "idCliente", "idUsuario"].includes(name)
       ? parseInt(value, 10) || 0
       : value;
 
@@ -81,11 +81,15 @@ export default function DinamicModalStockPost({
   };
 
   const handleSubmit = (e: React.FormEvent) => {
+
+
     e.preventDefault();
 
-    // Formatar datas para o padrão ISO 8601
     const formattedData = {
       ...formData,
+      idProduto:formData.idProduto,
+      valorNovo: parseFloat(formData.valorNovo) || 0,
+      qtdTotalEmTela: parseFloat(formData.qtdTotalEmTela) || 0,
       dataInicioValidade: new Date(formData.dataInicioValidade).toISOString(),
       dataFinalValidade: new Date(formData.dataFinalValidade).toISOString(),
     };
@@ -182,7 +186,7 @@ export default function DinamicModalStockPost({
             </label>
             <input
               id={name}
-              type="number"
+              type="text"
               name={name}
               placeholder={label}
               value={formData[name as keyof EstoqueFormData]}

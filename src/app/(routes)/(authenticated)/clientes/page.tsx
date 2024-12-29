@@ -14,8 +14,7 @@ import {
   editClient,
   postClient,
 } from "@/app/services/clientService";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast, Toaster } from "react-hot-toast";
 
 import { useSearchStore } from "@/app/hooks/searchHook"; 
 
@@ -88,27 +87,41 @@ export default function Clientes() {
 
   const confirmDelete = (rowIndex: number) => {
     const id = clientData[rowIndex].idCliente;
-
-    toast.warn(
-      <>
-        <p className="text-[12px]">Tem certeza que deseja excluir o cliente:</p>
-        <p>{clientData[rowIndex].nomeCliente}?</p>
-        <div className="flex w-full justify-between">
-          <button onClick={() => 
-            handleDelete(rowIndex)
-          } className="btn-confirm hover:text-green-400">
-            Confirmar
-          </button>
-          <button onClick={() => toast.dismiss()} className="btn-cancel hover:text-red-400">
-            Cancelar
-          </button>
+    const clientName = clientData[rowIndex].nomeCliente;
+  
+    toast(
+      (t) => (
+        <div className="space-y-2">
+          <p className="text-[12px]">Tem certeza que deseja excluir o cliente:</p>
+          <p>{clientName}?</p>
+          <div className="flex w-full justify-between">
+            <button
+              onClick={() => {
+                handleDelete(rowIndex);
+                toast.dismiss(t.id); // Dismiss the toast after confirming
+              }}
+              className="btn-confirm hover:text-green-400"
+            >
+              Confirmar
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)} // Dismiss the toast on cancel
+              className="btn-cancel hover:text-red-400"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
-      </>,
+      ),
       {
-        position: "top-center",
-        autoClose: false,
-        closeOnClick: false,
-        closeButton: false,
+        position: 'top-center',
+        duration: Infinity, // Prevent the toast from closing automatically
+        icon: '⚠️',
+        style: {
+          background: '#fff3cd',
+          color: '#856404',
+          border: '1px solid #ffeeba',
+        },
       }
     );
   };
@@ -120,12 +133,10 @@ export default function Clientes() {
       await fetchData();
       toast.success(`Cliente deletado: ${id}`, {
         className: "bg-green-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
       });
     } catch (error) {
       toast.error(`Erro ao deletar cliente: ${id}`, {
         className: "bg-red-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
       });
       console.error(`Erro ao deletar cliente: ${id}`, error);
     }
@@ -148,8 +159,6 @@ export default function Clientes() {
         toast.dismiss(toastId);
         toast.success("Cliente editado com sucesso!", {
           className: "bg-blue-500 text-white p-4 rounded",
-          progressClassName: "bg-white",
-          toastId,
         });
       } else {
         await postClient(clientWithoutId);
@@ -157,8 +166,6 @@ export default function Clientes() {
         toast.dismiss(toastId); 
         toast.success("Novo cliente adicionado!", {
           className: "bg-green-500 text-white p-4 rounded",
-          progressClassName: "bg-white",
-          toastId,
         });
       }
 
@@ -169,8 +176,6 @@ export default function Clientes() {
       toast.dismiss(toastId); 
       toast.error("Erro ao salvar cliente.", {
         className: "bg-red-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
-        toastId,
       });
       console.error("Erro ao salvar cliente:", error);
     } finally {
@@ -266,7 +271,7 @@ export default function Clientes() {
         />
       )}
 
-      <ToastContainer position="top-center"/>
+      <Toaster position="top-center" />
     </div>
   );
 }
