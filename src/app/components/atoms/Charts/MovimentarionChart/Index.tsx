@@ -14,6 +14,7 @@ interface TransacaoEstoque {
   quantidadeKG: number;
   dataTransacao: string;
   valorTransacao: number;
+  nomeProduto: string;
 }
 
 export default function MovimentationChart() {
@@ -30,11 +31,14 @@ export default function MovimentationChart() {
         }
       );
 
+      // Limitar a 10 últimas transações
+      const lastTenTransacoes = response.data.slice(-15);
+
       // Mapeando as categorias e os dados da série
-      const categorias = response.data.map(
+      const categorias = lastTenTransacoes.map(
         (transacao, index) => `Produto ${transacao.idProduto} - Transação ${index + 1}`
       );
-      const series = response.data.map((transacao, index) => ({
+      const series = lastTenTransacoes.map((transacao, index) => ({
         x: `Produto ${transacao.nomeProduto} - Transação ${index + 1}`,
         y: transacao.quantidadeKG,
       }));
@@ -57,25 +61,23 @@ export default function MovimentationChart() {
       toolbar: {
         show: false,
       },
-      
-    dataLabels: {
-      enabled: false,
     },
-    series:[
+    // dataLabels: {
+    //   enabled: false,
+    // },
+    series: [
       {
-        name: "Valor"
-      }
-
-    ],
-      dropShadow: {
-        enabled: true,
-        color: "#000",
-        top: 18,
-        left: 7,
-        blur: 10,
-        opacity: 0.2,
+        name: "Valor",
+        data: seriesData, // Atualiza os dados da série dinamicamente
       },
-      
+    ],
+    dropShadow: {
+      enabled: true,
+      color: "#000",
+      top: 18,
+      left: 7,
+      blur: 10,
+      opacity: 0.2,
     },
     xaxis: {
       categories: categories, // Atualiza as categorias dinamicamente
@@ -114,17 +116,11 @@ export default function MovimentationChart() {
     },
   };
 
-  const series = [
-    {
-      data: seriesData, // Atualiza os dados da série dinamicamente
-    },
-  ];
-
   return (
     <Chart
       type="line"
       options={option}
-      series={series}
+      series={[{ data: seriesData }]}
       height="100%"
       width="100%"
     />

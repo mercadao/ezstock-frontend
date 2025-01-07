@@ -34,7 +34,6 @@ export default function ClienteCategorias() {
     try {
       const response = await getCategoriaClientes();
       console.log(response);
-
       if (response.sucesso) {
         setClientCategoryData(response.categoriaCliente);
       } else {
@@ -99,7 +98,11 @@ export default function ClienteCategorias() {
   };
 
   const handleDelete = async (rowIndex: number) => {
-    const id = clientCategoryData[rowIndex].idCategoria;
+    const id = clientCategoryData[rowIndex]?.idCategoria;
+    if (id === undefined) {
+      console.error("ID is undefined");
+      return;
+    }
     const toastId = `delete_${id}`;
 
     try {
@@ -209,6 +212,7 @@ export default function ClienteCategorias() {
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
+          labelNames={["Nome da categoria do cliente"]}
         />
       )}
 

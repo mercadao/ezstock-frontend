@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 import SideBar from "@/app/components/organisms/SideBar";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -11,6 +13,14 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const userEmail = Cookies.get("userEmail");
+    if (!userEmail) {
+      router.push("/login");
+    }
+  }, [router]);
 
   const handleToggleSidebar = (isClosed: boolean) => {
     setIsSidebarClosed(isClosed);

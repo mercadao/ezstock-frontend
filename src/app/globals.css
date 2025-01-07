@@ -19,7 +19,7 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif; /* Adiciona a fonte Poppins como global */
+  font-family: 'Poppins', sans-serif; 
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,

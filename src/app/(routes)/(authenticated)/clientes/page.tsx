@@ -14,8 +14,7 @@ import {
   editClient,
   postClient,
 } from "@/app/services/clientService";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast, Toaster } from "react-hot-toast";
 
 import { useSearchStore } from "@/app/hooks/searchHook"; 
 
@@ -28,6 +27,7 @@ export default function Clientes() {
   const [readMode, setReadMode] = useState(false);
   const [isEditMode, setEditMode] = useState(false);
   const [isCreate, setIscreate] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   
   // Usando o hook com as buscas de produto
@@ -48,7 +48,6 @@ export default function Clientes() {
     try {
       const clients = await getClients();
       const clienteCategoryData = await getCategoriaClientes();
-      console.log("clienteCategoryData: ", clienteCategoryData.categoriaCliente);
 
       // Mapeando as categorias para o formato correto
       const options = clienteCategoryData.categoriaCliente.map((category: any) => ({
@@ -88,27 +87,41 @@ export default function Clientes() {
 
   const confirmDelete = (rowIndex: number) => {
     const id = clientData[rowIndex].idCliente;
-
-    toast.warn(
-      <>
-        <p className="text-[12px]">Tem certeza que deseja excluir o cliente:</p>
-        <p>{clientData[rowIndex].nomeCliente}?</p>
-        <div className="flex w-full justify-between">
-          <button onClick={() => 
-            handleDelete(rowIndex)
-          } className="btn-confirm hover:text-green-400">
-            Confirmar
-          </button>
-          <button onClick={() => toast.dismiss()} className="btn-cancel hover:text-red-400">
-            Cancelar
-          </button>
+    const clientName = clientData[rowIndex].nomeCliente;
+  
+    toast(
+      (t) => (
+        <div className="space-y-2">
+          <p className="text-[12px]">Tem certeza que deseja excluir o cliente:</p>
+          <p>{clientName}?</p>
+          <div className="flex w-full justify-between">
+            <button
+              onClick={() => {
+                handleDelete(rowIndex);
+                toast.dismiss(t.id); // Dismiss the toast after confirming
+              }}
+              className="btn-confirm hover:text-green-400"
+            >
+              Confirmar
+            </button>
+            <button
+              onClick={() => toast.dismiss(t.id)} // Dismiss the toast on cancel
+              className="btn-cancel hover:text-red-400"
+            >
+              Cancelar
+            </button>
+          </div>
         </div>
-      </>,
+      ),
       {
-        position: "top-center",
-        autoClose: false,
-        closeOnClick: false,
-        closeButton: false,
+        position: 'top-center',
+        duration: Infinity, // Prevent the toast from closing automatically
+        icon: '⚠️',
+        style: {
+          background: '#fff3cd',
+          color: '#856404',
+          border: '1px solid #ffeeba',
+        },
       }
     );
   };
@@ -120,12 +133,10 @@ export default function Clientes() {
       await fetchData();
       toast.success(`Cliente deletado: ${id}`, {
         className: "bg-green-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
       });
     } catch (error) {
       toast.error(`Erro ao deletar cliente: ${id}`, {
         className: "bg-red-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
       });
       console.error(`Erro ao deletar cliente: ${id}`, error);
     }
@@ -133,35 +144,45 @@ export default function Clientes() {
 
   const handleSave = async (updatedData: Cliente) => {
     const { idCliente, ...clientWithoutId } = updatedData;
+    const toastId = isEditMode ? `edit_${idCliente}` : "create_new";
 
-    // Garantir que idCategoria e numero sejam números
     clientWithoutId.idCategoria = Number(clientWithoutId.idCategoria);
-    clientWithoutId.numero = Number(clientWithoutId.numero);
+
+    if (isProcessing) return;
+
+    setIsProcessing(true); 
 
     try {
       if (isEditMode) {
         await editClient(clientWithoutId, idCliente);
+
+        toast.dismiss(toastId);
         toast.success("Cliente editado com sucesso!", {
           className: "bg-blue-500 text-white p-4 rounded",
-          progressClassName: "bg-white",
         });
       } else {
         await postClient(clientWithoutId);
+
+        toast.dismiss(toastId); 
         toast.success("Novo cliente adicionado!", {
           className: "bg-green-500 text-white p-4 rounded",
-          progressClassName: "bg-white",
         });
       }
+
       setModalOpen(false);
-      await fetchData(); 
+
+      await fetchData();
     } catch (error) {
+      toast.dismiss(toastId); 
       toast.error("Erro ao salvar cliente.", {
         className: "bg-red-500 text-white p-4 rounded",
-        progressClassName: "bg-white",
       });
       console.error("Erro ao salvar cliente:", error);
+    } finally {
+      setIsProcessing(false); 
     }
   };
+
 
   const handleAddClient = () => {
     setSelectedClient({
@@ -185,6 +206,23 @@ export default function Clientes() {
     setIscreate(true);
     setModalOpen(true);
   };
+
+  const labelNames = [
+    "Nome do Cliente",
+    "Email do Cliente",
+    "Telefone do Cliente",
+    "CNPJ",
+    "Estado",
+    "Inscrição Estadual",
+    "Bairro",
+    "Logradouro",
+    "Numero",
+    "Complemento",
+    "CEP",
+    "Categoria do Cliente",
+    "Cidade",
+  ];
+  
 
   return (
     <div className="my-4 w-full p-10">
@@ -220,18 +258,20 @@ export default function Clientes() {
 
       {selectedClient && (
         <DynamicModal
+          modalName="Cliente"
           data={selectedClient}
           isEditMode={isEditMode}
           isOpen={isModalOpen}
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
-          selectLabel="Categoria do Cliente"  // Passando a label do select
-          selectOptions={categoryOptions} // Usando a lista dinâmica de categorias
+          selectLabel="Categoria do Cliente"  
+          selectOptions={categoryOptions} 
+          labelNames={labelNames}
         />
       )}
 
-      <ToastContainer position="top-center"/>
+      <Toaster position="top-center" />
     </div>
   );
 }

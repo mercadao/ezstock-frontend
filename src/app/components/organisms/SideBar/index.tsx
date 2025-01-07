@@ -26,14 +26,12 @@ const sections = [
       { icon: <StoreIcon />, text: 'Materia Prima', href: '/materiaPrima' },
       { icon: <ClientIcon />, text: 'Clientes', href: '/clientes' },
       { icon: <ClientIcon />, text: 'Categoria cliente', href: '/categoriaCliente' },
-      { icon: <ClientIcon />, text: 'Usuarios ', href: '/users' },
     ],
   },
   {
     title: "Outros",
     items: [
-      { icon: <SettingsIcon />, text: "Configurações", href: "/settings" },
-      { icon: <LogOutIcon />, text: "Sair", href: "/logout" },
+      { icon: <LogOutIcon />, text: "Sair", href: "/login" },
     ],
   },
 ];

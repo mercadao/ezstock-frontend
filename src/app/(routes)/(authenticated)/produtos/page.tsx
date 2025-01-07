@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -48,8 +49,13 @@ export default function ProductsPage() {
     fetchProdutos();
   }, []);
 
+  // Regex dinâmica para o filtro de busca
+  const createDynamicRegex = (searchTerm: string) => {
+    return new RegExp(searchTerm.split("").join(".*"), "i"); // Regex que permite busca por qualquer parte do termo
+  };
+
   const filteredProdutos = produtos.filter((produto) =>
-    produto.nomeProduto.toLowerCase().includes(productSearch.toLowerCase())
+    createDynamicRegex(productSearch).test(produto.nomeProduto)
   );
 
   const headerData = ["ID", "Nome do Produto", "Ativo", "Valor/Kg", "Ações"];
@@ -77,12 +83,15 @@ export default function ProductsPage() {
     setModalOpen(true);
   };
 
+  // Função para confirmar exclusão do produto
   const confirmDelete = (rowIndex: number) => {
     const id = filteredProdutos[rowIndex].idProduto;
 
     toast.warn(
       <>
-        <p className="text-[12px]">Tem certeza que deseja excluir o produto:</p>
+        <p className="text-[12px] font-bold">
+          Tem certeza que deseja excluir o produto:
+        </p>
         <p>{filteredProdutos[rowIndex].nomeProduto}?</p>
         <div className="flex w-full justify-between">
           <button
@@ -111,10 +120,11 @@ export default function ProductsPage() {
     );
   };
 
+  // Função para deletar o produto
   const handleDelete = async (rowIndex: number) => {
     const id = filteredProdutos[rowIndex].idProduto;
     try {
-      await deleteProduto(id);
+      await deleteProduto(id as number);
       toast.success(`Produto deletado: ${id}`, {
         className: "bg-green-500 text-white p-4 rounded",
         progressClassName: "bg-white",
@@ -162,6 +172,8 @@ export default function ProductsPage() {
       idProduto: 0,
       nomeProduto: "",
       valorKG: 0,
+      sucesso: true,
+      produto: [],
     });
     setReadMode(false);
     setEditMode(false);
@@ -169,7 +181,12 @@ export default function ProductsPage() {
   };
 
   if (loading) {
-    return <p>Carregando produtos...</p>;
+    return (
+      <div className="justify-center items-center flex h-full">
+        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-black border-t-transparent"></div>
+        <p className="text-black ml-4">Carregando...</p>
+      </div>
+    );
   }
 
   return (
@@ -196,12 +213,14 @@ export default function ProductsPage() {
 
       {selectedProduto && (
         <DynamicModal
+          modalName="Produto"
           data={selectedProduto}
           isEditMode={isEditMode}
           isOpen={isModalOpen}
           onClose={() => setModalOpen(false)}
           isReadOnly={readMode}
           onSave={handleSave}
+          labelNames={["Nome do Produto", "Valor/Kg"]}
         />
       )}
 
