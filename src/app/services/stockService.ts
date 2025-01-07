@@ -51,9 +51,7 @@ export const getProdutoEstoque = async (id: number): Promise<Estoque> => {
   }
 };
 
-export const postBaixaEstoque = async (estoque: MenosEstoque): Promise<void> => {
-
-
+export const postBaixaEstoque = async (estoque: any): Promise<void> => {
   try {
     await axios.post(`${BASE_URL}/BaixaEstoque`, estoque);
   } catch (error) {

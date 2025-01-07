@@ -23,7 +23,7 @@ export const getProdutos = async (): Promise<Produto[]> => {
 };
 
 // Serviço para buscar um produto específico pelo ID
-export const getProdutoEspecifico = async (id: number): Promise<Produto> => {
+export const getProdutoEspecifico = async (id: number): Promise<any> => {
   try {
     const response = await axios.get<Produto>(`${BASE_URL}/ListaProduto/${id}`);
     return response.data;

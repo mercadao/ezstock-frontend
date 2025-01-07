@@ -16,8 +16,8 @@ interface EstoqueFormData {
 interface DinamicModalStockReduceProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: EstoqueFormData) => void;
-  initialData?: EstoqueFormData | null;
+  onSave: any;
+  initialData?:any;
 }
 
 export default function DinamicModalStockReduce({
@@ -26,7 +26,7 @@ export default function DinamicModalStockReduce({
   onSave,
   initialData,
 }: DinamicModalStockReduceProps) {
-  const [formData, setFormData] = useState<EstoqueFormData>({
+  const [formData, setFormData] = useState<any>({
     valorNovo: 0,
     idProduto: 0,
     idUsuario: 0,
@@ -88,7 +88,7 @@ export default function DinamicModalStockReduce({
       ? parseInt(value, 10) || 0
       : value;
   
-    setFormData((prevData) => ({
+    setFormData((prevData: any) => ({
       ...prevData,
       [name]: formattedValue,
     }));

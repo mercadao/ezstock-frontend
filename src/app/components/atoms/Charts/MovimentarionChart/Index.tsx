@@ -62,9 +62,9 @@ export default function MovimentationChart() {
         show: false,
       },
     },
-    dataLabels: {
-      enabled: false,
-    },
+    // dataLabels: {
+    //   enabled: false,
+    // },
     series: [
       {
         name: "Valor",

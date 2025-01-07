@@ -19,8 +19,8 @@ interface EstoqueFormData {
 interface DinamicModalStockPostProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (data: EstoqueFormData) => void;
-  initialData?: EstoqueFormData | null;
+  onSave: any;
+  initialData?: any;
 }
 
 export default function DinamicModalStockPost({
