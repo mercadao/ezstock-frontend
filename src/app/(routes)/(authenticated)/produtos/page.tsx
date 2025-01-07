@@ -51,7 +51,7 @@ export default function ProductsPage() {
 
   // Regex dinâmica para o filtro de busca
   const createDynamicRegex = (searchTerm: string) => {
-    return new RegExp(searchTerm.split('').join('.*'), 'i'); // Regex que permite busca por qualquer parte do termo
+    return new RegExp(searchTerm.split("").join(".*"), "i"); // Regex que permite busca por qualquer parte do termo
   };
 
   const filteredProdutos = produtos.filter((produto) =>
@@ -89,7 +89,9 @@ export default function ProductsPage() {
 
     toast.warn(
       <>
-        <p className="text-[12px] font-bold">Tem certeza que deseja excluir o produto:</p>
+        <p className="text-[12px] font-bold">
+          Tem certeza que deseja excluir o produto:
+        </p>
         <p>{filteredProdutos[rowIndex].nomeProduto}?</p>
         <div className="flex w-full justify-between">
           <button
@@ -171,7 +173,7 @@ export default function ProductsPage() {
       nomeProduto: "",
       valorKG: 0,
       sucesso: true,
-      produto: []
+      produto: [],
     });
     setReadMode(false);
     setEditMode(false);
@@ -179,7 +181,12 @@ export default function ProductsPage() {
   };
 
   if (loading) {
-    return <p className="text-black">Carregando produtos...</p>;
+    return (
+      <div className="justify-center items-center flex h-full">
+        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-black border-t-transparent"></div>
+        <p className="text-black ml-4">Carregando...</p>
+      </div>
+    );
   }
 
   return (

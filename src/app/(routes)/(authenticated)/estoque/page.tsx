@@ -45,9 +45,12 @@ export default function EstoquePage() {
         await Promise.all(
           response.map(async (estoque) => {
             try {
-              const produtoResponse = await getProdutoEspecifico(estoque.idProduto);
+              const produtoResponse = await getProdutoEspecifico(
+                estoque.idProduto
+              );
               produtoNames[estoque.idProduto] =
-                produtoResponse?.produto?.nomeProduto || "Produto não encontrado";
+                produtoResponse?.produto?.nomeProduto ||
+                "Produto não encontrado";
             } catch {
               produtoNames[estoque.idProduto] = "Erro ao carregar produto";
             }
@@ -112,7 +115,13 @@ export default function EstoquePage() {
     }
   };
 
-  if (loading) return <p>Carregando estoques...</p>;
+  if (loading)
+    return (
+      <div className="justify-center items-center flex h-full">
+        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-black border-t-transparent"></div>
+        <p className="text-black ml-4">Carregando...</p>
+      </div>
+    );
 
   const headerData = ["Nome Produto", "Qtd Total", "Ativo", "Ações"];
   const tableData = filteredEstoques.map((estoque) => [
