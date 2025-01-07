@@ -80,7 +80,7 @@ export default function MateriaPrimaPage() {
   const confirmDelete = (rowIndex: number) => {
     const id = materiasPrimas[rowIndex].idMateriaPrima;
     const materiaPrimaName = materiasPrimas[rowIndex].dscMateriaPrima;
-  
+
     toast(
       (t) => (
         <div className="space-y-2">
@@ -110,15 +110,15 @@ export default function MateriaPrimaPage() {
         </div>
       ),
       {
-        position: 'top-center',
+        position: "top-center",
         duration: Infinity, // Não fechar automaticamente
-        icon: '⚠️',
+        icon: "⚠️",
         style: {
-          background: '#fff3cd', // Fundo amarelo
-          color: '#856404', // Texto escuro
-          border: '1px solid #ffeeba', // Borda suave
-          padding: '16px',
-          borderRadius: '8px',
+          background: "#fff3cd", // Fundo amarelo
+          color: "#856404", // Texto escuro
+          border: "1px solid #ffeeba", // Borda suave
+          padding: "16px",
+          borderRadius: "8px",
         },
       }
     );
@@ -180,7 +180,12 @@ export default function MateriaPrimaPage() {
   };
 
   if (loading) {
-    return <p>Carregando matérias-primas...</p>;
+    return (
+      <div className="justify-center items-center flex h-full">
+        <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-black border-t-transparent"></div>
+        <p className="text-black ml-4">Carregando...</p>
+      </div>
+    );
   }
 
   return (
@@ -209,7 +214,7 @@ export default function MateriaPrimaPage() {
 
       {selectedMateriaPrima && (
         <DynamicModal
-          modalName="Produto"
+          modalName="Matéria Prima"
           data={selectedMateriaPrima}
           isEditMode={isEditMode}
           isOpen={isModalOpen}
