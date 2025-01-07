@@ -178,7 +178,6 @@ export default function DinamicModalStockPost({
         {/* Outros campos */}
         {[ 
           { name: "valorNovo", label: "Valor Novo" },
-          { name: "qtdTotalEmTela", label: "Quantidade Total" },
         ].map(({ name, label }) => (
           <div key={name}>
             <label className="block text-sm font-medium text-gray-700" htmlFor={name}>
