@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://villavitoriaapi-production.up.railway.app/api/Estoque';
+const BASE_URL = 'https://villavitoriaez.up.railway.app/api/Estoque';
 
 export interface Estoque {
   idProduto: number;

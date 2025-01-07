@@ -12,7 +12,7 @@ interface LoginResponse {
   token: string | null;
 }
 
-const LOGIN_URL = 'https://villavitoriaapi-production.up.railway.app/api/Login/Login';
+const LOGIN_URL = 'https://villavitoriaez.up.railway.app/api/Login/Login';
 
 export const login = async (email: string, senha: string): Promise<LoginResponse> => {
   try {
