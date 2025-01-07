@@ -179,7 +179,7 @@ export default function ProductsPage() {
   };
 
   if (loading) {
-    return <p>Carregando produtos...</p>;
+    return <p className="text-black">Carregando produtos...</p>;
   }
 
   return (
