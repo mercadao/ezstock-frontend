@@ -14,7 +14,6 @@ export default function ControlPanel() {
       <div className="flex flex-col h-full justify-between items-start">
         <div className="flex flex-col gap-8 w-full">
           <DashboardItem />
-          
         </div>
       </div>
     </div>
