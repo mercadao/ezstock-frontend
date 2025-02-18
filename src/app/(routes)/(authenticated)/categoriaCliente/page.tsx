@@ -202,6 +202,7 @@ export default function ClienteCategorias() {
         onClickRead={handleRead}
         onClickEdit={handleEdit}
         onClickDelete={confirmDelete}
+        withoutId
       />
 
       {selectedClientCategory && (

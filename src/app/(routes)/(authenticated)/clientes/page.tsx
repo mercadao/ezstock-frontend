@@ -254,6 +254,7 @@ export default function Clientes() {
         onClickRead={handleRead}
         onClickEdit={handleEdit}
         onClickDelete={confirmDelete}
+        withoutId
       />
 
       {selectedClient && (
