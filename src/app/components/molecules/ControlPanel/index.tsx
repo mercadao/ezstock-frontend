@@ -16,7 +16,6 @@ export default function ControlPanel() {
           <DashboardItem />
           
         </div>
-        <DashboardButton text="Ver mais" />
       </div>
     </div>
   );
