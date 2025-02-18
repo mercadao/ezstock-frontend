@@ -3,6 +3,7 @@ import Modal from "@/app/components/atoms/Modal";
 import { getProdutos, Produto } from "@/app/services/productService";
 import { getClients, Cliente } from "@/app/services/clientService";
 import { getUsuarios, Usuario } from "@/app/services/userService";
+import { useRouter } from "next/navigation";
 
 interface EstoqueFormData {
   idProduto: number;
@@ -44,6 +45,8 @@ export default function DinamicModalStockPost({
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [clientes, setClientes] = useState<Cliente[]>([]);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+    const router = useRouter();
+  
 
   // Carrega produtos, clientes e usuários ao abrir o modal
   useEffect(() => {
@@ -80,21 +83,20 @@ export default function DinamicModalStockPost({
     setFormData({ ...formData, [name]: formattedValue });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-
-
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const formattedData = {
       ...formData,
-      idProduto:formData.idProduto,
+      idProduto: formData.idProduto,
       valorNovo: parseFloat(formData.valorNovo) || 0,
       qtdTotalEmTela: parseFloat(formData.qtdTotalEmTela) || 0,
       dataInicioValidade: new Date(formData.dataInicioValidade).toISOString(),
       dataFinalValidade: new Date(formData.dataFinalValidade).toISOString(),
     };
 
-    onSave(formattedData);
+    await onSave(formattedData);
+    router.refresh(); 
   };
 
   return (
@@ -177,7 +179,7 @@ export default function DinamicModalStockPost({
 
         {/* Outros campos */}
         {[ 
-          { name: "valorNovo", label: "Valor Novo" },
+          { name: "valorNovo", label: "Adicionar valor" },
         ].map(({ name, label }) => (
           <div key={name}>
             <label className="block text-sm font-medium text-gray-700" htmlFor={name}>

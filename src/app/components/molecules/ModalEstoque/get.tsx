@@ -90,15 +90,7 @@ export default function DinamicModalStockGet({
             />
           </div>
 
-          <div>
-            <label className="block">Status</label>
-            <input
-              type="text"
-              value={estoque.indAtivo === 1 ? "Ativo" : "Inativo"}
-              readOnly
-              className="w-full p-2 border rounded"
-            />
-          </div>
+         
         </div>
       ) : (
         <p>Estoque não encontrado.</p>

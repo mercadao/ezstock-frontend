@@ -209,6 +209,8 @@ export default function ProductsPage() {
         onClickRead={handleRead}
         onClickEdit={handleEdit}
         onClickDelete={confirmDelete}
+        withoutId={true}
+        withoutAtivo={true}
       />
 
       {selectedProduto && (

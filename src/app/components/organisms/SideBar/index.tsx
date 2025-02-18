@@ -23,7 +23,7 @@ const sections = [
     items: [
       { icon: <StoreIcon />, text: "Estoque", href: "/estoque" },
       { icon: <ProductIcon />, text: "Produtos", href: "/produtos" },
-      { icon: <StoreIcon />, text: 'Materia Prima', href: '/materiaPrima' },
+      // { icon: <StoreIcon />, text: 'Materia Prima', href: '/materiaPrima' },
       { icon: <ClientIcon />, text: 'Clientes', href: '/clientes' },
       { icon: <ClientIcon />, text: 'Categoria cliente', href: '/categoriaCliente' },
     ],

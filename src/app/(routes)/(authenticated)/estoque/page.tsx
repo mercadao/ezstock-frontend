@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { toast, Toaster } from "react-hot-toast";
+
 
 // Components
 import Divider from "@/app/components/atoms/Divider";
@@ -147,6 +148,8 @@ export default function EstoquePage() {
         onClickRead={handleRead}
         onClickEdit={handleReduce}
         deleteHidden={true}
+        isBaixaEstoque
+        withoutAtivo={true}
       />
       <DinamicModalStockPost
         isOpen={isModalPostOpen}
@@ -166,7 +169,7 @@ export default function EstoquePage() {
         onSave={handleSave}
       />
 
-      <ToastContainer position="top-center" />
+      <Toaster position="top-center" />
     </div>
   );
 }

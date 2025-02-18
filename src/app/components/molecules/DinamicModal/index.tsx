@@ -77,7 +77,7 @@ export default function DynamicModal({
   };
 
   const excludeFields = (key: any) => {
-    const excludePatterns = ["id", "tipoTransacao", "indAtivo"];
+    const excludePatterns = ["id", "tipoTransacao", "indAtivo", "sucesso", "valorKG"];
     return !excludePatterns.some((pattern) =>
       key.toLowerCase().includes(pattern.toLowerCase())
     );

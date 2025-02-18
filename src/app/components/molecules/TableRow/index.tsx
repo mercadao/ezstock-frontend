@@ -9,6 +9,7 @@ interface TableRowProps {
   onClickDelete?: () => void;
   editHiiden?: boolean;
   deleteHidden?: boolean; 
+  isBaixaEstoque?: boolean;
 }
 
 export default function TableRow({
@@ -18,7 +19,8 @@ export default function TableRow({
   onClickEdit,
   onClickDelete,
   editHiiden,
-  deleteHidden
+  deleteHidden,
+  isBaixaEstoque
 }: TableRowProps) {
   return (
     <div
@@ -35,6 +37,7 @@ export default function TableRow({
           onClickDelete={onClickDelete}
           editHiiden={editHiiden}
           deleteHidden={deleteHidden}
+          isBaixaEstoque={isBaixaEstoque}
         />
       )}
     </div>
