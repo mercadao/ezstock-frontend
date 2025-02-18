@@ -9,9 +9,10 @@ interface TableProps {
   onClickDelete?: (rowIndex: number) => void;
   editHiiden?: boolean;
   deleteHidden?: boolean; 
+  isBaixaEstoque?: boolean;  
 }
 
-export default function Table({ headerData, data, onClickRead, onClickEdit, onClickDelete, editHiiden, deleteHidden }: TableProps) {
+export default function Table({ headerData, data, onClickRead, onClickEdit, onClickDelete, editHiiden, deleteHidden, isBaixaEstoque }: TableProps) {
 
   return (
     <div className="border border-[#E5E7EB] rounded-lg my-4 w-full">
@@ -32,7 +33,8 @@ export default function Table({ headerData, data, onClickRead, onClickEdit, onCl
             onClickEdit={() => onClickEdit?.(rowIndex)}
             onClickDelete={() => onClickDelete?.(rowIndex)}
             editHiiden={editHiiden}
-            deleteHidden={deleteHidden} 
+            deleteHidden={deleteHidden}
+            isBaixaEstoque={isBaixaEstoque} 
           />
         </motion.div>
       ))}
