@@ -148,6 +148,7 @@ export default function EstoquePage() {
         onClickEdit={handleReduce}
         deleteHidden={true}
         isBaixaEstoque
+        withoutAtivo={true}
       />
       <DinamicModalStockPost
         isOpen={isModalPostOpen}

@@ -12,11 +12,7 @@ interface TableProps {
   deleteHidden?: boolean; 
   isBaixaEstoque?: boolean; 
   withoutId?: boolean;
-}
-
-interface RowData {
-  id?: string | number;
-  [key: string]: any;
+  withoutAtivo?: boolean; 
 }
 
 export default function Table({ 
@@ -28,27 +24,39 @@ export default function Table({
   editHiiden, 
   deleteHidden, 
   isBaixaEstoque,
-  withoutId = false 
+  withoutId = false,
+  withoutAtivo = false // Valor padrão para withoutAtivo
 }: TableProps) {
 
   const [modifiedHeaderData, setModifiedHeaderData] = useState<string[] | undefined>(headerData);
   const [modifiedData, setModifiedData] = useState<any[][]>(data);
 
   useEffect(() => {
-    if (withoutId) {
-      const newHeaderData = headerData ? headerData.filter(item => item !== 'ID') : headerData;
-      setModifiedHeaderData(newHeaderData);
+    let newHeaderData = headerData ? [...headerData] : headerData; // Cria uma cópia do headerData
+    let newData = data ? [...data] : data; // Cria uma cópia dos dados
 
-      const newData = data.map((row: any[]) => {
-        return row.slice(1); 
-      });
-      setModifiedData(newData);
-    } else {
-      setModifiedHeaderData(headerData);
-      setModifiedData(data);
+    // Remove a coluna "ID" se withoutId for true
+    if (withoutId && newHeaderData) {
+      const idIndex = newHeaderData.indexOf('ID');
+      if (idIndex !== -1) {
+        newHeaderData = newHeaderData.filter((_, index) => index !== idIndex);
+        newData = newData.map((row) => row.filter((_, index) => index !== idIndex));
+      }
     }
-  }, [withoutId, headerData, data]);
 
+    // Remove a coluna "Ativo" se withoutAtivo for true
+    if (withoutAtivo && newHeaderData) {
+      const ativoIndex = newHeaderData.indexOf('Ativo');
+      if (ativoIndex !== -1) {
+        newHeaderData = newHeaderData.filter((_, index) => index !== ativoIndex);
+        newData = newData.map((row) => row.filter((_, index) => index !== ativoIndex));
+      }
+    }
+
+    // Atualiza os estados com os dados modificados
+    setModifiedHeaderData(newHeaderData);
+    setModifiedData(newData);
+  }, [withoutId, withoutAtivo, headerData, data]);
 
   return (
     <div className="border border-[#E5E7EB] rounded-lg my-4 w-full">

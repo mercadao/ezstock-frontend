@@ -210,6 +210,7 @@ export default function ProductsPage() {
         onClickEdit={handleEdit}
         onClickDelete={confirmDelete}
         withoutId={true}
+        withoutAtivo={true}
       />
 
       {selectedProduto && (
