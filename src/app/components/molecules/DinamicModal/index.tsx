@@ -119,8 +119,11 @@ export default function DynamicModal({
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
             disabled={isReadOnly}
           >
-            <option value="" disabled>
+            {/* <option value="" disabled>
               {selectLabel}
+            </option> */}
+            <option>
+              Selecione um item...
             </option>
             {selectOptions.map((option) => (
               <option key={option.value} value={option.value}>
