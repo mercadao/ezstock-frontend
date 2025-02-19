@@ -83,6 +83,7 @@ export default function DynamicModal({
     );
   };
 
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-bold mb-4">{title()}</h2>
