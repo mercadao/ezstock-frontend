@@ -44,23 +44,37 @@ export default function Clientes() {
     "Ações",
   ];
 
-  const fetchData = async () => {
+  // Função para buscar os clientes
+  const fetchClients = async () => {
     try {
       const clients = await getClients();
-      const clienteCategoryData = await getCategoriaClientes();
+      setClientData(clients);
+    } catch (error) {
+      console.error("Erro ao buscar clientes:", error);
+    }
+  };
 
+  // Função para buscar as categorias de clientes e mapear as opções
+  const fetchClientCategories = async () => {
+    try {
+      const clienteCategoryData = await getCategoriaClientes();
       // Mapeando as categorias para o formato correto
       const options = clienteCategoryData.categoriaCliente.map((category: any) => ({
         value: category.idCategoria,
         label: category.desCategoriaCliente,
       }));
 
-      setClientData(clients);
       setClientCategorysData(clienteCategoryData);
       setCategoryOptions(options); // Atualizando categoryOptions dinamicamente
     } catch (error) {
-      console.error("Erro ao buscar clientes:", error);
+      console.error("Erro ao buscar categorias de clientes:", error);
     }
+  };
+
+  // Função principal que chama as duas funções acima
+  const fetchData = async () => {
+    await fetchClients();
+    await fetchClientCategories();
   };
 
   useEffect(() => {
