@@ -17,7 +17,7 @@ interface DinamicModalStockReduceProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: any;
-  initialData?:any;
+  initialData?: any;
 }
 
 export default function DinamicModalStockReduce({
@@ -60,17 +60,17 @@ export default function DinamicModalStockReduce({
 
   useEffect(() => {
     if (initialData) {
-      const { 
-        quantidadeAtual, 
-        dataInicioValidade, 
-        dataFinalValidade, 
-        dataCadastro, 
-        nomeProduto, 
-        indAtivo, 
+      const {
+        quantidadeAtual,
+        dataInicioValidade,
+        dataFinalValidade,
+        dataCadastro,
+        nomeProduto,
+        indAtivo,
         valorKG,
-        ...filteredData 
+        ...filteredData
       } = initialData;
-  
+
       // Adiciona tipoTransacao ao objeto filtrado
       setFormData({
         ...filteredData,
@@ -78,43 +78,92 @@ export default function DinamicModalStockReduce({
       });
     }
   }, [initialData]);
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-  
-    const formattedValue = ["idProduto", "idUsuario", "idCliente", "tipoTransacao", "valorNovo"].includes(
-      name
-    )
+
+    console.log("e> ", e.target);
+
+    const formattedValue = [
+      "idProduto",
+      "idUsuario",
+      "idCliente",
+      "tipoTransacao",
+      "valorNovo",
+    ].includes(name)
       ? parseInt(value, 10) || 0
       : value;
-  
+
     setFormData((prevData: any) => ({
       ...prevData,
       [name]: formattedValue,
     }));
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     // Verificar se os campos obrigatórios foram preenchidos
     if (!formData.idProduto || !formData.idUsuario || !formData.idCliente) {
+      console.log(formData.idUsuario);
+      console.log(formData.idCliente);
       console.error("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
-  
+
     console.log("formData enviado: ", formData);
-  
+
     onSave(formData);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      const fetchData = async () => {
+        try {
+          const [produtosData, usuariosData, clientesData] = await Promise.all([
+            getProdutos(),
+            getUsuarios(),
+            getClients(),
+          ]);
+          setProdutos(produtosData);
+          setUsuarios(usuariosData);
+          setClientes(clientesData);
   
+          // Se houver apenas um usuário, define-o automaticamente
+          if (usuariosData.length === 1) {
+            setFormData((prev) => ({
+              ...prev,
+              idUsuario: usuariosData[0].idUsuario,
+            }));
+          }
+          // Se houver apenas um cliente, define-o automaticamente
+          if (clientesData.length === 1) {
+            setFormData((prev) => ({
+              ...prev,
+              idCliente: clientesData[0].idCliente,
+            }));
+          }
+        } catch (error) {
+          console.error("Erro ao buscar dados:", error);
+        }
+      };
+      fetchData();
+    }
+  }, [isOpen]);
+  
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h2 className="text-xl font-bold mb-4">Baixa de Estoque</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Select para Produto */}
         <div>
-          <label className="block text-sm font-medium text-gray-700" htmlFor="idProduto">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="idProduto"
+          >
             Produto
           </label>
           <select
@@ -138,7 +187,10 @@ export default function DinamicModalStockReduce({
 
         {/* Select para Usuário */}
         <div>
-          <label className="block text-sm font-medium text-gray-700" htmlFor="idUsuario">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="idUsuario"
+          >
             Usuário
           </label>
           <select
@@ -162,7 +214,10 @@ export default function DinamicModalStockReduce({
 
         {/* Select para Cliente */}
         <div>
-          <label className="block text-sm font-medium text-gray-700" htmlFor="idCliente">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="idCliente"
+          >
             Cliente
           </label>
           <select
@@ -186,7 +241,10 @@ export default function DinamicModalStockReduce({
 
         {/* Campo para Valor Novo */}
         <div>
-          <label className="block text-sm font-medium text-gray-700" htmlFor="valorNovo">
+          <label
+            className="block text-sm font-medium text-gray-700"
+            htmlFor="valorNovo"
+          >
             Diminuir Valor
           </label>
           <input
@@ -203,12 +261,12 @@ export default function DinamicModalStockReduce({
 
         {/* Botão de Salvar */}
         <div className="flex justify-end">
-        <button
-          type="submit"
-          className="w-full bg-primary-400 text-white py-2 rounded hover:bg-primary-600"
-        >
-          Salvar
-        </button>
+          <button
+            type="submit"
+            className="w-full bg-primary-400 text-white py-2 rounded hover:bg-primary-600"
+          >
+            Salvar
+          </button>
         </div>
       </form>
     </Modal>

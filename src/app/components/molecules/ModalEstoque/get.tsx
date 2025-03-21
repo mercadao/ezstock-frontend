@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Modal from "@/app/components/atoms/Modal";
 import { Estoque, getEstoqueEspecifico } from "@/app/services/stockService";
+import { getProdutoEspecifico, Produto } from "@/app/services/productService";
 
 interface DinamicModalStockGetProps {
   isOpen: boolean;
@@ -13,6 +14,9 @@ export default function DinamicModalStockGet({
   onClose,
   estoqueId,
 }: DinamicModalStockGetProps) {
+
+
+  const [produtoNome, setProdutoNome] = useState("");
   const [estoque, setEstoque] = useState<Estoque | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -21,6 +25,10 @@ export default function DinamicModalStockGet({
       const fetchEstoque = async () => {
         try {
           const data = await getEstoqueEspecifico(estoqueId);
+          if(data){
+            const produtoData = await getProdutoEspecifico(data.idProduto);
+            setProdutoNome(produtoData.produto.nomeProduto);
+          }
           setEstoque(data);
         } catch (error) {
           console.error("Erro ao carregar estoque específico:", error);
@@ -33,6 +41,7 @@ export default function DinamicModalStockGet({
     }
   }, [isOpen, estoqueId]);
 
+  
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -44,17 +53,7 @@ export default function DinamicModalStockGet({
             <label className="block">Produto</label>
             <input
               type="text"
-              value={estoque.idProduto}
-              readOnly
-              className="w-full p-2 border rounded"
-            />
-          </div>
-
-          <div>
-            <label className="block">Cliente</label>
-            <input
-              type="text"
-              value={estoque.idCliente || "N/A"}
+              value={produtoNome}
               readOnly
               className="w-full p-2 border rounded"
             />
