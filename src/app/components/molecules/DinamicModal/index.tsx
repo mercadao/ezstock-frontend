@@ -74,38 +74,62 @@ export default function DynamicModal({
     if (isReadOnly) return "Visualizar Entidade";
     if (isEditMode) return "Editar Entidade";
     return `Criar ${modalName}`;
-  };
-  const excludeFields = (key: any) => {
+  };  const excludeFields = (key: any) => {
     const excludePatterns = ["id", "tipoTransacao", "indAtivo", "sucesso"];
     return !excludePatterns.some((pattern) =>
       key.toLowerCase().includes(pattern.toLowerCase())
     );
   };
 
+  // Ordem fixa dos campos para garantir consistência
+  const getOrderedFields = () => {
+    const allKeys = Object.keys(formData);
+    
+    // Ordem específica para clientes
+    if (allKeys.includes('nomeCliente')) {
+      return [
+        'nomeCliente',
+        'emailCliente', 
+        'telefoneCliente',
+        'cnpj',
+        'inscricaoEstadual',
+        'estado',
+        'cidade',
+        'bairro',
+        'logradouro',
+        'numero',
+        'complemento',
+        'cep'
+      ].filter(key => allKeys.includes(key));
+    }
+    
+    // Para outros tipos de entidade, usar a ordem original
+    return allKeys.filter(excludeFields);
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">{title()}</h2>      {Object.keys(formData)
-        .filter(excludeFields)
-        .map((key, index) => (
-          <div key={key} className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              {labelNames[index] || key}
-            </label>
-            <input
-              type={key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? "number" : "text"}
-              value={formData[key] || ""}
-              onChange={(e) => handleChange(key, key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? Number(e.target.value) : e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
-              disabled={isReadOnly}
-              step={key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? "0.01" : undefined}
-              min={key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? "0" : undefined}
-            />
-            {errors[key] && (
-              <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
-            )}
-          </div>
-        ))}
+      <h2 className="text-xl font-bold mb-4">{title()}</h2>
+      
+      {getOrderedFields().map((key, index) => (
+        <div key={key} className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            {labelNames[index] || key}
+          </label>
+          <input
+            type={key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? "number" : "text"}
+            value={formData[key] || ""}
+            onChange={(e) => handleChange(key, key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? Number(e.target.value) : e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+            disabled={isReadOnly}
+            step={key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? "0.01" : undefined}
+            min={key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? "0" : undefined}
+          />
+          {errors[key] && (
+            <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
+          )}
+        </div>
+      ))}
 
       {!isReadOnly && selectLabel && (
         <div className="mb-4">

@@ -220,21 +220,19 @@ export default function Clientes() {
     setIscreate(true);
     setModalOpen(true);
   };
-
   const labelNames = [
     "Nome do Cliente",
-    "Email do Cliente",
+    "Email do Cliente", 
     "Telefone do Cliente",
     "CNPJ",
-    "Estado",
     "Inscrição Estadual",
+    "Estado",
+    "Cidade",
     "Bairro",
     "Logradouro",
     "Numero",
     "Complemento",
     "CEP",
-    "Categoria do Cliente",
-    "Cidade",
   ];
   
 
