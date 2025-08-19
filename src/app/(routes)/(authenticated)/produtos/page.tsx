@@ -166,14 +166,12 @@ export default function ProductsPage() {
       console.error("Erro ao salvar produto:", error);
     }
   };
-
   const handleAddProduct = () => {
     setSelectedProduto({
       idProduto: 0,
       nomeProduto: "",
       valorKG: 0,
-      sucesso: true,
-      produto: [],
+      indAtivo: true
     });
     setReadMode(false);
     setEditMode(false);

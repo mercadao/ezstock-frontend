@@ -3,18 +3,21 @@ import axios from 'axios';
 const BASE_URL = 'https://villavitoriaez.up.railway.app/api/Produto';
 
 export interface Produto {
-  sucesso: boolean;
-  produto: Produto[];
   idProduto?: number;
   nomeProduto: string;
   indAtivo?: boolean;
   valorKG: number;
 }
 
+export interface ProdutoResponse {
+  sucesso: boolean;
+  produto: Produto[];
+}
+
 // Serviço para buscar produtos
 export const getProdutos = async (): Promise<Produto[]> => {
   try {
-    const response = await axios.get<{ produto: Produto[] }>(`${BASE_URL}/ListaProduto`);
+    const response = await axios.get<ProdutoResponse>(`${BASE_URL}/ListaProduto`);
     return response.data.produto;
   } catch (error) {
     console.error('Erro ao buscar produtos:', error);
@@ -36,12 +39,17 @@ export const getProdutoEspecifico = async (id: number): Promise<any> => {
 
 // Serviço para adicionar produto
 export const addProduto = async (produto: Omit<Produto, 'idProduto' | 'indAtivo'>): Promise<void> => {
+  // Criando objeto limpo apenas com os campos necessários
+  const produtoData = {
+    nomeProduto: produto.nomeProduto,
+    valorKG: produto.valorKG
+  };
 
   console.log('url:', `${BASE_URL}/AdicionaProduto`);
-  console.log('produto:', produto);
+  console.log('produto:', produtoData);
 
   try {
-    await axios.post(`${BASE_URL}/AdicionaProduto`, produto);
+    await axios.post(`${BASE_URL}/AdicionaProduto`, produtoData);
   } catch (error) {
     console.error('Erro ao adicionar produto:', error);
     throw error;

@@ -75,9 +75,8 @@ export default function DynamicModal({
     if (isEditMode) return "Editar Entidade";
     return `Criar ${modalName}`;
   };
-
   const excludeFields = (key: any) => {
-    const excludePatterns = ["id", "tipoTransacao", "indAtivo", "sucesso", "valorKG"];
+    const excludePatterns = ["id", "tipoTransacao", "indAtivo", "sucesso"];
     return !excludePatterns.some((pattern) =>
       key.toLowerCase().includes(pattern.toLowerCase())
     );
@@ -86,9 +85,7 @@ export default function DynamicModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-bold mb-4">{title()}</h2>
-
-      {Object.keys(formData)
+      <h2 className="text-xl font-bold mb-4">{title()}</h2>      {Object.keys(formData)
         .filter(excludeFields)
         .map((key, index) => (
           <div key={key} className="mb-4">
@@ -96,11 +93,13 @@ export default function DynamicModal({
               {labelNames[index] || key}
             </label>
             <input
-              type="text"
+              type={key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? "number" : "text"}
               value={formData[key] || ""}
-              onChange={(e) => handleChange(key, e.target.value)}
+              onChange={(e) => handleChange(key, key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? Number(e.target.value) : e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
               disabled={isReadOnly}
+              step={key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? "0.01" : undefined}
+              min={key.toLowerCase().includes('valor') || key.toLowerCase().includes('kg') ? "0" : undefined}
             />
             {errors[key] && (
               <p className="text-red-500 text-xs mt-1">{errors[key]}</p>
