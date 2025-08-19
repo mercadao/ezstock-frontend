@@ -8,7 +8,7 @@ export interface Cliente {
   emailCliente: string;
   telefoneCliente: string;
   cnpj: string;
-  idCategoria: number;
+  idCategoria: number | null;
   inscricaoEstadual?: string;
   estado: string;
   cidade: string;

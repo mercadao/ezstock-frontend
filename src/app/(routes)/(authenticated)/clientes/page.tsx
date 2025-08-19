@@ -207,7 +207,7 @@ export default function Clientes() {
       cnpj: "",
       cidade: "",
       estado: "",
-      idCategoria: 3,
+      idCategoria: null ,
       inscricaoEstadual: "",
       bairro: "",
       logradouro: "",
