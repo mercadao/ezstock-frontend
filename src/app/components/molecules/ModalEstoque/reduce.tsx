@@ -133,14 +133,14 @@ export default function DinamicModalStockReduce({
   
           // Se houver apenas um usuário, define-o automaticamente
           if (usuariosData.length === 1) {
-            setFormData((prev) => ({
+            setFormData((prev : any) => ({
               ...prev,
               idUsuario: usuariosData[0].idUsuario,
             }));
           }
           // Se houver apenas um cliente, define-o automaticamente
           if (clientesData.length === 1) {
-            setFormData((prev) => ({
+            setFormData((prev : any) => ({
               ...prev,
               idCliente: clientesData[0].idCliente,
             }));
