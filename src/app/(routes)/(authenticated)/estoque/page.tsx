@@ -148,7 +148,7 @@ export default function EstoquePage() {
       </div>
     );
 
-  const headerData = ["Nome Produto", "Qtd Total", "Ativo", "Ações"];
+  const headerData = ["Nome Produto", "Qtd Total", "Ativo"];
   const tableData = paginatedEstoques.map((estoque) => [
     produtos[estoque.idProduto] || "Carregando...",
     estoque.quantidadeAtual,

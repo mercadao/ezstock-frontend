@@ -12,29 +12,50 @@ interface TableCellActionProps {
 export default function TableCellAction({ onClickRead, onClickEdit, onClickDelete, editHiiden, deleteHidden, isBaixaEstoque }: TableCellActionProps) {
 
   return (
-    <div className="flex justify-center items-center py-2 gap-2 flex-1">
-      <Info
+    <div className="flex justify-center items-center gap-3">
+      <button
         onClick={onClickRead}
-        className="cursor-pointer text-gray-400 hover:text-blue-500 transition-colors duration-200"
-      />
-      {isBaixaEstoque ? (
-        <Minus
-          onClick={onClickEdit}
-          className={`cursor-pointer text-gray-400 hover:text-green-500 transition-colors duration-200
-        ${editHiiden ? "hidden" : ""}`}
+        className="p-2 rounded-full hover:bg-blue-100 transition-colors duration-200 group"
+        title="Visualizar"
+      >
+        <Info
+          size={16}
+          className="text-gray-400 group-hover:text-blue-600 transition-colors duration-200"
         />
-      ) : (
-        <Edit
+      </button>
+      
+      {!editHiiden && (
+        <button
           onClick={onClickEdit}
-          className={`cursor-pointer text-gray-400 hover:text-green-500 transition-colors duration-200
-        ${editHiiden ? "hidden" : ""}`}
-        />
+          className="p-2 rounded-full hover:bg-green-100 transition-colors duration-200 group"
+          title={isBaixaEstoque ? "Baixar Estoque" : "Editar"}
+        >
+          {isBaixaEstoque ? (
+            <Minus
+              size={16}
+              className="text-gray-400 group-hover:text-green-600 transition-colors duration-200"
+            />
+          ) : (
+            <Edit
+              size={16}
+              className="text-gray-400 group-hover:text-green-600 transition-colors duration-200"
+            />
+          )}
+        </button>
       )}
-      <Trash
-        onClick={onClickDelete}
-        className={`cursor-pointer text-gray-400 hover:text-red-500 transition-colors duration-200
-        ${deleteHidden ? "hidden" : ""}`}
-      />
+      
+      {!deleteHidden && (
+        <button
+          onClick={onClickDelete}
+          className="p-2 rounded-full hover:bg-red-100 transition-colors duration-200 group"
+          title="Excluir"
+        >
+          <Trash
+            size={16}
+            className="text-gray-400 group-hover:text-red-600 transition-colors duration-200"
+          />
+        </button>
+      )}
     </div>
   );
 }

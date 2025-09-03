@@ -78,9 +78,8 @@ export default function ProductsPage() {
 
   // Handle data change for pagination reset
   useEffect(() => {
-    handleDataChange();
-  }, [produtos, handleDataChange]);
-  const headerData = ["ID", "Nome do Produto", "Ativo", "Valor/Kg", "Ações"];
+    handleDataChange();  }, [produtos, handleDataChange]);
+  const headerData = ["ID", "Nome do Produto", "Ativo", "Valor/Kg"];
 
   const tableData = paginatedProdutos.map((produto) => [
     produto.idProduto,

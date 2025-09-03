@@ -26,7 +26,7 @@ export default function ClienteCategorias() {
   const [isEditMode, setEditMode] = useState(false);
   const [isCreateMode, setIsCreateMode] = useState(false);
 
-  const headerData = ["ID", "Nome da Categoria", "Ações"];
+  const headerData = ["ID", "Nome da Categoria"];
 
   // Usando o hook com as buscas de produto
   const { categoryClientsSearch, setCategoryClientsSearch } = useSearchStore();

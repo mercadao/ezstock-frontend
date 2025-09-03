@@ -22,24 +22,42 @@ export default function TableRow({
   deleteHidden,
   isBaixaEstoque
 }: TableRowProps) {
+  // Calculate the number of data columns for proper grid layout
+  const totalColumns = data.length + 1; // +1 for actions column
+  
   return (
     <div
-      className={`flex border-y-[1px] ${isHeader ? "font-bold" : "hover:bg-gray-100"} w-full cursor-pointer transition-colors duration-200`}
+      className={`grid gap-4 px-6 py-4 items-center ${
+        isHeader 
+          ? "font-semibold text-gray-700 text-sm uppercase tracking-wider" 
+          : "text-gray-900 hover:bg-gray-50"
+      } transition-colors duration-200`}
+      style={{
+        gridTemplateColumns: `repeat(${data.length}, minmax(0, 1fr)) 120px`
+      }}
     >
       {data.map((item, index) => (
-        <TableCellDefault key={index} data={item} />
+        <div key={index} className="min-w-0">
+          <TableCellDefault data={item} isHeader={isHeader} />
+        </div>
       ))}
 
-      {!isHeader && (
-        <TableCellAction
-          onClickRead={onClickRead}
-          onClickEdit={onClickEdit}
-          onClickDelete={onClickDelete}
-          editHiiden={editHiiden}
-          deleteHidden={deleteHidden}
-          isBaixaEstoque={isBaixaEstoque}
-        />
-      )}
+      <div className="flex justify-center">
+        {!isHeader ? (
+          <TableCellAction
+            onClickRead={onClickRead}
+            onClickEdit={onClickEdit}
+            onClickDelete={onClickDelete}
+            editHiiden={editHiiden}
+            deleteHidden={deleteHidden}
+            isBaixaEstoque={isBaixaEstoque}
+          />
+        ) : (
+          <div className="text-center font-semibold text-gray-700 text-sm uppercase tracking-wider">
+            Ações
+          </div>
+        )}
+      </div>
     </div>
   );
 }

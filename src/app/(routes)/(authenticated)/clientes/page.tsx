@@ -34,7 +34,6 @@ export default function Clientes() {
   // Usando o hook com as buscas de produto
   const { clientsSearch, setClientsSearch } = useSearchStore();
   const { refresh, isRefreshing } = useDataRefresh();
-
   const headerData = [
     "ID",
     "Nome",
@@ -43,7 +42,6 @@ export default function Clientes() {
     "CNPJ",
     "Cidade",
     "Estado",
-    "Ações",
   ];
 
   // Função para buscar os clientes

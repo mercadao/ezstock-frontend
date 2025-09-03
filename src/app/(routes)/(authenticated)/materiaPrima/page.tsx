@@ -74,7 +74,7 @@ export default function MateriaPrimaPage() {
     handleDataChange();
   }, [materiasPrimas, handleDataChange]);
 
-  const headerData = ["Descrição", "Ações"];
+  const headerData = ["Descrição"];
 
   const tableData = paginatedMateriasPrimas.map((materiaPrima) => [
     materiaPrima.dscMateriaPrima,
