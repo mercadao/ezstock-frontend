@@ -1,23 +1,18 @@
 import { useState, useEffect } from "react";
 import Modal from "@/app/components/atoms/Modal";
 import { getProdutos, Produto } from "@/app/services/productService";
-import { getClients, Cliente } from "@/app/services/clientService";
 import { getUsuarios, Usuario } from "@/app/services/userService";
 import { useRouter } from "next/navigation";
 
 interface EstoqueFormData {
   idProduto: number;
-  idCliente: number;
   idUsuario: number;
   valorNovo: string;
-  qtdTotalEmTela: string;
   dataInicioValidade: string;
   dataFinalValidade: string;
-  indAtivo: number;
-  tipoTransacao: number;
 }
 
-interface DinamicModalStockPostProps {
+interface DinamicModalStockPostProps {  
   isOpen: boolean;
   onClose: () => void;
   onSave: any;
@@ -32,34 +27,26 @@ export default function DinamicModalStockPost({
 }: DinamicModalStockPostProps) {
   const [formData, setFormData] = useState<EstoqueFormData>({
     idProduto: 0,
-    idCliente: 0,
     idUsuario: 0,
     valorNovo: "",
-    qtdTotalEmTela: "",
     dataInicioValidade: "",
     dataFinalValidade: "",
-    indAtivo: 1,
-    tipoTransacao: 1,
   });
 
   const [produtos, setProdutos] = useState<Produto[]>([]);
-  const [clientes, setClientes] = useState<Cliente[]>([]);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-    const router = useRouter();
-  
+  const router = useRouter();
 
-  // Carrega produtos, clientes e usuários ao abrir o modal
+  // Carrega produtos e usuários ao abrir o modal
   useEffect(() => {
     if (isOpen) {
       const fetchData = async () => {
         try {
-          const [produtosData, clientesData, usuariosData] = await Promise.all([
+          const [produtosData, usuariosData] = await Promise.all([
             getProdutos(),
-            getClients(),
             getUsuarios(),
           ]);
           setProdutos(produtosData);
-          setClientes(clientesData);
           setUsuarios(usuariosData);
         } catch (error) {
           console.error("Erro ao buscar dados:", error);
@@ -76,7 +63,7 @@ export default function DinamicModalStockPost({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
 
-    const formattedValue = ["idProduto", "idCliente", "idUsuario"].includes(name)
+    const formattedValue = ["idProduto", "idUsuario"].includes(name)
       ? parseInt(value, 10) || 0
       : value;
 
@@ -87,16 +74,15 @@ export default function DinamicModalStockPost({
     e.preventDefault();
 
     const formattedData = {
-      ...formData,
       idProduto: formData.idProduto,
+      idUsuario: formData.idUsuario,
       valorNovo: parseFloat(formData.valorNovo) || 0,
-      qtdTotalEmTela: parseFloat(formData.qtdTotalEmTela) || 0,
-      dataInicioValidade: new Date(formData.dataInicioValidade).toISOString(),
-      dataFinalValidade: new Date(formData.dataFinalValidade).toISOString(),
+      dataInicioValidade: formData.dataInicioValidade,
+      dataFinalValidade: formData.dataFinalValidade,
     };
 
     await onSave(formattedData);
-    router.refresh(); 
+    router.refresh();
   };
 
   return (
@@ -129,30 +115,6 @@ export default function DinamicModalStockPost({
           </select>
         </div>
 
-        {/* Select dinâmico para ID do Cliente */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700" htmlFor="idCliente">
-            Cliente
-          </label>
-          <select
-            id="idCliente"
-            name="idCliente"
-            value={formData.idCliente}
-            onChange={handleChange}
-            required
-            className="w-full p-2 border rounded"
-          >
-            <option value={0} disabled>
-              Selecione um cliente
-            </option>
-            {clientes.map((cliente) => (
-              <option key={cliente.idCliente} value={cliente.idCliente}>
-                {cliente.nomeCliente}
-              </option>
-            ))}
-          </select>
-        </div>
-
         {/* Select dinâmico para ID do Usuário */}
         <div>
           <label className="block text-sm font-medium text-gray-700" htmlFor="idUsuario">
@@ -177,26 +139,22 @@ export default function DinamicModalStockPost({
           </select>
         </div>
 
-        {/* Outros campos */}
-        {[ 
-          { name: "valorNovo", label: "Adicionar valor" },
-        ].map(({ name, label }) => (
-          <div key={name}>
-            <label className="block text-sm font-medium text-gray-700" htmlFor={name}>
-              {label}
-            </label>
-            <input
-              id={name}
-              type="text"
-              name={name}
-              placeholder={label}
-              value={formData[name as keyof EstoqueFormData]}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border rounded"
-            />
-          </div>
-        ))}
+        {/* Input for Valor Novo */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700" htmlFor="valorNovo">
+            Valor Novo
+          </label>
+          <input
+            type="number"
+            id="valorNovo"
+            name="valorNovo"
+            value={formData.valorNovo}
+            onChange={handleChange}
+            required
+            min={0}
+            className="w-full p-2 border rounded"
+          />
+        </div>
 
         {/* Datas */}
         <div>
