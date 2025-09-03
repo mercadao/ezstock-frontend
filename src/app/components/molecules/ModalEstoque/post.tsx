@@ -150,8 +150,8 @@ export default function DinamicModalStockPost({
             name="valorNovo"
             value={formData.valorNovo}
             onChange={handleChange}
-            required
             min={0}
+            step="0.01"
             className="w-full p-2 border rounded"
           />
         </div>

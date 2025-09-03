@@ -84,7 +84,6 @@ export default function MateriaPrimaPage() {
   const originalIndexes = paginatedMateriasPrimas.map(materiaPrima => 
     materiasPrimas.findIndex(m => m.idMateriaPrima === materiaPrima.idMateriaPrima)
   );
-
   const handleRead = (rowIndex: number) => {
     const materiaPrima = materiasPrimas[rowIndex];
     setSelectedMateriaPrima(materiaPrima);
