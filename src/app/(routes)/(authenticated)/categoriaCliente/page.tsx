@@ -16,6 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { useSearchStore } from "@/app/hooks/searchHook"; 
+import { usePaginatedData, useDataRefresh } from "@/app/hooks/paginationHook";
 
 export default function ClienteCategorias() {
   const [clientCategoryData, setClientCategoryData] = useState<CategoriaCliente[]>([]);
@@ -29,6 +30,7 @@ export default function ClienteCategorias() {
 
   // Usando o hook com as buscas de produto
   const { categoryClientsSearch, setCategoryClientsSearch } = useSearchStore();
+  const { refresh, isRefreshing } = useDataRefresh();
 
   const fetchData = async () => {
     try {
@@ -43,14 +45,29 @@ export default function ClienteCategorias() {
       console.error("Erro ao buscar categorias de clientes:", error);
     }
   };
-
   useEffect(() => {
     fetchData();
   }, []);
 
-  const filteredCategoryClientDada = clientCategoryData.filter((categoryClient) =>
-    categoryClient.desCategoriaCliente.toLowerCase().includes(categoryClientsSearch.toLowerCase())
-  );
+  // Setup pagination
+  const {
+    paginatedData: paginatedCategoryClients,
+    currentPage,
+    totalPages,
+    totalItems,
+    goToPage,
+    handleDataChange
+  } = usePaginatedData({
+    data: clientCategoryData,
+    itemsPerPage: 20,
+    searchTerm: categoryClientsSearch,
+    searchFields: ['desCategoriaCliente' as keyof CategoriaCliente]
+  });
+
+  // Handle data change for pagination reset
+  useEffect(() => {
+    handleDataChange();
+  }, [clientCategoryData, handleDataChange]);
 
   const handleRead = (rowIndex: number) => {
     setSelectedClientCategory(clientCategoryData[rowIndex]);
@@ -152,10 +169,11 @@ export default function ClienteCategorias() {
             progressClassName: "bg-white",
             toastId,
           });
-        }
-      }
+        }      }
       setModalOpen(false);
-      await fetchData();
+      
+      // Refresh data after save
+      await refresh(fetchData);
     } catch (error) {
       if (!toast.isActive(toastId)) {
         toast.error("Erro ao salvar categoria.", {
@@ -191,11 +209,9 @@ export default function ClienteCategorias() {
         setItemSearch={setCategoryClientsSearch} 
       />
 
-      <Divider />
-
-      <Table
+      <Divider />      <Table
         headerData={headerData}
-        data={filteredCategoryClientDada.map((clientCategory) => [
+        data={paginatedCategoryClients.map((clientCategory: CategoriaCliente) => [
           clientCategory.idCategoria,
           clientCategory.desCategoriaCliente,
         ])}
@@ -203,6 +219,15 @@ export default function ClienteCategorias() {
         onClickEdit={handleEdit}
         onClickDelete={confirmDelete}
         withoutId
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={goToPage}
+        itemsPerPage={20}
+        totalItems={totalItems}
+        showPagination={true}
+        originalIndexes={paginatedCategoryClients.map((clientCategory: CategoriaCliente) => 
+          clientCategoryData.findIndex(c => c.idCategoria === clientCategory.idCategoria)
+        )}
       />
 
       {selectedClientCategory && (

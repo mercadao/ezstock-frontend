@@ -23,6 +23,7 @@ import { getProdutoEspecifico } from "@/app/services/productService";
 
 // Hook
 import { useSearchStore } from "@/app/hooks/searchHook";
+import { usePaginatedData, useDataRefresh } from "@/app/hooks/paginationHook";
 import DinamicModalStockGet from "@/app/components/molecules/ModalEstoque/get";
 
 export default function EstoquePage() {
@@ -36,49 +37,70 @@ export default function EstoquePage() {
   const [loading, setLoading] = useState<boolean>(true);
 
   const { estoqueSearch, setEstoqueSearch } = useSearchStore();
+  const { refresh, isRefreshing } = useDataRefresh();
+
+  // Fetch data function
+  const fetchEstoques = async () => {
+    try {
+      const response = await getEstoques();
+
+      const produtoNames: { [key: number]: string } = {};
+      await Promise.all(
+        response.map(async (estoque) => {
+          try {
+            const produtoResponse = await getProdutoEspecifico(
+              estoque.idProduto
+            );
+            produtoNames[estoque.idProduto] =
+              produtoResponse?.produto?.nomeProduto ||
+              "Produto não encontrado";
+          } catch {
+            produtoNames[estoque.idProduto] = "Erro ao carregar produto";
+          }
+        })
+      );
+
+      setEstoques(response);
+      setProdutos(produtoNames);
+    } catch (error) {
+      console.error("Erro ao buscar estoques:", error);
+      toast.error("Erro ao buscar estoques.");
+    }
+  };
+
+  // Setup pagination with custom filter
+  const {
+    paginatedData: paginatedEstoques,
+    currentPage,
+    totalPages,
+    totalItems,
+    goToPage,
+    handleDataChange
+  } = usePaginatedData({
+    data: estoques,
+    itemsPerPage: 20,
+    searchTerm: estoqueSearch,
+    filterFn: (estoque, searchTerm) => {
+      const produtoNome = produtos[estoque.idProduto] || "";
+      return produtoNome.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+  });
 
   useEffect(() => {
-    const fetchEstoques = async () => {
-      try {
-        const response = await getEstoques();
-
-        const produtoNames: { [key: number]: string } = {};
-        await Promise.all(
-          response.map(async (estoque) => {
-            try {
-              const produtoResponse = await getProdutoEspecifico(
-                estoque.idProduto
-              );
-              produtoNames[estoque.idProduto] =
-                produtoResponse?.produto?.nomeProduto ||
-                "Produto não encontrado";
-            } catch {
-              produtoNames[estoque.idProduto] = "Erro ao carregar produto";
-            }
-          })
-        );
-
-        setEstoques(response);
-        setProdutos(produtoNames);
-      } catch (error) {
-        console.error("Erro ao buscar estoques:", error);
-        toast.error("Erro ao buscar estoques.");
-      } finally {
-        setLoading(false);
-      }
+    const loadData = async () => {
+      setLoading(true);
+      await fetchEstoques();
+      setLoading(false);
     };
-
-    fetchEstoques();
+    loadData();
   }, []);
 
-  const filteredEstoques = estoques.filter((estoque) =>
-    produtos[estoque.idProduto]
-      ?.toLowerCase()
-      .includes(estoqueSearch.toLowerCase())
-  );
-
+  // Handle data change for pagination reset
+  useEffect(() => {
+    handleDataChange();
+  }, [estoques, handleDataChange]);
   const handleRead = (rowIndex: number) => {
-    const estoque = filteredEstoques[rowIndex];
+    const estoque = estoques[rowIndex];
     setSelectedEstoque(estoque);
     setModalOpen(true);
     setEditMode(false);
@@ -91,7 +113,7 @@ export default function EstoquePage() {
   };
 
   const handleReduce = (rowIndex: number) => {
-    const estoque = filteredEstoques[rowIndex];
+    const estoque = estoques[rowIndex];
     setSelectedEstoque(estoque);
     setModalReduceOpen(true);
     setEditMode(true);
@@ -109,27 +131,34 @@ export default function EstoquePage() {
       setModalOpen(false);
       setModalPostOpen(false);
       setModalReduceOpen(false);
-      const updatedEstoques = await getEstoques();
-      setEstoques(updatedEstoques);
+      
+      // Refresh data after save
+      await refresh(fetchEstoques);
     } catch (error) {
       toast.error("Erro ao salvar estoque.");
     }
   };
-
-  if (loading)
+  if (loading || isRefreshing)
     return (
       <div className="justify-center items-center flex h-full">
         <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-black border-t-transparent"></div>
-        <p className="text-black ml-4">Carregando...</p>
+        <p className="text-black ml-4">
+          {isRefreshing ? "Atualizando dados..." : "Carregando..."}
+        </p>
       </div>
     );
 
   const headerData = ["Nome Produto", "Qtd Total", "Ativo", "Ações"];
-  const tableData = filteredEstoques.map((estoque) => [
+  const tableData = paginatedEstoques.map((estoque) => [
     produtos[estoque.idProduto] || "Carregando...",
     estoque.quantidadeAtual,
     estoque.indAtivo ? "Sim" : "Não",
   ]);
+
+  // Create mapping for original indexes to handle pagination correctly
+  const originalIndexes = paginatedEstoques.map(estoque => 
+    estoques.findIndex(e => e.idEstoque === estoque.idEstoque)
+  );
 
   return (
     <div className="my-4 w-full p-10">
@@ -141,8 +170,7 @@ export default function EstoquePage() {
         itemSearch={estoqueSearch}
         setItemSearch={setEstoqueSearch}
       />
-      <Divider />
-      <Table
+      <Divider />      <Table
         headerData={headerData}
         data={tableData}
         onClickRead={handleRead}
@@ -150,6 +178,13 @@ export default function EstoquePage() {
         deleteHidden={true}
         isBaixaEstoque
         withoutAtivo={true}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={goToPage}
+        itemsPerPage={20}
+        totalItems={totalItems}
+        showPagination={true}
+        originalIndexes={originalIndexes}
       />
       <DinamicModalStockPost
         isOpen={isModalPostOpen}

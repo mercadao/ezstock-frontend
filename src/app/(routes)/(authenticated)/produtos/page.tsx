@@ -21,6 +21,7 @@ import {
 
 // Importando o hook SearchStore correto
 import { useSearchStore } from "@/app/hooks/searchHook";
+import { usePaginatedData, useDataRefresh } from "@/app/hooks/paginationHook";
 
 export default function ProductsPage() {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -32,43 +33,69 @@ export default function ProductsPage() {
 
   // Usando o hook com as buscas de produto
   const { productSearch, setProductSearch } = useSearchStore();
+  const { refresh, isRefreshing } = useDataRefresh();
 
-  useEffect(() => {
-    const fetchProdutos = async () => {
-      try {
-        const response = await getProdutos();
-        setProdutos(response);
-      } catch (error) {
-        console.error("Erro ao buscar produtos:", error);
-        toast.error("Erro ao buscar produtos.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProdutos();
-  }, []);
+  const fetchProdutos = async () => {
+    try {
+      const response = await getProdutos();
+      setProdutos(response);
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+      toast.error("Erro ao buscar produtos.");
+    }
+  };
 
   // Regex dinâmica para o filtro de busca
   const createDynamicRegex = (searchTerm: string) => {
     return new RegExp(searchTerm.split("").join(".*"), "i"); // Regex que permite busca por qualquer parte do termo
   };
 
-  const filteredProdutos = produtos.filter((produto) =>
-    createDynamicRegex(productSearch).test(produto.nomeProduto)
-  );
+  // Setup pagination
+  const {
+    paginatedData: paginatedProdutos,
+    currentPage,
+    totalPages,
+    totalItems,
+    goToPage,
+    handleDataChange
+  } = usePaginatedData({
+    data: produtos,
+    itemsPerPage: 20,
+    searchTerm: productSearch,
+    filterFn: (produto, searchTerm) => {
+      return createDynamicRegex(searchTerm).test(produto.nomeProduto);
+    }
+  });
 
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await fetchProdutos();
+      setLoading(false);
+    };
+    loadData();
+  }, []);
+
+  // Handle data change for pagination reset
+  useEffect(() => {
+    handleDataChange();
+  }, [produtos, handleDataChange]);
   const headerData = ["ID", "Nome do Produto", "Ativo", "Valor/Kg", "Ações"];
 
-  const tableData = filteredProdutos.map((produto) => [
+  const tableData = paginatedProdutos.map((produto) => [
     produto.idProduto,
     produto.nomeProduto,
     produto.indAtivo ? "Sim" : "Não",
     produto.valorKG,
   ]);
 
+  // Create mapping for original indexes to handle pagination correctly
+  const originalIndexes = paginatedProdutos.map(produto => 
+    produtos.findIndex(p => p.idProduto === produto.idProduto)
+  );
+
   const handleRead = (rowIndex: number) => {
-    const produto = filteredProdutos[rowIndex];
+    const produto = produtos[rowIndex];
     setSelectedProduto(produto);
     setReadMode(true);
     setEditMode(false);
@@ -76,23 +103,23 @@ export default function ProductsPage() {
   };
 
   const handleEdit = (rowIndex: number) => {
-    const produto = filteredProdutos[rowIndex];
+    const produto = produtos[rowIndex];
     setSelectedProduto(produto);
     setReadMode(false);
     setEditMode(true);
     setModalOpen(true);
   };
-
   // Função para confirmar exclusão do produto
   const confirmDelete = (rowIndex: number) => {
-    const id = filteredProdutos[rowIndex].idProduto;
+    const produto = produtos[rowIndex];
+    const id = produto.idProduto;
 
     toast.warn(
       <>
         <p className="text-[12px] font-bold">
           Tem certeza que deseja excluir o produto:
         </p>
-        <p>{filteredProdutos[rowIndex].nomeProduto}?</p>
+        <p>{produto.nomeProduto}?</p>
         <div className="flex w-full justify-between">
           <button
             onClick={() => {
@@ -119,17 +146,19 @@ export default function ProductsPage() {
       }
     );
   };
-
   // Função para deletar o produto
   const handleDelete = async (rowIndex: number) => {
-    const id = filteredProdutos[rowIndex].idProduto;
+    const produto = produtos[rowIndex];
+    const id = produto.idProduto;
     try {
       await deleteProduto(id as number);
       toast.success(`Produto deletado: ${id}`, {
         className: "bg-green-500 text-white p-4 rounded",
         progressClassName: "bg-white",
       });
-      setProdutos(produtos.filter((p) => p.idProduto !== id));
+      
+      // Refresh data after delete
+      await refresh(fetchProdutos);
     } catch (error) {
       toast.error(`Erro ao deletar produto: ${id}`, {
         className: "bg-red-500 text-white p-4 rounded",
@@ -138,7 +167,6 @@ export default function ProductsPage() {
       console.error(`Erro ao deletar produto: ${id}`, error);
     }
   };
-
   const handleSave = async (updatedProduto: Produto) => {
     const { idProduto, ...produtoSemId } = updatedProduto;
 
@@ -157,7 +185,9 @@ export default function ProductsPage() {
         });
       }
       setModalOpen(false);
-      setProdutos(await getProdutos());
+      
+      // Refresh data after save
+      await refresh(fetchProdutos);
     } catch (error) {
       toast.error("Erro ao salvar produto.", {
         className: "bg-red-500 text-white p-4 rounded",
@@ -177,12 +207,13 @@ export default function ProductsPage() {
     setEditMode(false);
     setModalOpen(true);
   };
-
   if (loading) {
     return (
       <div className="justify-center items-center flex h-full">
         <div className="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full border-black border-t-transparent"></div>
-        <p className="text-black ml-4">Carregando...</p>
+        <p className="text-black ml-4">
+          {isRefreshing ? "Atualizando dados..." : "Carregando..."}
+        </p>
       </div>
     );
   }
@@ -199,9 +230,7 @@ export default function ProductsPage() {
         setItemSearch={setProductSearch}
       />
 
-      <Divider />
-
-      <Table
+      <Divider />      <Table
         headerData={headerData}
         data={tableData}
         onClickRead={handleRead}
@@ -209,6 +238,13 @@ export default function ProductsPage() {
         onClickDelete={confirmDelete}
         withoutId={true}
         withoutAtivo={true}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={goToPage}
+        itemsPerPage={20}
+        totalItems={totalItems}
+        showPagination={true}
+        originalIndexes={originalIndexes}
       />
 
       {selectedProduto && (

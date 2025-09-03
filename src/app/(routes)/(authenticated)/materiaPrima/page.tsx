@@ -19,6 +19,7 @@ import {
 } from "@/app/services/materiaPrimaService";
 
 import { useSearchStore } from "@/app/hooks/searchHook";
+import { usePaginatedData, useDataRefresh } from "@/app/hooks/paginationHook";
 
 export default function MateriaPrimaPage() {
   const [materiasPrimas, setMateriasPrimas] = useState<MateriaPrima[]>([]);
@@ -32,34 +33,57 @@ export default function MateriaPrimaPage() {
   const router = useRouter();
 
   const { materiaPrimaSearch, setMateriaPrimaSearch } = useSearchStore();
+  const { refresh, isRefreshing } = useDataRefresh();
+
+  const fetchMateriasPrimas = async () => {
+    try {
+      const response = await getMateriaPrima();
+      setMateriasPrimas(response);
+    } catch (error) {
+      console.error("Erro ao buscar matérias-primas:", error);
+      toast.error("Erro ao buscar matérias-primas.");
+    }
+  };
+
+  // Setup pagination
+  const {
+    paginatedData: paginatedMateriasPrimas,
+    currentPage,
+    totalPages,
+    totalItems,
+    goToPage,
+    handleDataChange
+  } = usePaginatedData({
+    data: materiasPrimas,
+    itemsPerPage: 20,
+    searchTerm: materiaPrimaSearch,
+    searchFields: ['dscMateriaPrima' as keyof MateriaPrima]
+  });
 
   useEffect(() => {
-    const fetchMateriasPrimas = async () => {
-      try {
-        const response = await getMateriaPrima();
-        setMateriasPrimas(response);
-      } catch (error) {
-        console.error("Erro ao buscar matérias-primas:", error);
-        toast.error("Erro ao buscar matérias-primas."); // Alterado
-      } finally {
-        setLoading(false);
-      }
+    const loadData = async () => {
+      setLoading(true);
+      await fetchMateriasPrimas();
+      setLoading(false);
     };
-
-    fetchMateriasPrimas();
+    loadData();
   }, []);
 
-  const filteredMateriaPrimaData = materiasPrimas.filter((materiaPrima) =>
-    materiaPrima.dscMateriaPrima
-      .toLowerCase()
-      .includes(materiaPrimaSearch.toLowerCase())
-  );
+  // Handle data change for pagination reset
+  useEffect(() => {
+    handleDataChange();
+  }, [materiasPrimas, handleDataChange]);
 
   const headerData = ["Descrição", "Ações"];
 
-  const tableData = filteredMateriaPrimaData.map((materiaPrima) => [
+  const tableData = paginatedMateriasPrimas.map((materiaPrima) => [
     materiaPrima.dscMateriaPrima,
   ]);
+
+  // Create mapping for original indexes to handle pagination correctly
+  const originalIndexes = paginatedMateriasPrimas.map(materiaPrima => 
+    materiasPrimas.findIndex(m => m.idMateriaPrima === materiaPrima.idMateriaPrima)
+  );
 
   const handleRead = (rowIndex: number) => {
     const materiaPrima = materiasPrimas[rowIndex];

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import TableRow from "@/app/components/molecules/TableRow";
+import Pagination from "@/app/components/atoms/Pagination";
 import { useEffect, useState } from 'react';
 
 interface TableProps {
@@ -12,7 +13,16 @@ interface TableProps {
   deleteHidden?: boolean; 
   isBaixaEstoque?: boolean; 
   withoutId?: boolean;
-  withoutAtivo?: boolean; 
+  withoutAtivo?: boolean;
+  // Pagination props
+  currentPage?: number;
+  totalPages?: number;
+  onPageChange?: (page: number) => void;
+  itemsPerPage?: number;
+  totalItems?: number;
+  showPagination?: boolean;
+  // Original data indexes for proper handling
+  originalIndexes?: number[];
 }
 
 export default function Table({ 
@@ -25,7 +35,15 @@ export default function Table({
   deleteHidden, 
   isBaixaEstoque,
   withoutId = false,
-  withoutAtivo = false // Valor padrão para withoutAtivo
+  withoutAtivo = false,
+  // Pagination props
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange,
+  itemsPerPage = 20,
+  totalItems = 0,
+  showPagination = true,
+  originalIndexes
 }: TableProps) {
 
   const [modifiedHeaderData, setModifiedHeaderData] = useState<string[] | undefined>(headerData);
@@ -57,32 +75,48 @@ export default function Table({
     setModifiedHeaderData(newHeaderData);
     setModifiedData(newData);
   }, [withoutId, withoutAtivo, headerData, data]);
-
   return (
-    <div className="border border-[#E5E7EB] rounded-lg my-4 w-full">
-      {modifiedHeaderData && (
-        <TableRow data={modifiedHeaderData} isHeader />
-      )}
+    <div className="w-full">
+      <div className="border border-[#E5E7EB] rounded-lg my-4 w-full">
+        {modifiedHeaderData && (
+          <TableRow data={modifiedHeaderData} isHeader />
+        )}
+        
+        {modifiedData.map((rowData, rowIndex) => {
+          // Use original index if provided, otherwise use current index
+          const actualIndex = originalIndexes ? originalIndexes[rowIndex] : rowIndex;
+          
+          return (
+            <motion.div
+              key={rowIndex}
+              initial={{ y: 300, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 300, opacity: 0 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
+            >
+              <TableRow
+                data={rowData}
+                onClickRead={() => onClickRead?.(actualIndex)}
+                onClickEdit={() => onClickEdit?.(actualIndex)}
+                onClickDelete={() => onClickDelete?.(actualIndex)}
+                editHiiden={editHiiden}
+                deleteHidden={deleteHidden}
+                isBaixaEstoque={isBaixaEstoque} 
+              />
+            </motion.div>
+          );
+        })}
+      </div>
       
-      {modifiedData.map((rowData, rowIndex) => (
-        <motion.div
-          key={rowIndex}
-          initial={{ y: 300, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 300, opacity: 0 }}
-          transition={{ duration: 0.4, ease: "easeInOut" }}
-        >
-          <TableRow
-            data={rowData}
-            onClickRead={() => onClickRead?.(rowIndex)}
-            onClickEdit={() => onClickEdit?.(rowIndex)}
-            onClickDelete={() => onClickDelete?.(rowIndex)}
-            editHiiden={editHiiden}
-            deleteHidden={deleteHidden}
-            isBaixaEstoque={isBaixaEstoque} 
-          />
-        </motion.div>
-      ))}
+      {showPagination && totalPages > 1 && onPageChange && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+        />
+      )}
     </div>
   );
 }

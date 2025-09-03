@@ -17,6 +17,7 @@ import {
 import { toast, Toaster } from "react-hot-toast";
 
 import { useSearchStore } from "@/app/hooks/searchHook"; 
+import { usePaginatedData, useDataRefresh } from "@/app/hooks/paginationHook";
 
 export default function Clientes() {
   const [clientData, setClientData] = useState<Cliente[]>([]);
@@ -32,6 +33,7 @@ export default function Clientes() {
   
   // Usando o hook com as buscas de produto
   const { clientsSearch, setClientsSearch } = useSearchStore();
+  const { refresh, isRefreshing } = useDataRefresh();
 
   const headerData = [
     "ID",
@@ -70,21 +72,35 @@ export default function Clientes() {
       console.error("Erro ao buscar categorias de clientes:", error);
     }
   };
-
   // Função principal que chama as duas funções acima
   const fetchData = async () => {
     await fetchClients();
     await fetchClientCategories();
   };
 
+  // Setup pagination
+  const {
+    paginatedData: paginatedClients,
+    currentPage,
+    totalPages,
+    totalItems,
+    goToPage,
+    handleDataChange
+  } = usePaginatedData({
+    data: clientData,
+    itemsPerPage: 20,
+    searchTerm: clientsSearch,
+    searchFields: ['nomeCliente' as keyof Cliente]
+  });
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  const filteredClients = clientData.filter((client) =>
-    client.nomeCliente.toLowerCase().includes(clientsSearch.toLowerCase())
-  );
-
+  // Handle data change for pagination reset
+  useEffect(() => {
+    handleDataChange();
+  }, [clientData, handleDataChange]);
   const handleRead = (rowIndex: number) => {
     setSelectedClient(clientData[rowIndex]);
     setReadMode(true);
@@ -139,15 +155,16 @@ export default function Clientes() {
       }
     );
   };
-
   const handleDelete = async (rowIndex: number) => {
     const id = clientData[rowIndex].idCliente;
     try {
       await deleteClient(id);
-      await fetchData();
       toast.success(`Cliente deletado: ${id}`, {
         className: "bg-green-500 text-white p-4 rounded",
       });
+      
+      // Refresh data after delete
+      await refresh(fetchData);
     } catch (error) {
       toast.error(`Erro ao deletar cliente: ${id}`, {
         className: "bg-red-500 text-white p-4 rounded",
@@ -181,11 +198,9 @@ export default function Clientes() {
         toast.success("Novo cliente adicionado!", {
           className: "bg-green-500 text-white p-4 rounded",
         });
-      }
+      }      setModalOpen(false);
 
-      setModalOpen(false);
-
-      await fetchData();
+      await refresh(fetchData);
     } catch (error) {
       toast.dismiss(toastId); 
       toast.error("Erro ao salvar cliente.", {
@@ -250,11 +265,9 @@ export default function Clientes() {
         setItemSearch={setClientsSearch}  
       />
 
-      <Divider />
-
-      <Table
+      <Divider />      <Table
         headerData={headerData}
-        data={filteredClients.map(client => [
+        data={paginatedClients.map((client: Cliente) => [
           client.idCliente,
           client.nomeCliente,
           client.emailCliente,
@@ -267,6 +280,15 @@ export default function Clientes() {
         onClickEdit={handleEdit}
         onClickDelete={confirmDelete}
         withoutId
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={goToPage}
+        itemsPerPage={20}
+        totalItems={totalItems}
+        showPagination={true}
+        originalIndexes={paginatedClients.map((client: Cliente) => 
+          clientData.findIndex(c => c.idCliente === client.idCliente)
+        )}
       />
 
       {selectedClient && (
