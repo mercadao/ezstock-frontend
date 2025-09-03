@@ -6,10 +6,10 @@ import { getClients, Cliente } from "@/app/services/clientService";
 
 interface EstoqueFormData {
   idEstoque?: number; // Opcional, caso seja usado para edição
-  valorNovo: number;
+  valorNovo: number; // Changed to string for better input handling
   idProduto: number;
   idUsuario: number;
-  idCliente: number;
+  idCliente?: number; // Made optional
   tipoTransacao: number;
 }
 
@@ -27,7 +27,7 @@ export default function DinamicModalStockReduce({
   initialData,
 }: DinamicModalStockReduceProps) {
   const [formData, setFormData] = useState<any>({
-    valorNovo: 0,
+    valorNovo: "", // Changed to empty string
     idProduto: 0,
     idUsuario: 0,
     idCliente: 0,
@@ -75,6 +75,7 @@ export default function DinamicModalStockReduce({
       setFormData({
         ...filteredData,
         tipoTransacao: 2,
+        valorNovo: filteredData.valorNovo ? filteredData.valorNovo.toString() : "", // Ensure valorNovo is string
       });
     }
   }, [initialData]);
@@ -91,8 +92,7 @@ export default function DinamicModalStockReduce({
       "idUsuario",
       "idCliente",
       "tipoTransacao",
-      "valorNovo",
-    ].includes(name)
+    ].includes(name)  // Removed "valorNovo" from parsing
       ? parseInt(value, 10) || 0
       : value;
 
@@ -106,16 +106,20 @@ export default function DinamicModalStockReduce({
     e.preventDefault();
 
     // Verificar se os campos obrigatórios foram preenchidos
-    if (!formData.idProduto || !formData.idUsuario || !formData.idCliente) {
+    if (!formData.idProduto || !formData.idUsuario) {  // Removed idCliente check
       console.log(formData.idUsuario);
-      console.log(formData.idCliente);
       console.error("Por favor, preencha todos os campos obrigatórios.");
       return;
     }
 
-    console.log("formData enviado: ", formData);
+    const dataToSend = {
+      ...formData,
+      valorNovo: parseFloat(formData.valorNovo) || 0, // Parse to number on submit
+    };
 
-    onSave(formData);
+    console.log("formData enviado: ", dataToSend);
+
+    onSave(dataToSend);
   };
 
   useEffect(() => {
@@ -225,11 +229,10 @@ export default function DinamicModalStockReduce({
             name="idCliente"
             value={formData.idCliente}
             onChange={handleChange}
-            required
             className="w-full p-2 border rounded"
           >
-            <option value={0} disabled>
-              Selecione um cliente
+            <option value={0}>
+              Nenhum cliente
             </option>
             {clientes.map((cliente) => (
               <option key={cliente.idCliente} value={cliente.idCliente}>
@@ -248,13 +251,12 @@ export default function DinamicModalStockReduce({
             Diminuir Valor
           </label>
           <input
-            type="number"
+            type="text"  // Changed from "number" to "text"
             id="valorNovo"
             name="valorNovo"
             value={formData.valorNovo}
             onChange={handleChange}
             required
-            min={0}
             className="w-full p-2 border rounded"
           />
         </div>
