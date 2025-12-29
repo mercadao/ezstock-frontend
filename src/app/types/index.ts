@@ -59,3 +59,21 @@ export interface Usuario {
     indAtivo: boolean;
     imgPerfilUsuario: string | null;
 }
+export interface EstoqueMateriaPrima {
+    idMateriaPrima: number;
+    dscMateriaPrima: string;
+    quantidadeKG: number;
+    valorKG: number;
+    idFornecedorPadrao: number;
+}
+
+export interface RegistroMateriaPrima {
+    idRegistro: number;
+    idMateriaPrima: number;
+    dscMateriaPrima: string;
+    quantidadeKG: number;
+    tipoTransacao: number;
+    dscTipoTransacao: string;
+    dataTransacao: string;
+    observacao: string;
+}
