@@ -304,7 +304,7 @@ export default function MateriaPrimaPage() {
                         <div className="flex items-center justify-between">
                           <span className="text-textGray text-sm">Valor/kg</span>
                           <span className="font-semibold text-brownText text-sm">
-                            {formatarValor(item.valorKG)}
+                            {formatarValor(item.valorKG || 0)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
@@ -313,7 +313,7 @@ export default function MateriaPrimaPage() {
                             <span className="text-textGray text-sm">Valor Total</span>
                           </div>
                           <span className="font-bold text-primary-900">
-                            {formatarValor(item.quantidadeKG * item.valorKG)}
+                            {formatarValor(item.quantidadeKG * (item.valorKG || 0))}
                           </span>
                         </div>
                       </div>
