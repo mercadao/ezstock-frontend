@@ -74,6 +74,10 @@ export default function ModalHistorico({
           ? value === ""
             ? null
             : parseInt(value)
+          : name === "idMateriaPrima"
+          ? value === ""
+            ? null
+            : parseInt(value)
           : value,
     }));
   };
