@@ -77,3 +77,23 @@ export interface RegistroMateriaPrima {
     dataTransacao: string;
     observacao: string;
 }
+
+export interface TransacaoEstoque {
+    idTransacao: number;
+    dataTransacao: string;
+    nomeProduto: string;
+    tipoTransacao: number;
+    quantidadeKG: number;
+    valorTransacao: number;
+    nomeUsuario?: string;
+    nomeCliente?: string;
+    observacao?: string;
+}
+
+export interface FiltroHistoricoEstoque {
+    idProduto?: number | null;
+    dataInicio?: string | null;
+    dataFim?: string | null;
+    tipoTransacao?: number | null;
+    idCliente?: number | null;
+}

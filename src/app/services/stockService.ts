@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { TransacaoEstoque, FiltroHistoricoEstoque } from '../types';
 
 const BASE_URL = 'https://villavitoriaez.up.railway.app/api/Estoque';
 
@@ -69,6 +70,24 @@ export const postAdicionaEstoque = async (estoque: Estoque): Promise<void> => {
     await axios.post(`${BASE_URL}/AdicionaEstoque`, estoque);
   } catch (error) {
     console.error('Erro ao adicionar estoque:', error);
+    throw error;
+  }
+};
+
+export const buscarHistoricoEstoque = async (filtro: FiltroHistoricoEstoque): Promise<TransacaoEstoque[]> => {
+  try {
+    const response = await axios.post<{ sucesso: boolean; registros: TransacaoEstoque[]; mensagem: string }>(
+      `${BASE_URL}/ListaTransacoes`,
+      filtro
+    );
+    
+    if (response.data.sucesso) {
+      return response.data.registros;
+    } else {
+      throw new Error(response.data.mensagem);
+    }
+  } catch (error) {
+    console.error('Erro ao buscar histórico de estoque:', error);
     throw error;
   }
 };
