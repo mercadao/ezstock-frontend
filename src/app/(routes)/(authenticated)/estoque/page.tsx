@@ -209,7 +209,7 @@ export default function EstoquePage() {
         </button>
         <button
           onClick={() => setModalHistoricoOpen(true)}
-          disabled
+          
           className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:opacity-80 transition-all shadow-md hover:shadow-lg flex items-center gap-2 font-medium"
         >
           <MdHistory className="text-xl" />
