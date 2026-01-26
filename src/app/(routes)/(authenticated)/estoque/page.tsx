@@ -209,10 +209,11 @@ export default function EstoquePage() {
         </button>
         <button
           onClick={() => setModalHistoricoOpen(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:opacity-80 transition-all shadow-md hover:shadow-lg flex items-center gap-2 font-medium"
+          disabled
+          className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:opacity-80 transition-all shadow-md hover:shadow-lg flex items-center gap-2 font-medium"
         >
           <MdHistory className="text-xl" />
-          Ver Histórico
+          Ver Histórico (EM MANUTENÇÃO)
         </button>
         <button
           onClick={handleRefreshData}
@@ -299,7 +300,7 @@ export default function EstoquePage() {
                       </span>
                     </div>
                     <div className="h-px bg-borderGray" />
-                    <div className="flex items-center justify-between">
+                    {/* <div className="flex items-center justify-between">
                       <span className="text-textGray text-sm">Status</span>
                       <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
                         estoque.indAtivo 
@@ -308,7 +309,7 @@ export default function EstoquePage() {
                       }`}>
                         {estoque.indAtivo ? "Ativo" : "Inativo"}
                       </span>
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Botões de Ação */}

@@ -340,7 +340,7 @@ export default function MateriaPrimaPage() {
                           onClick={() => handleHistorico(item)}
                           className="px-2 py-2 text-xs bg-gray-400 text-white rounded-lg hover:opacity-80 transition-all shadow-sm hover:shadow-md flex flex-col items-center gap-1 font-medium"
                           title="Ver histórico"
-                          
+                          disabled
                         >
                           <MdHistory className="text-base" />
                           <span>Histórico <br></br> (EM MANUTENÇÃO)</span>
