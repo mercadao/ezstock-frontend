@@ -343,7 +343,7 @@ export default function MateriaPrimaPage() {
                           disabled
                         >
                           <MdHistory className="text-base" />
-                          <span>Histórico <br></br> (EM MANUTENÇÃO)</span>
+                          <span>Histórico</span>
                         </button>
                       </div>
                     </div>
