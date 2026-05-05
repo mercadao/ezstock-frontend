@@ -13,6 +13,8 @@ export interface Estoque {
   quantidadeAtual?: number;
   dataInicioValidade: string;
   dataFinalValidade: string;
+  dataCadastro?: string;
+  nomeProduto?: string;
   indAtivo: number;
   tipoTransacao: number;
 }

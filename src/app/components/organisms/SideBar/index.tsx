@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Image from "next/image";
-import { ArrowLeftCircleIcon, ArrowRightCircle } from "lucide-react";
+import { ArrowLeftCircleIcon, ArrowRightCircle, History } from "lucide-react";
 
 import SideBarSection from "@/app/components/molecules/SideBarSection";
 import HomeIcon from "../../../../../public/assets/icons/HomeIcon";
@@ -26,6 +26,12 @@ const sections = [
       { icon: <StoreIcon />, text: 'Materia Prima', href: '/materiaPrima' },
       { icon: <ClientIcon />, text: 'Clientes', href: '/clientes' },
       { icon: <ClientIcon />, text: 'Categoria cliente', href: '/categoriaCliente' },
+    ],
+  },
+  {
+    title: "Auditoria",
+    items: [
+      { icon: <History size={20} color="#FF6A00" />, text: "Movimentações", href: "/movimentacoes" },
     ],
   },
   {

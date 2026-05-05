@@ -2,16 +2,17 @@
 import { useEffect, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
 import { toast, Toaster } from "react-hot-toast";
-import { 
-  MdInventory2, 
-  MdAdd, 
-  MdRemove, 
-  MdHistory, 
+import {
+  MdInventory2,
+  MdAdd,
+  MdRemove,
+  MdHistory,
   MdRefresh,
   MdWarning,
   MdCheckCircle,
   MdError,
-  MdVisibility
+  MdVisibility,
+  MdEvent
 } from "react-icons/md";
 import { FaBoxOpen, FaWeightHanging } from "react-icons/fa";
 import { BiSolidPackage } from "react-icons/bi";
@@ -30,15 +31,58 @@ import {
   Estoque,
 } from "@/app/services/stockService";
 
-import { getProdutoEspecifico } from "@/app/services/productService";
-
 // Hook
 import { useSearchStore } from "@/app/hooks/searchHook";
 import { usePaginatedData, useDataRefresh } from "@/app/hooks/paginationHook";
 
+const VALIDADE_FALLBACK = "—";
+const VALIDADE_SEM_DATA = "Sem validade";
+const VALIDADE_VENCIDO = "Vencido";
+const VALIDADE_PROXIMA = "Vence em breve";
+const VALIDADE_OK = "Em validade";
+const DIAS_ALERTA_VENCIMENTO = 3;
+const MS_POR_DIA = 1000 * 60 * 60 * 24;
+
+const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+});
+
+const formatValidade = (value?: string): string => {
+  if (!value) {
+    return VALIDADE_FALLBACK;
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return VALIDADE_FALLBACK;
+  }
+  return dateFormatter.format(parsed);
+};
+
+const getStatusValidade = (value?: string): { label: string; classe: string } => {
+  if (!value) {
+    return { label: VALIDADE_SEM_DATA, classe: "text-textGray" };
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return { label: VALIDADE_SEM_DATA, classe: "text-textGray" };
+  }
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  const diffDias = Math.ceil((parsed.getTime() - hoje.getTime()) / MS_POR_DIA);
+
+  if (diffDias < 0) {
+    return { label: VALIDADE_VENCIDO, classe: "text-red-600" };
+  }
+  if (diffDias <= DIAS_ALERTA_VENCIMENTO) {
+    return { label: VALIDADE_PROXIMA, classe: "text-yellow-600" };
+  }
+  return { label: VALIDADE_OK, classe: "text-green-600" };
+};
+
 export default function EstoquePage() {
   const [estoques, setEstoques] = useState<Estoque[]>([]);
-  const [produtos, setProdutos] = useState<{ [key: number]: string }>({});
   const [selectedEstoque, setSelectedEstoque] = useState<Estoque | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [isModalPostOpen, setModalPostOpen] = useState(false);
@@ -51,36 +95,15 @@ export default function EstoquePage() {
   const { refresh, isRefreshing } = useDataRefresh();
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch data function
   const fetchEstoques = async () => {
     try {
       const response = await getEstoques();
-
-      const produtoNames: { [key: number]: string } = {};
-      await Promise.all(
-        response.map(async (estoque) => {
-          try {
-            const produtoResponse = await getProdutoEspecifico(
-              estoque.idProduto
-            );
-            produtoNames[estoque.idProduto] =
-              produtoResponse?.produto?.nomeProduto ||
-              "Produto não encontrado";
-          } catch {
-            produtoNames[estoque.idProduto] = "Erro ao carregar produto";
-          }
-        })
-      );
-
       setEstoques(response);
-      setProdutos(produtoNames);
     } catch (error) {
-      console.error("Erro ao buscar estoques:", error);
       toast.error("Erro ao buscar estoques.");
     }
   };
 
-  // Setup pagination with custom filter
   const {
     paginatedData: paginatedEstoques,
     currentPage,
@@ -93,7 +116,7 @@ export default function EstoquePage() {
     itemsPerPage: 20,
     searchTerm: estoqueSearch,
     filterFn: (estoque, searchTerm) => {
-      const produtoNome = produtos[estoque.idProduto] || "";
+      const produtoNome = estoque.nomeProduto || "";
       return produtoNome.toLowerCase().includes(searchTerm.toLowerCase());
     }
   });
@@ -166,9 +189,8 @@ export default function EstoquePage() {
     return { cor: "bg-green-100 border-green-300", label: "Normal", icon: MdCheckCircle };
   };
 
-  // Filtrar estoques pela busca
   const filteredEstoques = paginatedEstoques.filter((estoque) => {
-    const produtoNome = produtos[estoque.idProduto]?.toLowerCase() || "";
+    const produtoNome = estoque.nomeProduto?.toLowerCase() || "";
     return produtoNome.includes(searchTerm.toLowerCase());
   });
 
@@ -253,7 +275,9 @@ export default function EstoquePage() {
             const isLowStock = (estoque.quantidadeAtual || 0) < 50;
             const isOutOfStock = (estoque.quantidadeAtual || 0) === 0;
             const IconComponent = indicador.icon;
-            
+            const validadeLabel = formatValidade(estoque.dataFinalValidade);
+            const statusValidade = getStatusValidade(estoque.dataFinalValidade);
+
             return (
               <div
                 key={estoque.idEstoque}
@@ -268,17 +292,17 @@ export default function EstoquePage() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-brownText text-base leading-tight">
-                          {produtos[estoque.idProduto] || "Carregando..."}
+                          {estoque.nomeProduto || "Produto não identificado"}
                         </h3>
                         <div className="flex items-center gap-1 mt-1">
                           <IconComponent className={`text-xs ${
-                            isOutOfStock ? 'text-red-500' : 
-                            isLowStock ? 'text-yellow-600' : 
+                            isOutOfStock ? 'text-red-500' :
+                            isLowStock ? 'text-yellow-600' :
                             'text-green-600'
                           }`} />
                           <span className={`text-xs font-medium ${
-                            isOutOfStock ? 'text-red-600' : 
-                            isLowStock ? 'text-yellow-600' : 
+                            isOutOfStock ? 'text-red-600' :
+                            isLowStock ? 'text-yellow-600' :
                             'text-green-600'
                           }`}>
                             {indicador.label}
@@ -300,16 +324,20 @@ export default function EstoquePage() {
                       </span>
                     </div>
                     <div className="h-px bg-borderGray" />
-                    {/* <div className="flex items-center justify-between">
-                      <span className="text-textGray text-sm">Status</span>
-                      <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
-                        estoque.indAtivo 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {estoque.indAtivo ? "Ativo" : "Inativo"}
-                      </span>
-                    </div> */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <MdEvent className="text-offgray text-sm" />
+                        <span className="text-textGray text-sm">Validade</span>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <span className="font-semibold text-brownText text-sm">
+                          {validadeLabel}
+                        </span>
+                        <span className={`text-xs font-medium ${statusValidade.classe}`}>
+                          {statusValidade.label}
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Botões de Ação */}
